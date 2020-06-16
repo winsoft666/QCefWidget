@@ -1,0 +1,19 @@
+<RCC>
+    <qresource prefix="/QCefWidgetTest">
+        <file>images/back.svg</file>
+        <file>images/back_disable.svg</file>
+        <file>images/forward_disable.svg</file>
+        <file>images/reload.svg</file>
+        <file>images/reload_disable.svg</file>
+        <file>QCefWidgetTest.qss</file>
+        <file>images/stop.svg</file>
+        <file>images/stop_disable.svg</file>
+        <file>images/forward.svg</file>
+        <file>images/function.svg</file>
+        <file>images/function_hover.svg</file>
+        <file>images/splitter_h_handle.svg</file>
+        <file>images/splitter_h_handle_hover.svg</file>
+        <file>images/splitter_v_handle.svg</file>
+        <file>images/splitter_v_handle_hover.svg</file>
+    </qresource>
+</RCC>

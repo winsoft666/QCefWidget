@@ -1,0 +1,13 @@
+---
+Language: Cpp
+BasedOnStyle:  LLVM
+SortIncludes: false
+SortUsingDeclarations: false
+BreakStringLiterals: false
+BreakConstructorInitializersBeforeComma: true
+ColumnLimit: 100
+ReflowComments: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  BeforeElse:      true
+...

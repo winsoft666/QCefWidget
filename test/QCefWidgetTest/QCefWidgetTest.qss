@@ -1,0 +1,81 @@
+QPushButton#pushButtonBack {
+	border: none;
+	image: url(:/QCefWidgetTest/images/back.svg);
+}
+
+QPushButton#pushButtonBack:disabled {
+	border: none;
+	image: url(:/QCefWidgetTest/images/back_disable.svg);
+}
+
+QPushButton#pushButtonForward {
+	border: none;
+	image: url(:/QCefWidgetTest/images/forward.svg);
+}
+
+QPushButton#pushButtonForward:disabled {
+	border: none;
+	image: url(:/QCefWidgetTest/images/forward_disable.svg);
+}
+
+QPushButton#pushButtonReload[loading="0"] {
+	border: none;
+	image: url(:/QCefWidgetTest/images/reload.svg);
+}
+
+QPushButton#pushButtonReload[loading="0"]:disabled {
+	border: none;
+	image: url(:/QCefWidgetTest/images/reload_disable.svg);
+}
+
+QPushButton#pushButtonReload[loading="1"] {
+	border: none;
+	image: url(:/QCefWidgetTest/images/stop.svg);
+}
+
+QPushButton#pushButtonReload[loading="1"]:disabled {
+	border: none;
+	image: url(:/QCefWidgetTest/images/stop_disable.svg);
+}
+
+QPushButton#pushButtonTest {
+  border: none;
+  image: url(:/QCefWidgetTest/images/function.svg);
+}
+
+QPushButton#pushButtonTest::menu-indicator {
+  width: 0px;
+}
+
+QPushButton#pushButtonTest:hover {
+  border: none;
+  image: url(:/QCefWidgetTest/images/function_hover.svg);
+}
+
+
+QSplitter::handle:pressed {
+  background-color: rgba(255,0,0,1);
+}
+
+QSplitter::handle:horizontal {
+  image: url(:/QCefWidgetTest/images/splitter_h_handle.svg);
+  width: 10px;
+  margin: 0px 4px 0px 4px;
+}
+
+QSplitter::handle:horizontal:hover {
+  image: url(:/QCefWidgetTest/images/splitter_h_handle_hover.svg);
+  width: 10px;
+}
+
+QSplitter::handle:vertical {
+  image: url(:/QCefWidgetTest/images/splitter_v_handle.svg);
+  height: 10px;
+  margin: 4px 0px 4px 0px;
+}
+
+/*TODO: hover不生效*/
+QSplitter::handle:vertical:hover {
+  image: url(:/QCefWidgetTest/images/splitter_v_handle_hover.svg);
+  height: 10px;
+}
