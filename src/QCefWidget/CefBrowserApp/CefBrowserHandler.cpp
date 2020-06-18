@@ -1,5 +1,5 @@
 #include "CefBrowserHandler.h"
-#include "QCefWidgetImplement.h"
+#include "QCefWidgetImpl.h"
 #include <QCefProtocol.h>
 #include <QDebug>
 #include <QRect>
@@ -15,7 +15,7 @@
 #include "Include/QCefWidget.h"
 #include "Include/QCefOpenGLWidget.h"
 
-CefBrowserHandler::CefBrowserHandler(QCefWidgetImplement *pCefViewImpl)
+CefBrowserHandler::CefBrowserHandler(QCefWidgetImpl *pCefViewImpl)
     : isClosing_(false)
     , pCefqueryHandler_(new CefQueryHandler(pCefViewImpl))
     , pResourceManager_(new CefResourceManager())
@@ -26,9 +26,9 @@ CefBrowserHandler::CefBrowserHandler(QCefWidgetImplement *pCefViewImpl)
 CefBrowserHandler::~CefBrowserHandler() {}
 
 bool CefBrowserHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                                                     CefRefPtr<CefFrame> frame,
-                                                     CefProcessId source_process,
-                                                     CefRefPtr<CefProcessMessage> message) {
+                                                 CefRefPtr<CefFrame> frame,
+                                                 CefProcessId source_process,
+                                                 CefRefPtr<CefProcessMessage> message) {
   CEF_REQUIRE_UI_THREAD();
   if (pMessageRouter_ &&
       pMessageRouter_->OnProcessMessageReceived(browser, frame, source_process, message))
@@ -41,46 +41,53 @@ bool CefBrowserHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
 }
 
 void CefBrowserHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,
-                                                CefRefPtr<CefFrame> frame,
-                                                CefRefPtr<CefContextMenuParams> params,
-                                                CefRefPtr<CefMenuModel> model) {
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefContextMenuParams> params,
+                                            CefRefPtr<CefMenuModel> model) {
   CEF_REQUIRE_UI_THREAD();
 
   model->Clear();
+
+  // TODO
 }
 
 bool CefBrowserHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
-                                                 CefRefPtr<CefFrame> frame,
-                                                 CefRefPtr<CefContextMenuParams> params,
-                                                 int command_id, EventFlags event_flags) {
+                                             CefRefPtr<CefFrame> frame,
+                                             CefRefPtr<CefContextMenuParams> params, int command_id,
+                                             EventFlags event_flags) {
   CEF_REQUIRE_UI_THREAD();
+
+  // TODO
 
   return false;
 }
 
-void CefBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
-                                            CefRefPtr<CefFrame> frame, const CefString &url) {
+void CefBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                        const CefString &url) {
   CEF_REQUIRE_UI_THREAD();
+  if (frame->IsMain()) {
+    // TODO
+  }
 }
 
 void CefBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title) {
   CEF_REQUIRE_UI_THREAD();
 
-  if (pCefViewImpl_->getWidgetType() == Widget) {
+  if (pCefViewImpl_->getWidgetType() == WT_Widget) {
     QCefWidget *p = (QCefWidget *)pCefViewImpl_->getWidget();
     if (p)
       emit p->titleChanged(QString::fromStdWString(title.ToWString()));
   }
-  else if (pCefViewImpl_->getWidgetType() == OpenGLWidget) {
+  else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
     if (p)
       emit p->titleChanged(QString::fromStdWString(title.ToWString()));
   }
 }
 
-bool CefBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
-                                             cef_log_severity_t level, const CefString &message,
-                                             const CefString &source, int line) {
+bool CefBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
+                                         const CefString &message, const CefString &source,
+                                         int line) {
   CEF_REQUIRE_UI_THREAD();
   if (source.empty() || message.empty())
     return false;
@@ -94,27 +101,41 @@ bool CefBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-bool CefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
-                                        CefRefPtr<CefDragData> dragData,
-                                        CefDragHandler::DragOperationsMask mask) {
+void CefBrowserHandler::OnFaviconURLChange(CefRefPtr<CefBrowser> browser,
+                                           const std::vector<CefString> &icon_urls) {
+  CEF_REQUIRE_UI_THREAD();
+
+  if (!icon_urls.empty()) {
+    // TODO
+  }
+}
+
+void CefBrowserHandler::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen) {
+  CEF_REQUIRE_UI_THREAD();
+
+  // TODO
+}
+
+bool CefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> dragData,
+                                    CefDragHandler::DragOperationsMask mask) {
   CEF_REQUIRE_UI_THREAD();
 
   return true;
 }
 
 bool CefBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> browser, const CefString &origin_url,
-                                       JSDialogType dialog_type, const CefString &message_text,
-                                       const CefString &default_prompt_text,
-                                       CefRefPtr<CefJSDialogCallback> callback,
-                                       bool &suppress_message) {
+                                   JSDialogType dialog_type, const CefString &message_text,
+                                   const CefString &default_prompt_text,
+                                   CefRefPtr<CefJSDialogCallback> callback,
+                                   bool &suppress_message) {
   CEF_REQUIRE_UI_THREAD();
 
   return false;
 }
 
 bool CefBrowserHandler::OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
-                                                 const CefString &message_text, bool is_reload,
-                                                 CefRefPtr<CefJSDialogCallback> callback) {
+                                             const CefString &message_text, bool is_reload,
+                                             CefRefPtr<CefJSDialogCallback> callback) {
   CEF_REQUIRE_UI_THREAD();
 
   return false;
@@ -125,19 +146,21 @@ void CefBrowserHandler::OnResetDialogState(CefRefPtr<CefBrowser> browser) {
 }
 
 bool CefBrowserHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser, const CefKeyEvent &event,
-                                          CefEventHandle os_event, bool *is_keyboard_shortcut) {
+                                      CefEventHandle os_event, bool *is_keyboard_shortcut) {
   CEF_REQUIRE_UI_THREAD();
 
   return false;
 }
 
-bool CefBrowserHandler::OnBeforePopup(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString &target_url,
-    const CefString &target_frame_name,
-    CefLifeSpanHandler::WindowOpenDisposition target_disposition, bool user_gesture,
-    const CefPopupFeatures &popupFeatures, CefWindowInfo &windowInfo, CefRefPtr<CefClient> &client,
-    CefBrowserSettings &settings, CefRefPtr<CefDictionaryValue> &extra_info,
-    bool *no_javascript_access) {
+bool CefBrowserHandler::OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                      const CefString &target_url,
+                                      const CefString &target_frame_name,
+                                      CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+                                      bool user_gesture, const CefPopupFeatures &popupFeatures,
+                                      CefWindowInfo &windowInfo, CefRefPtr<CefClient> &client,
+                                      CefBrowserSettings &settings,
+                                      CefRefPtr<CefDictionaryValue> &extra_info,
+                                      bool *no_javascript_access) {
   CEF_REQUIRE_UI_THREAD();
 
   if (isClosing_)
@@ -227,7 +250,6 @@ void CefBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
     std::lock_guard<std::recursive_mutex> lock(mtx_);
     --browserCount_;
 
-
     if (browserCount_ == 0) {
       if (pMessageRouter_) {
         pMessageRouter_->RemoveHandler(pCefqueryHandler_.get());
@@ -244,82 +266,87 @@ void CefBrowserHandler::OnBeforeClose(CefRefPtr<CefBrowser> browser) {
 }
 
 void CefBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading,
-                                                 bool canGoBack, bool canGoForward) {
+                                             bool canGoBack, bool canGoForward) {
   CEF_REQUIRE_UI_THREAD();
 
-  if (pCefViewImpl_->getWidgetType() == Widget) {
-    QCefWidget *p = (QCefWidget *)pCefViewImpl_->getWidget();
+  if (pCefViewImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget *p = qobject_cast<QCefWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadingStateChanged(isLoading, canGoBack, canGoForward);
   }
-  else if (pCefViewImpl_->getWidgetType() == OpenGLWidget) {
-    QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
+  else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadingStateChanged(isLoading, canGoBack, canGoForward);
   }
 }
 
 void CefBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                        TransitionType transition_type) {
+                                    TransitionType transition_type) {
   CEF_REQUIRE_UI_THREAD();
 
-
-  if (pCefViewImpl_->getWidgetType() == Widget) {
-    QCefWidget *p = (QCefWidget *)pCefViewImpl_->getWidget();
+  if (pCefViewImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget *p = qobject_cast<QCefWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadStart();
   }
-  else if (pCefViewImpl_->getWidgetType() == OpenGLWidget) {
-    QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
+  else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadStart();
   }
 }
 
 void CefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                      int httpStatusCode) {
+                                  int httpStatusCode) {
   CEF_REQUIRE_UI_THREAD();
 
-  if (pCefViewImpl_->getWidgetType() == Widget) {
-    QCefWidget *p = (QCefWidget *)pCefViewImpl_->getWidget();
+  if (pCefViewImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget *p = qobject_cast<QCefWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadEnd(httpStatusCode);
   }
-  else if (pCefViewImpl_->getWidgetType() == OpenGLWidget) {
-    QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
+  else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadEnd(httpStatusCode);
   }
 }
 
 void CefBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                        ErrorCode errorCode, const CefString &errorText,
-                                        const CefString &failedUrl) {
+                                    ErrorCode errorCode, const CefString &errorText,
+                                    const CefString &failedUrl) {
   CEF_REQUIRE_UI_THREAD();
   if (errorCode == ERR_ABORTED)
     return;
 
+  // Don't display an error for external protocols that we allow the OS to
+  // handle. See OnProtocolExecution().
+  if (errorCode == ERR_UNKNOWN_URL_SCHEME) {
+    return;
+  }
+
   QString msg = QString::fromStdString(errorText.ToString());
   QString url = QString::fromStdString(failedUrl.ToString());
 
-  if (pCefViewImpl_->getWidgetType() == Widget) {
-    QCefWidget* p = (QCefWidget*)pCefViewImpl_->getWidget();
-    if(p)
+  if (pCefViewImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget *p = qobject_cast<QCefWidget *>(pCefViewImpl_->getWidget());
+    if (p)
       emit p->loadError(errorCode, msg, url);
   }
-  else if (pCefViewImpl_->getWidgetType() == OpenGLWidget) {
-    QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
+  else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadError(errorCode, msg, url);
   }
 }
 
 bool CefBrowserHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                           CefRefPtr<CefRequest> request, bool user_gesture,
-                                           bool is_redirect) {
+                                       CefRefPtr<CefRequest> request, bool user_gesture,
+                                       bool is_redirect) {
   CEF_REQUIRE_UI_THREAD();
 
-  // TODO:自定义协议
+  // TODO:
 
   if (pMessageRouter_)
     pMessageRouter_->OnBeforeBrowse(browser, frame);
@@ -342,9 +369,8 @@ CefRefPtr<CefResourceRequestHandler> CefBrowserHandler::GetResourceRequestHandle
   return this;
 }
 
-bool CefBrowserHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
-                                           const CefString &origin_url, int64 new_size,
-                                           CefRefPtr<CefRequestCallback> callback) {
+bool CefBrowserHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser, const CefString &origin_url,
+                                       int64 new_size, CefRefPtr<CefRequestCallback> callback) {
   CEF_REQUIRE_IO_THREAD();
   static const int maxSize = 10 * 1024 * 1024;
   callback->Continue(new_size <= maxSize);
@@ -352,7 +378,7 @@ bool CefBrowserHandler::OnQuotaRequest(CefRefPtr<CefBrowser> browser,
 }
 
 void CefBrowserHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
-                                                      TerminationStatus status) {
+                                                  TerminationStatus status) {
   CEF_REQUIRE_UI_THREAD();
 
   if (pMessageRouter_)
@@ -364,24 +390,36 @@ void CefBrowserHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser,
       pMainBrowser_->GetMainFrame()->LoadURL(url);
     }
   }
+
+  if (pCefViewImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget *p = qobject_cast<QCefWidget *>(pCefViewImpl_->getWidget());
+    if (p)
+      emit p->renderProcessTerminated((int)status);
+  }
+  else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
+    if (p)
+      emit p->renderProcessTerminated((int)status);
+  }
 }
 
-CefResourceRequestHandler::ReturnValue CefBrowserHandler::OnBeforeResourceLoad(
-    CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
-    CefRefPtr<CefRequestCallback> callback) {
+CefResourceRequestHandler::ReturnValue
+CefBrowserHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+                                        CefRefPtr<CefRequest> request,
+                                        CefRefPtr<CefRequestCallback> callback) {
   return pResourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
 }
 
-CefRefPtr<CefResourceHandler>
-CefBrowserHandler::GetResourceHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                          CefRefPtr<CefRequest> request) {
+CefRefPtr<CefResourceHandler> CefBrowserHandler::GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                                                                    CefRefPtr<CefFrame> frame,
+                                                                    CefRefPtr<CefRequest> request) {
   return pResourceManager_->GetResourceHandler(browser, frame, request);
 }
 
 void CefBrowserHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
-                                                CefRefPtr<CefFrame> frame,
-                                                CefRefPtr<CefRequest> request,
-                                                bool &allow_os_execution) {
+                                            CefRefPtr<CefFrame> frame,
+                                            CefRefPtr<CefRequest> request,
+                                            bool &allow_os_execution) {
   // TODO
 }
 
@@ -391,7 +429,7 @@ bool CefBrowserHandler::GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect
 }
 
 bool CefBrowserHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX, int viewY,
-                                           int &screenX, int &screenY) {
+                                       int &screenX, int &screenY) {
   CEF_REQUIRE_UI_THREAD();
   QWidget *pWidget = pCefViewImpl_->getWidget();
 
@@ -424,8 +462,7 @@ void CefBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rect
   rect.height = viewRect.height();
 }
 
-bool CefBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser,
-                                          CefScreenInfo &screen_info) {
+bool CefBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo &screen_info) {
   CEF_REQUIRE_UI_THREAD();
   DCHECK(pCefViewImpl_);
   if (!pCefViewImpl_)
@@ -445,11 +482,10 @@ void CefBrowserHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {}
 void CefBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect &rect) {}
 
 void CefBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser,
-                                    CefRenderHandler::PaintElementType type,
-                                    const CefRenderHandler::RectList &dirtyRects,
-                                    const void *buffer, int width, int height) {
-  do
-  {
+                                CefRenderHandler::PaintElementType type,
+                                const CefRenderHandler::RectList &dirtyRects, const void *buffer,
+                                int width, int height) {
+  do {
     std::lock_guard<std::recursive_mutex> lg(imageMtx_);
     size_t newSize = width * height * 4;
 
@@ -467,13 +503,12 @@ void CefBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 }
 
 void CefBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor,
-                                           CursorType type,
-                                           const CefCursorInfo &custom_cursor_info) {
+                                       CursorType type, const CefCursorInfo &custom_cursor_info) {
   CEF_REQUIRE_UI_THREAD();
   QWidget *pWidget = pCefViewImpl_->getWidget();
   if (pWidget) {
     SetClassLongPtr((HWND)pWidget->winId(), GCLP_HCURSOR,
-      static_cast<LONG>(reinterpret_cast<LONG_PTR>(cursor)));
+                    static_cast<LONG>(reinterpret_cast<LONG_PTR>(cursor)));
 
     ::SetCursor(cursor);
   }
@@ -492,7 +527,7 @@ CefRefPtr<CefBrowser> CefBrowserHandler::browser() {
 }
 
 bool CefBrowserHandler::triggerEvent(const int64_t frame_id,
-                                         const CefRefPtr<CefProcessMessage> msg) {
+                                     const CefRefPtr<CefProcessMessage> msg) {
   if (msg->GetName().empty())
     return false;
 
@@ -519,8 +554,8 @@ bool CefBrowserHandler::triggerEvent(const int64_t frame_id,
   return false;
 }
 
-bool CefBrowserHandler::responseQuery(const int64_t query, bool success,
-                                          const CefString &response, int error) {
+bool CefBrowserHandler::responseQuery(const int64_t query, bool success, const CefString &response,
+                                      int error) {
   if (pCefqueryHandler_)
     return pCefqueryHandler_->Response(query, success, response, error);
 
@@ -528,8 +563,8 @@ bool CefBrowserHandler::responseQuery(const int64_t query, bool success,
 }
 
 bool CefBrowserHandler::dispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
-                                                  CefProcessId source_process,
-                                                  CefRefPtr<CefProcessMessage> message) {
+                                              CefProcessId source_process,
+                                              CefRefPtr<CefProcessMessage> message) {
   if (message->GetName() == INVOKEMETHOD_NOTIFY_MESSAGE) {
     CefRefPtr<CefListValue> messageArguments = message->GetArgumentList();
     if (messageArguments && (messageArguments->GetSize() >= 2)) {
@@ -578,12 +613,12 @@ bool CefBrowserHandler::dispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
               }
             }
 
-            if (pCefViewImpl_->getWidgetType() == Widget) {
+            if (pCefViewImpl_->getWidgetType() == WT_Widget) {
               QCefWidget *p = (QCefWidget *)pCefViewImpl_->getWidget();
               if (p)
                 emit p->invokeMethodNotify(browserId, frameId, method, arguments);
             }
-            else if (pCefViewImpl_->getWidgetType() == OpenGLWidget) {
+            else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
               QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
               if (p)
                 emit p->invokeMethodNotify(browserId, frameId, method, arguments);

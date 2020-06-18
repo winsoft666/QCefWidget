@@ -1,17 +1,17 @@
-#ifndef QCEFVIEWTEST_H
-#define QCEFVIEWTEST_H
+#ifndef TEST_WND_H__
+#define TEST_WND_H__
 
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QtWidgets>
 
 class QCefWidget;
 class QCefOpenGLWidget;
-class CefViewTestWnd : public QMainWindow {
+class TestWnd : public QMainWindow {
   Q_OBJECT
 
 public:
-  CefViewTestWnd(QWidget *parent = 0);
-  ~CefViewTestWnd();
+  TestWnd(QWidget *parent = 0);
+  ~TestWnd();
 
   void closeEvent(QCloseEvent *event) override;
   QSize sizeHint() const override;
@@ -22,6 +22,7 @@ private slots:
   void onShowTransparentCefWnd();
   void onTriggerTestEvent();
   void onPushButtonApplyClicked();
+  void onPushButtonOpenDevToolsClicked();
 private:
   QWidget* centralWidget_;
   QPushButton* pushButtonBack_;
@@ -29,6 +30,7 @@ private:
   QPushButton* pushButtonReload_;
   QPushButton* pushButtonTest_;
   QPushButton* pushButtonApply_;
+  QPushButton* pushButtonOpenDevTools_;
   QMenu* menuTest_;
   QAction* actionShowTransparentCef_;
   QAction* actionTriggerTestEvent_;
@@ -43,4 +45,4 @@ private:
   QCheckBox* checkboxIgnoreTopLevelCloseMsg_;
 };
 
-#endif // QCEFVIEWTEST_H
+#endif // TEST_WND_H__

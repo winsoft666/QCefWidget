@@ -11,7 +11,7 @@
 #define QCEFWIDGET_EXPORT Q_DECL_EXPORT
 #else
 #define QCEFWIDGET_EXPORT Q_DECL_IMPORT
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
 #pragma comment(lib, "QCefWidget.lib")
 #endif
 #endif

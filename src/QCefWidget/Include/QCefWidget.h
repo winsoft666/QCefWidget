@@ -15,7 +15,7 @@
 #define QCEFWIDGET_EXPORT Q_DECL_EXPORT
 #else
 #define QCEFWIDGET_EXPORT Q_DECL_IMPORT
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
 #pragma comment(lib, "QCefWidget.lib")
 #endif
 #endif
@@ -45,7 +45,7 @@
 //     exist.
 ///
 
-class QCefWidgetImplement;
+class QCefWidgetImpl;
 
 class QCEFWIDGET_EXPORT QCefWidget : public QWidget {
   Q_OBJECT
@@ -78,6 +78,7 @@ signals:
   void loadStart();
   void loadEnd(int httpStatusCode);
   void loadError(int errorCode, const QString &errorMsg, const QString &failedUrl);
+  void renderProcessTerminated(int status);
   void cefUrlRequest(const QString &url);
   void cefQueryRequest(const QCefQuery &query);
   void invokeMethodNotify(int browserId, int frameId, const QString &method,
@@ -86,7 +87,7 @@ protected:
   bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
   void paintEvent(QPaintEvent *event) override;
   
-  std::shared_ptr<QCefWidgetImplement> pImpl_;
+  std::shared_ptr<QCefWidgetImpl> pImpl_;
 };
 
 #endif // QCEF_WIDGET_H_

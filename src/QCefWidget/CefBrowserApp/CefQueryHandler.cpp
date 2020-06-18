@@ -2,9 +2,9 @@
 #include "Include/QCefQuery.h"
 #include "Include/QCefWidget.h"
 #include "Include/QCefOpenGLWidget.h"
-#include "QCefWidgetImplement.h"
+#include "QCefWidgetImpl.h"
 
-CefQueryHandler::CefQueryHandler(QCefWidgetImplement *pCefViewImpl)
+CefQueryHandler::CefQueryHandler(QCefWidgetImpl *pCefViewImpl)
     : pCefImpl_(pCefViewImpl) {}
 
 CefQueryHandler::~CefQueryHandler() {
@@ -20,12 +20,12 @@ bool CefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
 
     QString strRequest = QString::fromStdString(request.ToString());
 
-    if (pCefImpl_->getWidgetType() == Widget) {
+    if (pCefImpl_->getWidgetType() == WT_Widget) {
       QCefWidget *p = (QCefWidget *)pCefImpl_->getWidget();
       if (p)
         emit p->cefQueryRequest(QCefQuery(strRequest, query_id));
     }
-    else if (pCefImpl_->getWidgetType() == OpenGLWidget) {
+    else if (pCefImpl_->getWidgetType() == WT_OpenGLWidget) {
       QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefImpl_->getWidget();
       if (p)
         emit p->cefQueryRequest(QCefQuery(strRequest, query_id));

@@ -1,17 +1,19 @@
-This repository was originally cloned from [tishion/QCefView](https://github.com/tishion/QCefView). 
+[ >>> 中文版](README_ch.md)
 
-Since [tishion/QCefView](https://github.com/tishion/QCefView) don't support OSR (offscreen rendering), so I create a repository with the same name to implement these features. 
+The QCefWidget project provide a widget that is used to view webpage. QCefWidget is implemented based on the OSR mode of [CEF](https://bitbucket.org/chromiumembedded/cef/src/master/).
 
-**[tishion/QCefView](https://github.com/tishion/QCefView) and [winsoft666/QCefView](https://github.com/winsoft666/QCefView) are vastly different in code structure.**
+Support:
+
+✅ Show background transparent webpage;
+
+✅ Javascript and Qt interaction;
+
+✅ OpenGL graphics acceleratio;
 
 ---
 
-**Known Issues:**
-- CefRenderHandler::GetViewRect will be called frequently when resize browser window, and browser content can't resize correctly. 
 
----
-
-Build instruction:
+## Build Instruction
 
 1. Download and install [CMake](https://cmake.org/)
 
@@ -21,18 +23,19 @@ Build instruction:
     ```
     root
     ├─dep
-    │  └─cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows64
+    │  └─cef_binary_80.1.15+g7b802c9+chromium-80.0.3987.163_windows32
     ├─src
     └─test
     ```
 
-4. Modify the [config.cmake](config.cmake) to set the required build configurations
+4. Update the [config.cmake](config.cmake) to set the required build configurations
 
-5. Just use CMake to build the project, for example:
+5. Using CMake to build the project, for example:
     ``` bat
     REM create the build folder 
-    mkdir build.win && cd build.win
+    mkdir build && cd build
 
     REM generate and build the project
     cmake .. && cmake --build .
     ```
+> Thanks to [QCefView] (https://github.com/tishion/QCefView) project, `QCefWidget` great reference for the project in terms of engineering structure.

@@ -1,4 +1,4 @@
-#include "CefViewTestWnd.h"
+#include "TestWnd.h"
 #include "QCefSetting.h"
 #include "QCefWidget.h"
 #include "QCefOpenGLWidget.h"
@@ -13,31 +13,30 @@ namespace {
 QSize kWindowDefaultSize = QSize(1080, 600);
 }
 
-CefViewTestWnd::CefViewTestWnd(QWidget *parent)
+TestWnd::TestWnd(QWidget *parent)
     : QMainWindow(parent)
     , cefWidget_(nullptr)
     , cefOpenGLWidget_(nullptr) {
   setupUi();
 
-  connect(comboBoxUrl_->lineEdit(), &QLineEdit::returnPressed,
-          [this]() { 
-    cefWidget_->navigateToUrl(comboBoxUrl_->lineEdit()->text()); 
+  connect(comboBoxUrl_->lineEdit(), &QLineEdit::returnPressed, [this]() {
+    cefWidget_->navigateToUrl(comboBoxUrl_->lineEdit()->text());
     cefOpenGLWidget_->navigateToUrl(comboBoxUrl_->lineEdit()->text());
   });
 
   connect(comboBoxUrl_, QOverload<const QString &>::of(&QComboBox::currentIndexChanged), this,
-          [this](const QString &text) { 
-    cefWidget_->navigateToUrl(text); 
-    cefOpenGLWidget_->navigateToUrl(text);
-  });
+          [this](const QString &text) {
+            cefWidget_->navigateToUrl(text);
+            cefOpenGLWidget_->navigateToUrl(text);
+          });
 
-  connect(pushButtonBack_, &QPushButton::clicked, [this]() { 
-    cefWidget_->browserGoBack(); 
+  connect(pushButtonBack_, &QPushButton::clicked, [this]() {
+    cefWidget_->browserGoBack();
     cefOpenGLWidget_->browserGoBack();
   });
 
-  connect(pushButtonForward_, &QPushButton::clicked, [this]() { 
-    cefWidget_->browserGoForward(); 
+  connect(pushButtonForward_, &QPushButton::clicked, [this]() {
+    cefWidget_->browserGoForward();
     cefOpenGLWidget_->browserGoForward();
   });
 
@@ -53,7 +52,9 @@ CefViewTestWnd::CefViewTestWnd(QWidget *parent)
       cefOpenGLWidget_->browserReload();
   });
 
-  connect(pushButtonApply_, &QPushButton::clicked, this, &CefViewTestWnd::onPushButtonApplyClicked);
+  connect(pushButtonApply_, &QPushButton::clicked, this, &TestWnd::onPushButtonApplyClicked);
+  connect(pushButtonOpenDevTools_, &QPushButton::clicked, this, &TestWnd::onPushButtonOpenDevToolsClicked);
+
 
   connect(
       cefWidget_, &QCefWidget::loadingStateChanged, this,
@@ -119,15 +120,15 @@ CefViewTestWnd::CefViewTestWnd(QWidget *parent)
   }
 }
 
-CefViewTestWnd::~CefViewTestWnd() {}
+TestWnd::~TestWnd() {}
 
-void CefViewTestWnd::closeEvent(QCloseEvent *event) { event->accept(); }
+void TestWnd::closeEvent(QCloseEvent *event) { event->accept(); }
 
-QSize CefViewTestWnd::sizeHint() const { return kWindowDefaultSize; }
+QSize TestWnd::sizeHint() const { return kWindowDefaultSize; }
 
-void CefViewTestWnd::resizeEvent(QResizeEvent *event) {}
+void TestWnd::resizeEvent(QResizeEvent *event) {}
 
-void CefViewTestWnd::setupUi() {
+void TestWnd::setupUi() {
   this->setWindowTitle("CefView Demo");
   this->setObjectName("QCefViewTestClass");
 
@@ -135,12 +136,12 @@ void CefViewTestWnd::setupUi() {
   actionShowTransparentCef_->setShortcut(QKeySequence("Ctrl+T"));
   actionShowTransparentCef_->setText("Show Transparent CEF");
   connect(actionShowTransparentCef_, &QAction::triggered, this,
-          &CefViewTestWnd::onShowTransparentCefWnd);
+          &TestWnd::onShowTransparentCefWnd);
 
   actionTriggerTestEvent_ = new QAction();
   actionTriggerTestEvent_->setShortcut(QKeySequence("Ctrl+E"));
   actionTriggerTestEvent_->setText("Trigger Test Event");
-  connect(actionTriggerTestEvent_, &QAction::triggered, this, &CefViewTestWnd::onTriggerTestEvent);
+  connect(actionTriggerTestEvent_, &QAction::triggered, this, &TestWnd::onTriggerTestEvent);
 
   menuTest_ = new QMenu();
   menuTest_->setObjectName("menuTest");
@@ -177,14 +178,19 @@ void CefViewTestWnd::setupUi() {
   comboBoxUrl_->setFixedHeight(22);
   comboBoxUrl_->setEditable(true);
   comboBoxUrl_->addItems(
-      QStringList() << QString("file:///%1")
-                           .arg(QCoreApplication::applicationDirPath() + u8"/TestPage.html")
-                    << "about:blank"
-                    << "https://html5test.com/"
-                    << "https://www.bing.com"
-                    << "https://www.google.com"
-                    << "https://map.baidu.com/"
-                    << "https://ant.design/components/overview/");
+      QStringList()
+      << QString("file:///%1")
+             .arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
+      << QString("file:///%1")
+             .arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
+      << QString("file:///%1")
+             .arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Clock.html")
+      << "about:blank"
+      << "https://html5test.com/"
+      << "https://www.bing.com"
+      << "https://www.google.com"
+      << "https://map.baidu.com/"
+      << "https://ant.design/components/overview/");
 
   QHBoxLayout *hlTop = new QHBoxLayout();
   hlTop->setSpacing(6);
@@ -227,10 +233,14 @@ void CefViewTestWnd::setupUi() {
   checkboxIgnoreTopLevelCloseMsg_->setText("Ignore Top-level WM_CLOSE");
   checkboxIgnoreTopLevelCloseMsg_->setToolTip("Ignore Top-level Window's WM_CLOSE message");
 
+  pushButtonOpenDevTools_ = new QPushButton();
+  pushButtonOpenDevTools_->setText("Open DevTools");
+
   QVBoxLayout *vlBottomLeft = new QVBoxLayout();
   vlBottomLeft->setSpacing(6);
   vlBottomLeft->addWidget(checkboxHookTopLevelCloseMsg_);
   vlBottomLeft->addWidget(checkboxIgnoreTopLevelCloseMsg_);
+  vlBottomLeft->addWidget(pushButtonOpenDevTools_);
   vlBottomLeft->addWidget(pushButtonApply_);
   vlBottomLeft->addStretch();
 
@@ -277,12 +287,12 @@ void CefViewTestWnd::setupUi() {
   }
 }
 
-void CefViewTestWnd::onShowTransparentCefWnd() {
+void TestWnd::onShowTransparentCefWnd() {
   TransparentCefWnd *pTransparentCefWnd = new TransparentCefWnd();
   pTransparentCefWnd->show();
 }
 
-void CefViewTestWnd::onTriggerTestEvent() {
+void TestWnd::onTriggerTestEvent() {
   static int eventIndex = 1;
   QCefEvent event(QString("TestEvent%1").arg(eventIndex));
   event.setStringProperty("StrProp", QString("String_%1").arg(eventIndex));
@@ -295,4 +305,8 @@ void CefViewTestWnd::onTriggerTestEvent() {
   eventIndex++;
 }
 
-void CefViewTestWnd::onPushButtonApplyClicked() {}
+void TestWnd::onPushButtonApplyClicked() {}
+
+void TestWnd::onPushButtonOpenDevToolsClicked() {
+
+}

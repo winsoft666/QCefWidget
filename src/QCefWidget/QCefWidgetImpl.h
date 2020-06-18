@@ -9,12 +9,12 @@
 #include <QWidget>
 
 
-enum WidgetType { Widget = 0, OpenGLWidget };
+enum WidgetType { WT_Widget = 0, WT_OpenGLWidget };
 
-class QCefWidgetImplement {
+class QCefWidgetImpl {
 public:
-  explicit QCefWidgetImplement(WidgetType vt, QWidget* pWidget);
-  ~QCefWidgetImplement();
+  explicit QCefWidgetImpl(WidgetType vt, QWidget* pWidget);
+  ~QCefWidgetImpl();
 
 public:
   void navigateToUrl(const QString &url);

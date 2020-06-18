@@ -6,6 +6,7 @@
 #include <mutex>
 #include <list>
 #include <map>
+#include <qsystemdetection.h>
 
 class QWidget;
 class CefManager {
@@ -27,7 +28,7 @@ protected:
   ~CefManager();
 
 private:
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   static LRESULT CALLBACK newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
   CefRefPtr<CefBrowserApp> app_;
@@ -36,7 +37,7 @@ private:
   bool initialized_;
 
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   typedef struct _HookInfo {
     QWidget *cefWidget;
     QWidget *topWidget;

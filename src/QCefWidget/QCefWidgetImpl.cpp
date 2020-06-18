@@ -1,4 +1,4 @@
-#include "QCefWidgetImplement.h"
+#include "QCefWidgetImpl.h"
 #include "CefManager.h"
 #include "QCefProtocol.h"
 #include <QApplication>
@@ -13,7 +13,7 @@ namespace {
 int kDefaultFPS = 60;
 }
 
-QCefWidgetImplement::QCefWidgetImplement(WidgetType vt, QWidget *pWidget)
+QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
     : pWidget_(pWidget)
     , pTopWidget_(nullptr)
     , vt_(vt)
@@ -23,9 +23,9 @@ QCefWidgetImplement::QCefWidgetImplement(WidgetType vt, QWidget *pWidget)
     , background_color_(255, 255, 255, 255)
     , fps_(kDefaultFPS) {}
 
-QCefWidgetImplement::~QCefWidgetImplement() {}
+QCefWidgetImpl::~QCefWidgetImpl() {}
 
-bool QCefWidgetImplement::createBrowser() {
+bool QCefWidgetImpl::createBrowser() {
   if (browserCreated_)
     return true;
   Q_ASSERT(pWidget_);
@@ -38,7 +38,7 @@ bool QCefWidgetImplement::createBrowser() {
     return false;
   }
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   if (CefGlobalSetting::hook_top_level_window_close_msg) {
     pTopWidget_ = CefManager::getInstance().hookTopLevelWidget(pWidget_);
   }
@@ -74,8 +74,8 @@ bool QCefWidgetImplement::createBrowser() {
   return true;
 }
 
-void QCefWidgetImplement::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
   pCefUIEventWin_ = std::make_shared<UIEventHandlerWin>((HWND)pWidget_->winId(), browser);
@@ -95,7 +95,7 @@ void QCefWidgetImplement::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void QCefWidgetImplement::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
+void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
   browserCreated_ = false;
   pQCefViewHandler_ = nullptr;
   pCefUIEventWin_.reset();
@@ -112,7 +112,7 @@ void QCefWidgetImplement::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) 
   }
 }
 
-void QCefWidgetImplement::OnImeCompositionRangeChanged(
+void QCefWidgetImpl::OnImeCompositionRangeChanged(
     CefRefPtr<CefBrowser> browser, const CefRange &selection_range,
     const CefRenderHandler::RectList &character_bounds) {
   if (pCefUIEventWin_) {
@@ -120,7 +120,7 @@ void QCefWidgetImplement::OnImeCompositionRangeChanged(
   }
 }
 
-void QCefWidgetImplement::navigateToUrl(const QString &url) {
+void QCefWidgetImpl::navigateToUrl(const QString &url) {
   if (!browserCreated_) {
     if (!createBrowser()) {
       Q_ASSERT(false);
@@ -140,48 +140,48 @@ void QCefWidgetImplement::navigateToUrl(const QString &url) {
   }
 }
 
-bool QCefWidgetImplement::browserCanGoBack() {
+bool QCefWidgetImpl::browserCanGoBack() {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
     return pQCefViewHandler_->browser()->CanGoBack();
 
   return false;
 }
 
-bool QCefWidgetImplement::browserCanGoForward() {
+bool QCefWidgetImpl::browserCanGoForward() {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
     return pQCefViewHandler_->browser()->CanGoForward();
 
   return false;
 }
 
-void QCefWidgetImplement::browserGoBack() {
+void QCefWidgetImpl::browserGoBack() {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
     pQCefViewHandler_->browser()->GoBack();
 }
 
-void QCefWidgetImplement::browserGoForward() {
+void QCefWidgetImpl::browserGoForward() {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
     pQCefViewHandler_->browser()->GoForward();
 }
 
-bool QCefWidgetImplement::browserIsLoading() {
+bool QCefWidgetImpl::browserIsLoading() {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
     return pQCefViewHandler_->browser()->IsLoading();
 
   return false;
 }
 
-void QCefWidgetImplement::browserReload() {
+void QCefWidgetImpl::browserReload() {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
     pQCefViewHandler_->browser()->Reload();
 }
 
-void QCefWidgetImplement::browserStopLoad() {
+void QCefWidgetImpl::browserStopLoad() {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
     pQCefViewHandler_->browser()->StopLoad();
 }
 
-bool QCefWidgetImplement::triggerEvent(const QString &name, const QCefEvent &event, int frameId) {
+bool QCefWidgetImpl::triggerEvent(const QString &name, const QCefEvent &event, int frameId) {
   if (!name.isEmpty()) {
     return sendEventNotifyMessage(frameId, name, event);
   }
@@ -189,7 +189,7 @@ bool QCefWidgetImplement::triggerEvent(const QString &name, const QCefEvent &eve
   return false;
 }
 
-bool QCefWidgetImplement::responseQCefQuery(const QCefQuery &query) {
+bool QCefWidgetImpl::responseQCefQuery(const QCefQuery &query) {
   if (pQCefViewHandler_) {
     CefString res;
     res.FromString(query.response().toStdString());
@@ -198,7 +198,7 @@ bool QCefWidgetImplement::responseQCefQuery(const QCefQuery &query) {
   return false;
 }
 
-void QCefWidgetImplement::executeJavascript(const QString &javascript) {
+void QCefWidgetImpl::executeJavascript(const QString &javascript) {
   CefString strJavascript;
   strJavascript.FromWString(javascript.toStdWString());
 
@@ -209,8 +209,8 @@ void QCefWidgetImplement::executeJavascript(const QString &javascript) {
   }
 }
 
-bool QCefWidgetImplement::sendEventNotifyMessage(int frameId, const QString &name,
-                                               const QCefEvent &event) {
+bool QCefWidgetImpl::sendEventNotifyMessage(int frameId, const QString &name,
+                                                 const QCefEvent &event) {
   CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(TRIGGEREVENT_NOTIFY_MESSAGE);
   CefRefPtr<CefListValue> arguments = msg->GetArgumentList();
 
@@ -246,15 +246,15 @@ bool QCefWidgetImplement::sendEventNotifyMessage(int frameId, const QString &nam
   return pQCefViewHandler_->triggerEvent(frameId, msg);
 }
 
-QWidget *QCefWidgetImplement::getWidget() {
+QWidget *QCefWidgetImpl::getWidget() {
   Q_ASSERT(pWidget_);
   return pWidget_;
 }
 
-WidgetType QCefWidgetImplement::getWidgetType() { return vt_; }
+WidgetType QCefWidgetImpl::getWidgetType() { return vt_; }
 
-bool QCefWidgetImplement::nativeEvent(const QByteArray &eventType, void *message, long *result) {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, long *result) {
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   if (eventType == "windows_generic_MSG") {
     MSG *pMsg = (MSG *)message;
     if (!pMsg || !pWidget_ || !pCefUIEventWin_)
@@ -340,7 +340,7 @@ bool QCefWidgetImplement::nativeEvent(const QByteArray &eventType, void *message
   return false;
 }
 
-CefRefPtr<CefBrowserHost> QCefWidgetImplement::getCefBrowserHost() {
+CefRefPtr<CefBrowserHost> QCefWidgetImpl::getCefBrowserHost() {
   if (!pQCefViewHandler_)
     return nullptr;
 
@@ -351,7 +351,7 @@ CefRefPtr<CefBrowserHost> QCefWidgetImplement::getCefBrowserHost() {
   return browser->GetHost();
 }
 
-void QCefWidgetImplement::paintEvent(QPaintEvent *event) {
+void QCefWidgetImpl::paintEvent(QPaintEvent *event) {
   if (!pQCefViewHandler_ || browserClosing_)
     return;
 
@@ -360,7 +360,7 @@ void QCefWidgetImplement::paintEvent(QPaintEvent *event) {
     QImage image(pDrawImageParam->imageArray.get(), pDrawImageParam->imageWidth,
                  pDrawImageParam->imageHeight, QImage::Format_ARGB32);
 
-    Q_ASSERT(vt_ == Widget);
+    Q_ASSERT(vt_ == WT_Widget);
     QPainter paint(pWidget_);
 
     paint.drawImage(pWidget_->rect(), image);
@@ -368,16 +368,18 @@ void QCefWidgetImplement::paintEvent(QPaintEvent *event) {
   pQCefViewHandler_->releaseImage();
 }
 
-void QCefWidgetImplement::openGLPaintEvent(QPaintEvent *event) {
+void QCefWidgetImpl::openGLPaintEvent(QPaintEvent *event) {
   if (!pQCefViewHandler_ || browserClosing_)
     return;
 
+  // TODO
+  //
   DrawImageParam *pDrawImageParam = pQCefViewHandler_->lockImage();
   if (pDrawImageParam) {
     QImage image(pDrawImageParam->imageArray.get(), pDrawImageParam->imageWidth,
                  pDrawImageParam->imageHeight, QImage::Format_ARGB32);
 
-    Q_ASSERT(vt_ == OpenGLWidget);
+    Q_ASSERT(vt_ == WT_OpenGLWidget);
     QOpenGLWidget *pCefWidget = (QOpenGLWidget *)pWidget_;
     QPainter paint(pCefWidget);
 
@@ -386,25 +388,23 @@ void QCefWidgetImplement::openGLPaintEvent(QPaintEvent *event) {
   pQCefViewHandler_->releaseImage();
 }
 
-float QCefWidgetImplement::deviceScaleFactor() {
+float QCefWidgetImpl::deviceScaleFactor() {
   Q_ASSERT(pWidget_);
   return pWidget_->devicePixelRatioF();
 }
 
-void QCefWidgetImplement::setFPS(int fps) { fps_ = fps; }
+void QCefWidgetImpl::setFPS(int fps) { fps_ = fps; }
 
-int QCefWidgetImplement::fps() const { return fps_; }
+int QCefWidgetImpl::fps() const { return fps_; }
 
-void QCefWidgetImplement::setBackgroundColor(const QColor &color) { background_color_ = color; }
+void QCefWidgetImpl::setBackgroundColor(const QColor &color) { background_color_ = color; }
 
-QColor QCefWidgetImplement::backgroundColor() const { return background_color_; }
+QColor QCefWidgetImpl::backgroundColor() const { return background_color_; }
 
-void QCefWidgetImplement::updateCefView() { 
+void QCefWidgetImpl::updateCefView() {
   if (pWidget_) {
     pWidget_->update();
   }
 }
 
-void QCefWidgetImplement::setBrowserClosing(bool b) {
-  browserClosing_ = b;
-}
+void QCefWidgetImpl::setBrowserClosing(bool b) { browserClosing_ = b; }

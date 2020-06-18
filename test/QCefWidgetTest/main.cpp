@@ -1,4 +1,4 @@
-#include "CefViewTestWnd.h"
+#include "TestWnd.h"
 #include <QtWidgets/QApplication>
 
 #pragma execution_character_set("utf-8")
@@ -9,7 +9,7 @@ int main(int argc, char *argv[]) {
   QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
   QApplication a(argc, argv);
-  CefViewTestWnd w;
+  TestWnd w;
   w.show();
   int iret = a.exec();
   return iret;

@@ -1,5 +1,5 @@
 #include "Include/QCefOpenGLWidget.h"
-#include "QCefWidgetImplement.h"
+#include "QCefWidgetImpl.h"
 #include <QAbstractEventDispatcher>
 #include <QDebug>
 #include <QResizeEvent>
@@ -12,7 +12,7 @@
 #include "CefManager.h"
 
 QCefOpenGLWidget::QCefOpenGLWidget(QWidget *parent /*= nullptr*/) : QOpenGLWidget(parent) {
-  pImpl_ = std::make_unique<QCefWidgetImplement>(WidgetType::OpenGLWidget, this);
+  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_OpenGLWidget, this);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
 }

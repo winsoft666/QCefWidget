@@ -1,7 +1,7 @@
 <html>
-
-<head>
-    <script>
+ <head> 
+  <meta name="description" content="Test Page" /> 
+  <script>
         function onEventTest(event) {
             var kvlist = [];
             for (var key in event) {
@@ -46,41 +46,45 @@
             var popup = window.open("", "PopupWindow", "width=800, height=600");
             popup.document.write("<p>This is popup window.</p>");
         }
-    </script>
-</head>
-
-<body onload="onLoad()" id="main">
-    <h1 align="center" style="font-size:12pt; font-family:MS Shell Dlg 2;">Web Area</h1>
-    <div align="center" id="dragarea" style="height:40px; background-color: gray; color: white;" onmousedown="onDragAreaMouseDown()">
-        <span style="font-size:18pt; font-family:MS Shell Dlg 2;">you can drag this window in this area!</span>
-    </div>
-    <div align="center">
-        <label> Test Case for InvokeMethod </label>
-        <br />
-        <input type="button" value="Invoke Method" onclick="onInvokeMethodClicked()" />
-        <br />
-        <br />
-        <label> Test Case for TriggerEvent </label>
-        <br />
-        <textarea id="eventMessage" style="width:320px; height:120px;"></textarea>
-        <br />
-
-        <label> Test Case for QCefQuery </label>
-        <br />
-        <textarea id="message" style="width:320px; height:120px;">this message will be processed by native code.</textarea>
-        <br />
-        <input type="button" value="Query" onclick="onQCefQueryClicked()" />
-        <br />
-        <br />
-
-        <label>Test Case for QCefUrlQuery</label>
-        <br />
-        <a href="qcef://test/a/b">qcef://test/a/b</a>
-
-        <br />
-        <br />
-        <button onclick="OpenPopup()">Open Popup</button>
-    </div>
-</body>
-
+    </script> 
+  <style>
+dt{
+font-weight: bold;
+    font-size: 20px;
+}
+    dd{
+    display: flex;
+    flex-direction: column;
+    margin-top:50px;
+    }
+    input{
+    width:320px;
+    }
+    span{
+    font-size:12px;
+    }
+    textarea{
+    margin: 10px 0 10px 0;
+    }
+    </style>
+ </head>  
+ <body onload="onLoad()" id="main"> 
+  <dl> 
+   <dt>
+    Javascript and Qt interaction
+   </dt> 
+   <dd> 
+    <input type="button" value="Invoke" onclick="onInvokeMethodClicked()" /> 
+   </dd> 
+   <dd> 
+    <span>Recevie from Qt:</span> 
+    <textarea id="eventMessage" style="width:320px; height:120px;"></textarea> 
+   </dd> 
+   <dd> 
+    <span>QCefQuery Test:</span> 
+    <textarea id="message" style="width:320px; height:120px;">this message will be processed by native code.</textarea> 
+    <input type="button" value="Query" onclick="onQCefQueryClicked()" /> 
+   </dd> 
+  </dl>  
+ </body>
 </html>

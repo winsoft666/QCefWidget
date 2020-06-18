@@ -5,11 +5,11 @@
 #include <include/wrapper/cef_stream_resource_handler.h>
 #include <include/wrapper/cef_message_router.h>
 
-class QCefWidgetImplement;
+class QCefWidgetImpl;
 
 class CefQueryHandler : public CefBaseRefCounted, public CefMessageRouterBrowserSide::Handler {
 public:
-  CefQueryHandler(QCefWidgetImplement *pCefViewImpl);
+  CefQueryHandler(QCefWidgetImpl *pCefViewImpl);
   ~CefQueryHandler();
 
   virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
@@ -22,7 +22,7 @@ public:
   bool Response(int64_t query, bool success, const CefString &response, int error);
 
 private:
-  QCefWidgetImplement *pCefImpl_;
+  QCefWidgetImpl *pCefImpl_;
   std::map<int64, CefRefPtr<Callback>> mapCallback_;
   std::mutex mtxCallbackMap_;
 

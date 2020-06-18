@@ -1,5 +1,5 @@
 #include "Include/QCefWidget.h"
-#include "QCefWidgetImplement.h"
+#include "QCefWidgetImpl.h"
 #include <QAbstractEventDispatcher>
 #include <QDebug>
 #include <QResizeEvent>
@@ -12,7 +12,7 @@
 #include "CefManager.h"
 
 QCefWidget::QCefWidget(QWidget *parent) : QWidget(parent) {
-  pImpl_ = std::make_unique<QCefWidgetImplement>(WidgetType::Widget, this);
+  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
 }

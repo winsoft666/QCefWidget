@@ -50,7 +50,7 @@ void CefManager::initializeCef() {
 
   app_ = new CefBrowserApp();
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   HINSTANCE hInstance = ::GetModuleHandle(nullptr);
   CefMainArgs main_args(hInstance);
 #else
@@ -160,7 +160,7 @@ QWidget *CefManager::getTopWidget(QWidget *pWidget) {
   return topWidget;
 }
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
 LRESULT CALLBACK CefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
   CefManager *pThis = reinterpret_cast<CefManager *>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
   if (!pThis)
@@ -191,7 +191,7 @@ LRESULT CALLBACK CefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 #endif
 
 QWidget *CefManager::hookTopLevelWidget(QWidget *pWidget) {
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   QWidget *topWidget = getTopWidget(pWidget);
   if (!topWidget)
     return nullptr;

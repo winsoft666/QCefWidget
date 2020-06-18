@@ -14,7 +14,7 @@
 #include <set>
 #include <string>
 
-class QCefWidgetImplement;
+class QCefWidgetImpl;
 class QCefBase;
 
 struct DrawImageParam {
@@ -45,7 +45,7 @@ public:
     ALL_FRAMES = (int64_t)-1,
   };
 
-  CefBrowserHandler(QCefWidgetImplement *pCefViewImpl);
+  CefBrowserHandler(QCefWidgetImpl *pCefViewImpl);
   ~CefBrowserHandler();
 
 #pragma region CefClient
@@ -93,6 +93,9 @@ public:
   virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
                                 const CefString &message, const CefString &source,
                                 int line) override;
+  void OnFaviconURLChange(CefRefPtr<CefBrowser> browser,
+                          const std::vector<CefString> &icon_urls) override;
+  void OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen) override;
 
 #pragma endregion CefDisplayHandler
 
@@ -234,7 +237,7 @@ public:
   void releaseImage();
 
 private:
-  QCefWidgetImplement *pCefViewImpl_;
+  QCefWidgetImpl *pCefViewImpl_;
 
   int browserCount_;
 
