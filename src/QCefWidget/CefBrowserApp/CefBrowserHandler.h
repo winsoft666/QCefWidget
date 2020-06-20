@@ -17,28 +17,41 @@
 class QCefWidgetImpl;
 class QCefBase;
 
-struct DrawImageParam {
-  int imageWidth;
-  int imageHeight;
-  std::unique_ptr<uint8_t[]> imageArray;
+typedef struct _CefRenderBuffer {
+  int x;
+  int y;
+  int width;
+  int height;
 
-  DrawImageParam() {
-    imageWidth = 0;
-    imageHeight = 0;
+  std::unique_ptr<uint8_t[]> buffer;
+  int bufferSize;
+
+  HANDLE renderedEvent;
+
+  _CefRenderBuffer() {
+    x = 0;
+    y = 0;
+    width = 0;
+    height = 0;
+
+    buffer = nullptr;
+    bufferSize = 0;
+
+    renderedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   }
-};
+} CefRenderBuffer;
 
 class CefBrowserHandler : public CefClient,
-                              public CefContextMenuHandler,
-                              public CefDisplayHandler,
-                              public CefDragHandler,
-                              public CefJSDialogHandler,
-                              public CefKeyboardHandler,
-                              public CefLifeSpanHandler,
-                              public CefLoadHandler,
-                              public CefRequestHandler,
-                              public CefResourceRequestHandler,
-                              public CefRenderHandler {
+                          public CefContextMenuHandler,
+                          public CefDisplayHandler,
+                          public CefDragHandler,
+                          public CefJSDialogHandler,
+                          public CefKeyboardHandler,
+                          public CefLifeSpanHandler,
+                          public CefLoadHandler,
+                          public CefRequestHandler,
+                          public CefResourceRequestHandler,
+                          public CefRenderHandler {
 public:
   enum {
     MAIN_FRAME = (int64_t)0,
@@ -233,8 +246,16 @@ public:
   bool dispatchNotifyRequest(CefRefPtr<CefBrowser> browser, CefProcessId source_process,
                              CefRefPtr<CefProcessMessage> message);
 
-  DrawImageParam *lockImage();
-  void releaseImage();
+  CefRenderBuffer *lockViewBuffer();
+  void unlockViewBuffer();
+
+  CefRenderBuffer* lockPopupBuffer();
+  void unlockPopupBuffer();
+
+  bool isPopupShow();
+
+protected:
+  CefRect getPopupRectInWebView(const CefRect &original_rect) const;
 
 private:
   QCefWidgetImpl *pCefViewImpl_;
@@ -250,8 +271,16 @@ private:
   CefRefPtr<CefMessageRouterBrowserSide> pMessageRouter_;
   CefRefPtr<CefQueryHandler> pCefqueryHandler_;
 
-  std::recursive_mutex imageMtx_;
-  DrawImageParam drawImageParam_;
+  std::recursive_mutex viewRenderBufMtx_;
+  std::recursive_mutex popupRenderBufMtx_;
+  CefRenderBuffer viewRenderBuffer_;
+  CefRenderBuffer popupRenderBuffer_;
+
+  CefRect popupRect_;
+  CefRect originalPopupRect_;
+  int viewWidth_;
+  int viewHeight_;
+  bool isPaintingPopup_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(CefBrowserHandler);

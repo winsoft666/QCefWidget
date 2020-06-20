@@ -21,6 +21,9 @@ CefBrowserHandler::CefBrowserHandler(QCefWidgetImpl *pCefViewImpl)
     , pResourceManager_(new CefResourceManager())
     , pMessageRouter_(nullptr)
     , browserCount_(0)
+    , viewWidth_(0)
+    , viewHeight_(0)
+    , isPaintingPopup_(false)
     , pCefViewImpl_(pCefViewImpl) {}
 
 CefBrowserHandler::~CefBrowserHandler() {}
@@ -477,29 +480,109 @@ bool CefBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenIn
   return true;
 }
 
-void CefBrowserHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {}
+void CefBrowserHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
+  CEF_REQUIRE_UI_THREAD();
+  if (!show) {
+    popupRect_.Set(0, 0, 0, 0);
+    originalPopupRect_.Set(0, 0, 0, 0);
+    browser->GetHost()->Invalidate(PET_VIEW);
+  }
+}
 
-void CefBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect &rect) {}
+void CefBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect &rect) {
+  CEF_REQUIRE_UI_THREAD();
+  if (rect.width <= 0 || rect.height <= 0)
+    return;
+  originalPopupRect_ = rect;
+  popupRect_ = getPopupRectInWebView(originalPopupRect_);
+}
 
 void CefBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser,
                                 CefRenderHandler::PaintElementType type,
                                 const CefRenderHandler::RectList &dirtyRects, const void *buffer,
                                 int width, int height) {
-  do {
-    std::lock_guard<std::recursive_mutex> lg(imageMtx_);
-    size_t newSize = width * height * 4;
+  CEF_REQUIRE_UI_THREAD();
 
-    if (newSize != drawImageParam_.imageHeight * drawImageParam_.imageWidth)
-      drawImageParam_.imageArray.reset(new uint8_t[newSize]);
+  if (type == PET_VIEW) {
+    viewWidth_ = width;
+    viewHeight_ = height;
 
-    memcpy(drawImageParam_.imageArray.get(), buffer, newSize);
+    do {
+      std::lock_guard<std::recursive_mutex> lg(viewRenderBufMtx_);
+      size_t newSize = width * height * 4;
 
-    drawImageParam_.imageWidth = width;
-    drawImageParam_.imageHeight = height;
-  } while (false);
+      if (newSize != viewRenderBuffer_.bufferSize) {
+        viewRenderBuffer_.buffer.reset(new uint8_t[newSize]);
+        if (viewRenderBuffer_.buffer.get())
+          viewRenderBuffer_.bufferSize = newSize;
+      }
 
+      Q_ASSERT(viewRenderBuffer_.buffer.get());
+      if (viewRenderBuffer_.buffer.get()) {
+        memcpy(viewRenderBuffer_.buffer.get(), buffer, newSize);
+      }
+
+      viewRenderBuffer_.x = 0;
+      viewRenderBuffer_.y = 0;
+      viewRenderBuffer_.width = width;
+      viewRenderBuffer_.height = height;
+    } while (false);
+
+    if (!isPaintingPopup_) {
+      if (!popupRect_.IsEmpty()) {
+        isPaintingPopup_ = true;
+        browser->GetHost()->Invalidate(PET_POPUP);
+        isPaintingPopup_ = false;
+      }
+    }
+  }
+  else if (type == PET_POPUP && popupRect_.width > 0 && popupRect_.height > 0) {
+    int skip_pixels = 0, x = popupRect_.x;
+    int skip_rows = 0, y = popupRect_.y;
+    int w = width;
+    int h = height;
+
+    // Adjust the popup to fit inside the view.
+    if (x < 0) {
+      skip_pixels = -x;
+      x = 0;
+    }
+    if (y < 0) {
+      skip_rows = -y;
+      y = 0;
+    }
+    if (x + w > viewWidth_)
+      w -= x + w - viewWidth_;
+    if (y + h > viewHeight_)
+      h -= y + h - viewHeight_;
+
+    do {
+      std::lock_guard<std::recursive_mutex> lg(popupRenderBufMtx_);
+      size_t newSize = width * height * 4;
+
+      if (newSize != popupRenderBuffer_.bufferSize) {
+        popupRenderBuffer_.buffer.reset(new uint8_t[newSize]);
+        if (popupRenderBuffer_.buffer.get())
+          popupRenderBuffer_.bufferSize = newSize;
+      }
+
+      Q_ASSERT(popupRenderBuffer_.buffer.get());
+      if (popupRenderBuffer_.buffer.get()) {
+        memcpy(popupRenderBuffer_.buffer.get(), buffer, newSize);
+      }
+
+      popupRenderBuffer_.x = x;
+      popupRenderBuffer_.y = y;
+      popupRenderBuffer_.width = w;
+      popupRenderBuffer_.height = h;
+    } while (false);
+  }
+
+  ResetEvent(viewRenderBuffer_.renderedEvent);
   if (pCefViewImpl_)
     pCefViewImpl_->updateCefView();
+
+  WaitForSingleObject(viewRenderBuffer_.renderedEvent, INFINITE);
 }
 
 void CefBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor,
@@ -634,9 +717,38 @@ bool CefBrowserHandler::dispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-DrawImageParam *CefBrowserHandler::lockImage() {
-  imageMtx_.lock();
-  return &drawImageParam_;
+CefRenderBuffer *CefBrowserHandler::lockViewBuffer() {
+  viewRenderBufMtx_.lock();
+  return &viewRenderBuffer_;
 }
 
-void CefBrowserHandler::releaseImage() { imageMtx_.unlock(); }
+void CefBrowserHandler::unlockViewBuffer() { viewRenderBufMtx_.unlock(); }
+
+CefRenderBuffer *CefBrowserHandler::lockPopupBuffer() {
+  popupRenderBufMtx_.lock();
+  return &popupRenderBuffer_;
+}
+
+void CefBrowserHandler::unlockPopupBuffer() { popupRenderBufMtx_.unlock(); }
+
+bool CefBrowserHandler::isPopupShow() { return !popupRect_.IsEmpty(); }
+
+CefRect CefBrowserHandler::getPopupRectInWebView(const CefRect &original_rect) const {
+  CefRect rc(original_rect);
+  // if x or y are negative, move them to 0.
+  if (rc.x < 0)
+    rc.x = 0;
+  if (rc.y < 0)
+    rc.y = 0;
+  // if popup goes outside the view, try to reposition origin
+  if (rc.x + rc.width > viewWidth_)
+    rc.x = viewWidth_ - rc.width;
+  if (rc.y + rc.height > viewHeight_)
+    rc.y = viewHeight_ - rc.height;
+  // if x or y became negative, move them to 0 again.
+  if (rc.x < 0)
+    rc.x = 0;
+  if (rc.y < 0)
+    rc.y = 0;
+  return rc;
+}

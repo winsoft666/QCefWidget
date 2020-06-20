@@ -42,7 +42,7 @@ void CefManager::initializeCef() {
   cef_settings_.windowless_rendering_enabled = true;
 
 #ifndef NDEBUG
-  cef_settings_.log_severity = LOGSEVERITY_INFO;
+  cef_settings_.log_severity = LOGSEVERITY_VERBOSE;
   cef_settings_.remote_debugging_port = 7777;
 #else
   cef_settings_.log_severity = LOGSEVERITY_WARNING;

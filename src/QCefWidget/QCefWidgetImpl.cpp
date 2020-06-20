@@ -10,7 +10,7 @@
 #include "CefGlobalSetting.h"
 
 namespace {
-int kDefaultFPS = 60;
+int kDefaultFPS = 30;
 }
 
 QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
@@ -97,7 +97,6 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 
 void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
   browserCreated_ = false;
-  pQCefViewHandler_ = nullptr;
   pCefUIEventWin_.reset();
 
   CefManager::getInstance().removeBrowser(pTopWidget_, browser);
@@ -210,7 +209,7 @@ void QCefWidgetImpl::executeJavascript(const QString &javascript) {
 }
 
 bool QCefWidgetImpl::sendEventNotifyMessage(int frameId, const QString &name,
-                                                 const QCefEvent &event) {
+                                            const QCefEvent &event) {
   CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(TRIGGEREVENT_NOTIFY_MESSAGE);
   CefRefPtr<CefListValue> arguments = msg->GetArgumentList();
 
@@ -355,37 +354,75 @@ void QCefWidgetImpl::paintEvent(QPaintEvent *event) {
   if (!pQCefViewHandler_ || browserClosing_)
     return;
 
-  DrawImageParam *pDrawImageParam = pQCefViewHandler_->lockImage();
+  if (!pWidget_)
+    return;
+
+  Q_ASSERT(vt_ == WT_Widget);
+  float scale = deviceScaleFactor();
+  QPainter paint(pWidget_);
+
+  CefRenderBuffer *pDrawImageParam = pQCefViewHandler_->lockViewBuffer();
   if (pDrawImageParam) {
-    QImage image(pDrawImageParam->imageArray.get(), pDrawImageParam->imageWidth,
-                 pDrawImageParam->imageHeight, QImage::Format_ARGB32);
+    QImage image(pDrawImageParam->buffer.get(), pDrawImageParam->width, pDrawImageParam->height,
+                 QImage::Format_ARGB32);
 
-    Q_ASSERT(vt_ == WT_Widget);
-    QPainter paint(pWidget_);
-
-    paint.drawImage(pWidget_->rect(), image);
+    QRect destRect(pDrawImageParam->x, pDrawImageParam->y, pDrawImageParam->width / scale,
+                   pDrawImageParam->height / scale);
+    paint.drawImage(destRect, image);
   }
-  pQCefViewHandler_->releaseImage();
+  pQCefViewHandler_->unlockViewBuffer();
+
+  SetEvent(pDrawImageParam->renderedEvent);
+
+  if (pQCefViewHandler_->isPopupShow()) {
+    CefRenderBuffer *pPopupImageParam = pQCefViewHandler_->lockPopupBuffer();
+    if (pPopupImageParam) {
+      QImage image(pPopupImageParam->buffer.get(), pPopupImageParam->width,
+                   pPopupImageParam->height, QImage::Format_ARGB32);
+
+      QRect destRect(pPopupImageParam->x, pPopupImageParam->y, pPopupImageParam->width / scale,
+                     pPopupImageParam->height / scale);
+      paint.drawImage(destRect, image);
+    }
+    pQCefViewHandler_->unlockPopupBuffer();
+  }
 }
 
 void QCefWidgetImpl::openGLPaintEvent(QPaintEvent *event) {
   if (!pQCefViewHandler_ || browserClosing_)
     return;
 
-  // TODO
-  //
-  DrawImageParam *pDrawImageParam = pQCefViewHandler_->lockImage();
+  Q_ASSERT(vt_ == WT_OpenGLWidget);
+  QOpenGLWidget *pCefWidget = qobject_cast<QCefOpenGLWidget *>(pWidget_);
+  if (!pCefWidget)
+    return;
+
+  float scale = deviceScaleFactor();
+  QPainter paint(pCefWidget);
+
+  CefRenderBuffer *pDrawImageParam = pQCefViewHandler_->lockViewBuffer();
   if (pDrawImageParam) {
-    QImage image(pDrawImageParam->imageArray.get(), pDrawImageParam->imageWidth,
-                 pDrawImageParam->imageHeight, QImage::Format_ARGB32);
+    QImage image(pDrawImageParam->buffer.get(), pDrawImageParam->width, pDrawImageParam->height,
+                 QImage::Format_ARGB32);
 
-    Q_ASSERT(vt_ == WT_OpenGLWidget);
-    QOpenGLWidget *pCefWidget = (QOpenGLWidget *)pWidget_;
-    QPainter paint(pCefWidget);
-
-    paint.drawImage(pCefWidget->rect(), image);
+    QRect destRect(pDrawImageParam->x, pDrawImageParam->y, pDrawImageParam->width / scale,
+                   pDrawImageParam->height / scale);
+    paint.drawImage(destRect, image);
   }
-  pQCefViewHandler_->releaseImage();
+  pQCefViewHandler_->unlockViewBuffer();
+
+  if (pQCefViewHandler_->isPopupShow()) {
+    CefRenderBuffer *pPopupImageParam = pQCefViewHandler_->lockPopupBuffer();
+    if (pPopupImageParam) {
+      QImage image(pPopupImageParam->buffer.get(), pPopupImageParam->width,
+                   pPopupImageParam->height, QImage::Format_ARGB32);
+
+      QRect destRect(pPopupImageParam->x, pPopupImageParam->y, pPopupImageParam->width / scale,
+                     pPopupImageParam->height / scale);
+      paint.drawImage(destRect, image);
+    }
+    pQCefViewHandler_->unlockPopupBuffer();
+  }
 }
 
 float QCefWidgetImpl::deviceScaleFactor() {

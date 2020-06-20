@@ -17,6 +17,7 @@ void QCefRenderApp::CreateRenderDelegates(RenderDelegateSet& delegates) {
 
 //////////////////////////////////////////////////////////////////////////
 void QCefRenderApp::OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) {
+
 }
 
 void QCefRenderApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {
@@ -38,26 +39,26 @@ CefRefPtr<CefBrowserProcessHandler> QCefRenderApp::GetBrowserProcessHandler() {
 void QCefRenderApp::OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) {
     CEF_REQUIRE_RENDERER_THREAD();
 
-    CreateRenderDelegates(render_delegates_);
+    //CreateRenderDelegates(render_delegates_);
 
-    RenderDelegateSet::iterator it = render_delegates_.begin();
-    for (; it != render_delegates_.end(); ++it)
-        (*it)->OnRenderThreadCreated(this, extra_info);
+    //RenderDelegateSet::iterator it = render_delegates_.begin();
+    //for (; it != render_delegates_.end(); ++it)
+    //    (*it)->OnRenderThreadCreated(this, extra_info);
 }
 
 void QCefRenderApp::OnWebKitInitialized() {
     CEF_REQUIRE_RENDERER_THREAD();
 
-    RenderDelegateSet::iterator it = render_delegates_.begin();
-    for (; it != render_delegates_.end(); ++it)
-        (*it)->OnWebKitInitialized(this);
+    //RenderDelegateSet::iterator it = render_delegates_.begin();
+    //for (; it != render_delegates_.end(); ++it)
+    //    (*it)->OnWebKitInitialized(this);
 }
 
 void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) {
     CEF_REQUIRE_RENDERER_THREAD();
-    RenderDelegateSet::iterator it = render_delegates_.begin();
-    for (; it != render_delegates_.end(); ++it)
-        (*it)->OnBrowserCreated(this, browser, extra_info);
+    //RenderDelegateSet::iterator it = render_delegates_.begin();
+    //for (; it != render_delegates_.end(); ++it)
+    //    (*it)->OnBrowserCreated(this, browser, extra_info);
 }
 
 void QCefRenderApp::OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) {

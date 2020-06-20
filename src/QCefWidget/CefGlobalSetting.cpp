@@ -14,10 +14,10 @@ CefString CefGlobalSetting::cache_path;
 CefString CefGlobalSetting::user_data_path;
 CefString CefGlobalSetting::locale;
 CefString CefGlobalSetting::accept_language_list;
-int CefGlobalSetting::persist_session_cookies = 0;
-int CefGlobalSetting::persist_user_preferences = 0;
+int CefGlobalSetting::persist_session_cookies = 1;
+int CefGlobalSetting::persist_user_preferences = 1;
 int CefGlobalSetting::remote_debugging_port = 0;
-bool CefGlobalSetting::gpu_enabled = false;
+bool CefGlobalSetting::gpu_enabled = true;
 bool CefGlobalSetting::hook_top_level_window_close_msg = true;
 bool CefGlobalSetting::ignore_top_level_window_close_msg = false;
 
@@ -41,7 +41,7 @@ CefGlobalSetting::CefGlobalSetting() {
   accept_language_list.FromWString(L"zh-CN,en-US,en");
   locale.FromWString(L"zh-CN");
 
-  gpu_enabled = false;
+  gpu_enabled = true;
 }
 
 CefGlobalSetting::~CefGlobalSetting() {}

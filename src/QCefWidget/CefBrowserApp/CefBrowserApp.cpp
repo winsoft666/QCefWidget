@@ -21,7 +21,11 @@ void CefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type,
   command_line->AppendSwitch("allow-file-access-from-files");
   command_line->AppendSwitchWithValue("disable-features", "NetworkService");
 
-  if (!CefGlobalSetting::gpu_enabled) {
+  if (CefGlobalSetting::gpu_enabled) {
+    command_line->AppendSwitch("enable-gpu");
+    command_line->AppendSwitch("enable-gpu-compositing");
+  }
+  else {
     // D3D11模式不能禁用GPU加速，2623版本不会使用D3D11模式
     command_line->AppendSwitch("disable-gpu");
     command_line->AppendSwitch("disable-gpu-compositing");

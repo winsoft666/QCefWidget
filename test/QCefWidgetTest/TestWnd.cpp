@@ -20,41 +20,53 @@ TestWnd::TestWnd(QWidget *parent)
   setupUi();
 
   connect(comboBoxUrl_->lineEdit(), &QLineEdit::returnPressed, [this]() {
-    cefWidget_->navigateToUrl(comboBoxUrl_->lineEdit()->text());
-    cefOpenGLWidget_->navigateToUrl(comboBoxUrl_->lineEdit()->text());
+    if (cefWidget_)
+      cefWidget_->navigateToUrl(comboBoxUrl_->lineEdit()->text());
+    if (cefOpenGLWidget_)
+      cefOpenGLWidget_->navigateToUrl(comboBoxUrl_->lineEdit()->text());
   });
 
   connect(comboBoxUrl_, QOverload<const QString &>::of(&QComboBox::currentIndexChanged), this,
           [this](const QString &text) {
-            cefWidget_->navigateToUrl(text);
-            cefOpenGLWidget_->navigateToUrl(text);
+            if (cefWidget_)
+              cefWidget_->navigateToUrl(text);
+            if (cefOpenGLWidget_)
+              cefOpenGLWidget_->navigateToUrl(text);
           });
 
   connect(pushButtonBack_, &QPushButton::clicked, [this]() {
-    cefWidget_->browserGoBack();
-    cefOpenGLWidget_->browserGoBack();
+    if (cefWidget_)
+      cefWidget_->browserGoBack();
+    if (cefOpenGLWidget_)
+      cefOpenGLWidget_->browserGoBack();
   });
 
   connect(pushButtonForward_, &QPushButton::clicked, [this]() {
-    cefWidget_->browserGoForward();
-    cefOpenGLWidget_->browserGoForward();
+    if (cefWidget_)
+      cefWidget_->browserGoForward();
+    if (cefOpenGLWidget_)
+      cefOpenGLWidget_->browserGoForward();
   });
 
   connect(pushButtonReload_, &QPushButton::clicked, [this]() {
-    if (cefWidget_->browserIsLoading())
-      cefWidget_->browserStopLoad();
-    else
-      cefWidget_->browserReload();
+    if (cefWidget_) {
+      if (cefWidget_->browserIsLoading())
+        cefWidget_->browserStopLoad();
+      else
+        cefWidget_->browserReload();
+    }
 
-    if (cefOpenGLWidget_->browserIsLoading())
-      cefOpenGLWidget_->browserStopLoad();
-    else
-      cefOpenGLWidget_->browserReload();
+    if (cefOpenGLWidget_) {
+      if (cefOpenGLWidget_->browserIsLoading())
+        cefOpenGLWidget_->browserStopLoad();
+      else
+        cefOpenGLWidget_->browserReload();
+    }
   });
 
   connect(pushButtonApply_, &QPushButton::clicked, this, &TestWnd::onPushButtonApplyClicked);
-  connect(pushButtonOpenDevTools_, &QPushButton::clicked, this, &TestWnd::onPushButtonOpenDevToolsClicked);
-
+  connect(pushButtonOpenDevTools_, &QPushButton::clicked, this,
+          &TestWnd::onPushButtonOpenDevToolsClicked);
 
   connect(
       cefWidget_, &QCefWidget::loadingStateChanged, this,
@@ -112,11 +124,17 @@ TestWnd::TestWnd(QWidget *parent)
   checkboxHookTopLevelCloseMsg_->setChecked(QCefSetting::isHookTopLevelWindowCloseMessage());
   checkboxIgnoreTopLevelCloseMsg_->setChecked(QCefSetting::isIgnoreTopLevelCloseMessage());
 
-  cefWidget_->setFPS(30);
-  cefOpenGLWidget_->setFPS(30);
+  if (cefWidget_)
+    cefWidget_->setFPS(30);
+
+  if (cefOpenGLWidget_)
+    cefOpenGLWidget_->setFPS(30);
+
   if (comboBoxUrl_->itemText(0).length() > 0) {
-    cefWidget_->navigateToUrl(comboBoxUrl_->itemText(0));
-    cefOpenGLWidget_->navigateToUrl(comboBoxUrl_->itemText(0));
+    if (cefWidget_)
+      cefWidget_->navigateToUrl(comboBoxUrl_->itemText(0));
+    if (cefOpenGLWidget_)
+      cefOpenGLWidget_->navigateToUrl(comboBoxUrl_->itemText(0));
   }
 }
 
@@ -135,8 +153,7 @@ void TestWnd::setupUi() {
   actionShowTransparentCef_ = new QAction();
   actionShowTransparentCef_->setShortcut(QKeySequence("Ctrl+T"));
   actionShowTransparentCef_->setText("Show Transparent CEF");
-  connect(actionShowTransparentCef_, &QAction::triggered, this,
-          &TestWnd::onShowTransparentCefWnd);
+  connect(actionShowTransparentCef_, &QAction::triggered, this, &TestWnd::onShowTransparentCefWnd);
 
   actionTriggerTestEvent_ = new QAction();
   actionTriggerTestEvent_->setShortcut(QKeySequence("Ctrl+E"));
@@ -179,13 +196,13 @@ void TestWnd::setupUi() {
   comboBoxUrl_->setEditable(true);
   comboBoxUrl_->addItems(
       QStringList()
+      << "about:blank"
       << QString("file:///%1")
              .arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
       << QString("file:///%1")
              .arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
       << QString("file:///%1")
              .arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Clock.html")
-      << "about:blank"
       << "https://html5test.com/"
       << "https://www.bing.com"
       << "https://www.google.com"
@@ -202,18 +219,24 @@ void TestWnd::setupUi() {
   hlTop->addWidget(pushButtonTest_);
 
   cefWidget_ = new QCefWidget();
-  cefWidget_->setObjectName("cefWidget");
-  cefWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  if (cefWidget_) {
+    cefWidget_->setObjectName("cefWidget");
+    cefWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  }
 
-  cefOpenGLWidget_ = new QCefOpenGLWidget();
-  cefOpenGLWidget_->setObjectName("cefOpenGLWidget");
-  cefOpenGLWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  //cefOpenGLWidget_ = new QCefOpenGLWidget();
+  if (cefOpenGLWidget_) {
+    cefOpenGLWidget_->setObjectName("cefOpenGLWidget");
+    cefOpenGLWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  }
 
   splitterCef_ = new QSplitter(Qt::Orientation::Horizontal);
   splitterCef_->setObjectName("splitterCef");
   splitterCef_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  splitterCef_->addWidget(cefWidget_);
-  splitterCef_->addWidget(cefOpenGLWidget_);
+  if (cefWidget_)
+    splitterCef_->addWidget(cefWidget_);
+  if (cefOpenGLWidget_)
+    splitterCef_->addWidget(cefOpenGLWidget_);
 
   plainTextEditLog_ = new QPlainTextEdit();
   plainTextEditLog_->setObjectName("plainTextEditLog");
@@ -307,6 +330,4 @@ void TestWnd::onTriggerTestEvent() {
 
 void TestWnd::onPushButtonApplyClicked() {}
 
-void TestWnd::onPushButtonOpenDevToolsClicked() {
-
-}
+void TestWnd::onPushButtonOpenDevToolsClicked() {}
