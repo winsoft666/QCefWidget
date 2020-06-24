@@ -4,7 +4,7 @@
 
 #include <include\cef_base.h>
 
-class CefGlobalSetting {
+class QCefGlobalSetting {
 public:
   static void initializeInstance();
 
@@ -27,7 +27,7 @@ public:
   static bool ignore_top_level_window_close_msg;
 
 protected:
-  CefGlobalSetting();
-  ~CefGlobalSetting();
+  QCefGlobalSetting();
+  ~QCefGlobalSetting();
 };
 #endif

@@ -1,7 +1,7 @@
 #ifndef QCEFVIEWHANDLER_H_
 #define QCEFVIEWHANDLER_H_
 #pragma once
-#include "CefQueryHandler.h"
+#include "QCefQueryHandler.h"
 #include "Include/QCefQuery.h"
 #include <QEvent>
 #include <QPaintEvent>
@@ -26,8 +26,6 @@ typedef struct _CefRenderBuffer {
   std::unique_ptr<uint8_t[]> buffer;
   int bufferSize;
 
-  HANDLE renderedEvent;
-
   _CefRenderBuffer() {
     x = 0;
     y = 0;
@@ -36,12 +34,10 @@ typedef struct _CefRenderBuffer {
 
     buffer = nullptr;
     bufferSize = 0;
-
-    renderedEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
   }
 } CefRenderBuffer;
 
-class CefBrowserHandler : public CefClient,
+class QCefBrowserHandler : public CefClient,
                           public CefContextMenuHandler,
                           public CefDisplayHandler,
                           public CefDragHandler,
@@ -58,8 +54,8 @@ public:
     ALL_FRAMES = (int64_t)-1,
   };
 
-  CefBrowserHandler(QCefWidgetImpl *pCefViewImpl);
-  ~CefBrowserHandler();
+  QCefBrowserHandler(QCefWidgetImpl *pCefViewImpl);
+  ~QCefBrowserHandler();
 
 #pragma region CefClient
 
@@ -269,7 +265,7 @@ private:
   std::list<CefRefPtr<CefBrowser>> popupBrowserList_;
   CefRefPtr<CefResourceManager> pResourceManager_;
   CefRefPtr<CefMessageRouterBrowserSide> pMessageRouter_;
-  CefRefPtr<CefQueryHandler> pCefqueryHandler_;
+  CefRefPtr<QCefQueryHandler> pCefqueryHandler_;
 
   std::recursive_mutex viewRenderBufMtx_;
   std::recursive_mutex popupRenderBufMtx_;
@@ -283,6 +279,6 @@ private:
   bool isPaintingPopup_;
 
   // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(CefBrowserHandler);
+  IMPLEMENT_REFCOUNTING(QCefBrowserHandler);
 };
 #endif

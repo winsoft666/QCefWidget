@@ -9,7 +9,7 @@
 #include <include/cef_browser.h>
 #include <include/cef_frame.h>
 #include <include/cef_sandbox_win.h>
-#include "CefManager.h"
+#include "QCefManager.h"
 
 QCefOpenGLWidget::QCefOpenGLWidget(QWidget *parent /*= nullptr*/) : QOpenGLWidget(parent) {
   pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_OpenGLWidget, this);
@@ -19,7 +19,7 @@ QCefOpenGLWidget::QCefOpenGLWidget(QWidget *parent /*= nullptr*/) : QOpenGLWidge
 
 QCefOpenGLWidget::~QCefOpenGLWidget() {
   pImpl_.reset();
-  CefManager::getInstance().uninitializeCef();
+  QCefManager::getInstance().uninitializeCef();
 }
 
 void QCefOpenGLWidget::navigateToUrl(const QString &url) {
@@ -27,44 +27,44 @@ void QCefOpenGLWidget::navigateToUrl(const QString &url) {
   pImpl_->navigateToUrl(url);
 }
 
-bool QCefOpenGLWidget::browserCanGoBack() {
+bool QCefOpenGLWidget::canGoBack() {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserCanGoBack();
+  return pImpl_->canGoBack();
 }
 
-bool QCefOpenGLWidget::browserCanGoForward() {
+bool QCefOpenGLWidget::canGoForward() {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserCanGoForward();
+  return pImpl_->canGoForward();
 }
 
-void QCefOpenGLWidget::browserGoBack() {
+void QCefOpenGLWidget::goBack() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserGoBack();
+  pImpl_->goBack();
 }
 
-void QCefOpenGLWidget::browserGoForward() {
+void QCefOpenGLWidget::goForward() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserGoForward();
+  pImpl_->goForward();
 }
 
-bool QCefOpenGLWidget::browserIsLoading() {
+bool QCefOpenGLWidget::isLoadingBrowser() {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserIsLoading();
+  return pImpl_->isLoadingBrowser();
 }
 
-void QCefOpenGLWidget::browserReload() {
+void QCefOpenGLWidget::reloadBrowser() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserReload();
+  pImpl_->reloadBrowser();
 }
 
-void QCefOpenGLWidget::browserStopLoad() {
+void QCefOpenGLWidget::stopLoadBrowser() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserStopLoad();
+  pImpl_->stopLoadBrowser();
 }
 
 bool QCefOpenGLWidget::triggerEvent(const QString &name, const QCefEvent &event) {
   Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, CefBrowserHandler::MAIN_FRAME);
+  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::MAIN_FRAME);
 }
 
 bool QCefOpenGLWidget::triggerEvent(const QString &name, const QCefEvent &event, int frameId) {
@@ -74,7 +74,7 @@ bool QCefOpenGLWidget::triggerEvent(const QString &name, const QCefEvent &event,
 
 bool QCefOpenGLWidget::broadcastEvent(const QString &name, const QCefEvent &event) {
   Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, CefBrowserHandler::ALL_FRAMES);
+  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::ALL_FRAMES);
 }
 
 bool QCefOpenGLWidget::responseQCefQuery(const QCefQuery &query) {
@@ -97,14 +97,22 @@ int QCefOpenGLWidget::fps() const {
   return pImpl_->fps();
 }
 
-void QCefOpenGLWidget::setBackgroundColor(const QColor &color) {
+void QCefOpenGLWidget::setBrowserBackgroundColor(const QColor &color) {
   Q_ASSERT(pImpl_);
-  pImpl_->setBackgroundColor(color);
+  pImpl_->setBrowserBackgroundColor(color);
 }
 
-QColor QCefOpenGLWidget::backgroundColor() const {
+QColor QCefOpenGLWidget::browserBackgroundColor() const {
   Q_ASSERT(pImpl_);
-  return pImpl_->backgroundColor();
+  return pImpl_->browserBackgroundColor();
+}
+
+void QCefOpenGLWidget::showDevTools() {
+  QCefManager::getInstance().showDevTools(this);
+}
+
+void QCefOpenGLWidget::closeDevTools() {
+  QCefManager::getInstance().closeDevTools(this);
 }
 
 bool QCefOpenGLWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
@@ -114,5 +122,13 @@ bool QCefOpenGLWidget::nativeEvent(const QByteArray &eventType, void *message, l
 
 void QCefOpenGLWidget::paintEvent(QPaintEvent *event) {
   Q_ASSERT(pImpl_);
-  pImpl_->openGLPaintEvent(event);
+  if (!pImpl_->openGLPaintEventHandle(event)) {
+    QOpenGLWidget::paintEvent(event);
+  }
+}
+
+void QCefOpenGLWidget::setVisible(bool visible) {
+  QOpenGLWidget::setVisible(visible);
+  Q_ASSERT(pImpl_);
+  pImpl_->setVisible(visible);
 }

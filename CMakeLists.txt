@@ -94,7 +94,6 @@ PRINT_CEF_CONFIG()
 
 # Add all targets
 ###############################################################
-add_subdirectory(src/QCefProto)
 
 include_directories(
   src/QCefProto

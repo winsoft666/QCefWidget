@@ -9,7 +9,7 @@
 #include <include/cef_browser.h>
 #include <include/cef_frame.h>
 #include <include/cef_sandbox_win.h>
-#include "CefManager.h"
+#include "QCefManager.h"
 
 QCefWidget::QCefWidget(QWidget *parent) : QWidget(parent) {
   pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this);
@@ -19,7 +19,7 @@ QCefWidget::QCefWidget(QWidget *parent) : QWidget(parent) {
 
 QCefWidget::~QCefWidget() {
   pImpl_.reset();
-  CefManager::getInstance().uninitializeCef();
+  QCefManager::getInstance().uninitializeCef();
 }
 
 void QCefWidget::navigateToUrl(const QString &url) {
@@ -27,44 +27,44 @@ void QCefWidget::navigateToUrl(const QString &url) {
   pImpl_->navigateToUrl(url);
 }
 
-bool QCefWidget::browserCanGoBack() {
+bool QCefWidget::canGoBack() {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserCanGoBack();
+  return pImpl_->canGoBack();
 }
 
-bool QCefWidget::browserCanGoForward() {
+bool QCefWidget::canGoForward() {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserCanGoForward();
+  return pImpl_->canGoForward();
 }
 
-void QCefWidget::browserGoBack() {
+void QCefWidget::goBack() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserGoBack();
+  pImpl_->goBack();
 }
 
-void QCefWidget::browserGoForward() {
+void QCefWidget::goForward() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserGoForward();
+  pImpl_->goForward();
 }
 
-bool QCefWidget::browserIsLoading() {
+bool QCefWidget::isLoadingBrowser() {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserIsLoading();
+  return pImpl_->isLoadingBrowser();
 }
 
-void QCefWidget::browserReload() {
+void QCefWidget::reloadBrowser() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserReload();
+  pImpl_->reloadBrowser();
 }
 
-void QCefWidget::browserStopLoad() {
+void QCefWidget::stopLoadBrowser() {
   Q_ASSERT(pImpl_);
-  pImpl_->browserStopLoad();
+  pImpl_->stopLoadBrowser();
 }
 
 bool QCefWidget::triggerEvent(const QString &name, const QCefEvent &event) {
   Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, CefBrowserHandler::MAIN_FRAME);
+  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::MAIN_FRAME);
 }
 
 bool QCefWidget::triggerEvent(const QString &name, const QCefEvent &event, int frameId) {
@@ -74,7 +74,7 @@ bool QCefWidget::triggerEvent(const QString &name, const QCefEvent &event, int f
 
 bool QCefWidget::broadcastEvent(const QString &name, const QCefEvent &event) {
   Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, CefBrowserHandler::ALL_FRAMES);
+  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::ALL_FRAMES);
 }
 
 bool QCefWidget::responseQCefQuery(const QCefQuery &query) {
@@ -97,14 +97,22 @@ int QCefWidget::fps() const {
   return pImpl_->fps();
 }
 
-void QCefWidget::setBackgroundColor(const QColor &color) {
+void QCefWidget::setBrowserBackgroundColor(const QColor &color) {
   Q_ASSERT(pImpl_);
-  pImpl_->setBackgroundColor(color);
+  pImpl_->setBrowserBackgroundColor(color);
 }
 
-QColor QCefWidget::backgroundColor() const {
+QColor QCefWidget::browserBackgroundColor() const {
   Q_ASSERT(pImpl_);
-  return pImpl_->backgroundColor();
+  return pImpl_->browserBackgroundColor();
+}
+
+void QCefWidget::showDevTools() {
+  QCefManager::getInstance().showDevTools(this);
+}
+
+void QCefWidget::closeDevTools() {
+  QCefManager::getInstance().closeDevTools(this);
 }
 
 bool QCefWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
@@ -114,5 +122,13 @@ bool QCefWidget::nativeEvent(const QByteArray &eventType, void *message, long *r
 
 void QCefWidget::paintEvent(QPaintEvent *event) {
   Q_ASSERT(pImpl_);
-  pImpl_->paintEvent(event);
+  if (!pImpl_->paintEventHandle(event)) {
+    QWidget::paintEvent(event);
+  }
+}
+
+void QCefWidget::setVisible(bool visible) {
+  QWidget::setVisible(visible);
+  Q_ASSERT(pImpl_);
+  pImpl_->setVisible(visible);
 }

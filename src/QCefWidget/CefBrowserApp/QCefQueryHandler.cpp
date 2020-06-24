@@ -1,16 +1,16 @@
-#include "CefQueryHandler.h"
+#include "QCefQueryHandler.h"
 #include "Include/QCefQuery.h"
 #include "Include/QCefWidget.h"
 #include "Include/QCefOpenGLWidget.h"
 #include "QCefWidgetImpl.h"
 
-CefQueryHandler::CefQueryHandler(QCefWidgetImpl *pCefViewImpl)
+QCefQueryHandler::QCefQueryHandler(QCefWidgetImpl *pCefViewImpl)
     : pCefImpl_(pCefViewImpl) {}
 
-CefQueryHandler::~CefQueryHandler() {
+QCefQueryHandler::~QCefQueryHandler() {
 }
 
-bool CefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+bool QCefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                               int64 query_id, const CefString &request, bool persistent,
                               CefRefPtr<Callback> callback) {
   if (pCefImpl_ && pCefImpl_->getWidget()) {
@@ -37,7 +37,7 @@ bool CefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame>
   return false;
 }
 
-void CefQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+void QCefQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                       int64 query_id) {
   mtxCallbackMap_.lock();
   auto it = mapCallback_.find(query_id);
@@ -47,7 +47,7 @@ void CefQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<C
   mtxCallbackMap_.unlock();
 }
 
-bool CefQueryHandler::Response(int64_t query, bool success, const CefString &response, int error) {
+bool QCefQueryHandler::Response(int64_t query, bool success, const CefString &response, int error) {
   CefRefPtr<Callback> cb;
   mtxCallbackMap_.lock();
   auto it = mapCallback_.find(query);

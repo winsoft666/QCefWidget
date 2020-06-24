@@ -15,12 +15,12 @@ TransparentCefWnd::TransparentCefWnd(QWidget *parent)
   setupUi();
 
   if (cefWidget_) {
-    cefWidget_->setBackgroundColor(QColor(0, 0, 0, 0));
+    cefWidget_->setBrowserBackgroundColor(QColor(0, 0, 0, 0));
     cefWidget_->navigateToUrl(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html");
   }
 
   if (cefOpenGLWidget_) {
-    cefOpenGLWidget_->setBackgroundColor(QColor(0, 0, 0, 0));
+    cefOpenGLWidget_->setBrowserBackgroundColor(QColor(0, 0, 0, 0));
     cefOpenGLWidget_->navigateToUrl(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html");
   }
 }

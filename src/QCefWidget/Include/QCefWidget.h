@@ -46,21 +46,23 @@
 ///
 
 class QCefWidgetImpl;
+class QCefDevToolsWnd;
 
 class QCEFWIDGET_EXPORT QCefWidget : public QWidget {
   Q_OBJECT
 public:
   QCefWidget(QWidget *parent = nullptr);
-  ~QCefWidget();
+  virtual ~QCefWidget();
 
   virtual void navigateToUrl(const QString &url);
-  virtual bool browserCanGoBack();
-  virtual bool browserCanGoForward();
-  virtual void browserGoBack();
-  virtual void browserGoForward();
-  virtual bool browserIsLoading();
-  virtual void browserReload();
-  virtual void browserStopLoad();
+  virtual bool canGoBack();
+  virtual bool canGoForward();
+  virtual void goBack();
+  virtual void goForward();
+  virtual bool isLoadingBrowser();
+  virtual void reloadBrowser();
+  virtual void stopLoadBrowser();
+
   virtual bool triggerEvent(const QString &name, const QCefEvent &event);
   virtual bool triggerEvent(const QString &name, const QCefEvent &event, int frameId);
   virtual bool broadcastEvent(const QString &name, const QCefEvent &event);
@@ -70,8 +72,11 @@ public:
   virtual void setFPS(int fps);
   virtual int fps() const;
 
-  virtual void setBackgroundColor(const QColor &color);
-  virtual QColor backgroundColor() const;
+  virtual void setBrowserBackgroundColor(const QColor &color);
+  virtual QColor browserBackgroundColor() const;
+
+  virtual void showDevTools();
+  virtual void closeDevTools();
 signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);
@@ -86,8 +91,10 @@ signals:
 protected:
   bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
   void paintEvent(QPaintEvent *event) override;
-  
+  void setVisible(bool visible) override;
+
   std::shared_ptr<QCefWidgetImpl> pImpl_;
+  friend QCefDevToolsWnd;
 };
 
 #endif // QCEF_WIDGET_H_

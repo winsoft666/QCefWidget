@@ -1,10 +1,10 @@
 #ifndef QCEF_WIDGET_IMPLEMENT_H_
 #define QCEF_WIDGET_IMPLEMENT_H_
 #pragma once
-#include "CefBrowserApp/CefBrowserHandler.h"
+#include "CefBrowserApp/QCefBrowserHandler.h"
 #include "Include/QCefEvent.h"
 #include "Include/QCefQuery.h"
-#include "UIEventHandlerWin.h"
+#include "QCefWidgetUIEventHandlerWin.h"
 #include <QString>
 #include <QWidget>
 
@@ -18,19 +18,21 @@ public:
 
 public:
   void navigateToUrl(const QString &url);
-  bool browserCanGoBack();
-  bool browserCanGoForward();
-  void browserGoBack();
-  void browserGoForward();
-  bool browserIsLoading();
-  void browserReload();
-  void browserStopLoad();
+  bool canGoBack();
+  bool canGoForward();
+  void goBack();
+  void goForward();
+  bool isLoadingBrowser();
+  void reloadBrowser();
+  void stopLoadBrowser();
+
   bool triggerEvent(const QString &name, const QCefEvent &event,
-                    int frameId = CefBrowserHandler::MAIN_FRAME);
+                    int frameId = QCefBrowserHandler::MAIN_FRAME);
   bool responseQCefQuery(const QCefQuery &query);
   void executeJavascript(const QString &javascript);
 
   bool createBrowser();
+  bool createDevTools(CefRefPtr<CefBrowser> targetBrowser);
 
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);
   void browserDestoryedNotify(CefRefPtr<CefBrowser> browser);
@@ -42,19 +44,25 @@ public:
   WidgetType getWidgetType();
 
   bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-  void paintEvent(QPaintEvent *event);
-  void openGLPaintEvent(QPaintEvent *event);
+
+  bool paintEventHandle(QPaintEvent *event);
+  bool openGLPaintEventHandle(QPaintEvent *event);
+
+  void setVisible(bool visible);
+
   float deviceScaleFactor();
 
   void setFPS(int fps);
   int fps() const;
 
-  void setBackgroundColor(const QColor &color);
-  QColor backgroundColor() const;
+  void setBrowserBackgroundColor(const QColor &color);
+  QColor browserBackgroundColor() const;
 
-  void updateCefView();
+  void updateCefWidget();
 
   void setBrowserClosing(bool b);
+
+  CefRefPtr<CefBrowser> browser();
 protected:
   bool sendEventNotifyMessage(int frameId, const QString &name, const QCefEvent &event);
   CefRefPtr<CefBrowserHost> getCefBrowserHost();
@@ -64,8 +72,8 @@ private:
   QWidget *pWidget_;
   QWidget* pTopWidget_;
 
-  CefRefPtr<CefBrowserHandler> pQCefViewHandler_;
-  std::shared_ptr<UIEventHandlerWin> pCefUIEventWin_;
+  CefRefPtr<QCefBrowserHandler> pQCefViewHandler_;
+  std::shared_ptr<QCefWidgetUIEventHandlerWin> pCefUIEventWin_;
 
   // Cached url will be navigated when browser created
   CefString cachedNavigateUrl_;

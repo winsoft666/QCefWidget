@@ -36,31 +36,31 @@ TestWnd::TestWnd(QWidget *parent)
 
   connect(pushButtonBack_, &QPushButton::clicked, [this]() {
     if (cefWidget_)
-      cefWidget_->browserGoBack();
+      cefWidget_->goBack();
     if (cefOpenGLWidget_)
-      cefOpenGLWidget_->browserGoBack();
+      cefOpenGLWidget_->goBack();
   });
 
   connect(pushButtonForward_, &QPushButton::clicked, [this]() {
     if (cefWidget_)
-      cefWidget_->browserGoForward();
+      cefWidget_->goForward();
     if (cefOpenGLWidget_)
-      cefOpenGLWidget_->browserGoForward();
+      cefOpenGLWidget_->goForward();
   });
 
   connect(pushButtonReload_, &QPushButton::clicked, [this]() {
     if (cefWidget_) {
-      if (cefWidget_->browserIsLoading())
-        cefWidget_->browserStopLoad();
+      if (cefWidget_->isLoadingBrowser())
+        cefWidget_->stopLoadBrowser();
       else
-        cefWidget_->browserReload();
+        cefWidget_->reloadBrowser();
     }
 
     if (cefOpenGLWidget_) {
-      if (cefOpenGLWidget_->browserIsLoading())
-        cefOpenGLWidget_->browserStopLoad();
+      if (cefOpenGLWidget_->isLoadingBrowser())
+        cefOpenGLWidget_->stopLoadBrowser();
       else
-        cefOpenGLWidget_->browserReload();
+        cefOpenGLWidget_->reloadBrowser();
     }
   });
 
@@ -70,10 +70,10 @@ TestWnd::TestWnd(QWidget *parent)
 
   connect(
       cefWidget_, &QCefWidget::loadingStateChanged, this,
-      [this](bool isLoading, bool canGoBack, bool canGoForward) {
+      [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {
         pushButtonBack_->setEnabled(canGoBack);
         pushButtonForward_->setEnabled(canGoForward);
-        pushButtonReload_->setProperty("loading", isLoading ? "1" : "0");
+        pushButtonReload_->setProperty("loading", isLoadingBrowser ? "1" : "0");
         style()->unpolish(pushButtonReload_);
         style()->polish(pushButtonReload_);
       },
@@ -224,7 +224,7 @@ void TestWnd::setupUi() {
     cefWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   }
 
-  //cefOpenGLWidget_ = new QCefOpenGLWidget();
+  cefOpenGLWidget_ = new QCefOpenGLWidget();
   if (cefOpenGLWidget_) {
     cefOpenGLWidget_->setObjectName("cefOpenGLWidget");
     cefOpenGLWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -330,4 +330,8 @@ void TestWnd::onTriggerTestEvent() {
 
 void TestWnd::onPushButtonApplyClicked() {}
 
-void TestWnd::onPushButtonOpenDevToolsClicked() {}
+void TestWnd::onPushButtonOpenDevToolsClicked() {
+  if (cefWidget_) {
+    cefWidget_->showDevTools();
+  }
+}

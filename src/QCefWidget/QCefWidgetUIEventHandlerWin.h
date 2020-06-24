@@ -5,13 +5,13 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #include <include/cef_client.h>
 #include <windowsx.h>
-#include "CefBrowserApp/CefBrowserHandler.h"
-#include "IMEHandlerWin.h"
+#include "CefBrowserApp/QCefBrowserHandler.h"
+#include "QCefIMEHandlerWin.h"
 
-class UIEventHandlerWin {
+class QCefWidgetUIEventHandlerWin {
 public:
-  UIEventHandlerWin(HWND h, CefRefPtr<CefBrowser> pCefBrowser);
-  ~UIEventHandlerWin();
+  QCefWidgetUIEventHandlerWin(HWND h, CefRefPtr<CefBrowser> pCefBrowser);
+  ~QCefWidgetUIEventHandlerWin();
 
   void OnSize(UINT message, WPARAM wParam, LPARAM lParam);
   void OnKeyboardEvent(UINT message, WPARAM wParam, LPARAM lParam);
@@ -51,7 +51,7 @@ private:
   double last_click_time_;
   bool last_mouse_down_on_view_;
 
-  std::unique_ptr<IMEHandlerWin> ime_handler_;
+  std::unique_ptr<QCefIMEHandlerWin> ime_handler_;
 };
 
 #endif

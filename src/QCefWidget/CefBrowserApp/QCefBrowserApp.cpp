@@ -1,15 +1,15 @@
-#include "CefBrowserApp.h"
-#include "CefGlobalSetting.h"
+#include "QCefBrowserApp.h"
+#include "QCefGlobalSetting.h"
 #include <include/cef_browser.h>
 #include <include/cef_command_line.h>
 #include <include/wrapper/cef_helpers.h>
 #include <string>
 
-CefBrowserApp::CefBrowserApp() {}
+QCefBrowserApp::QCefBrowserApp() {}
 
-CefBrowserApp::~CefBrowserApp() {}
+QCefBrowserApp::~QCefBrowserApp() {}
 
-void CefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type,
+void QCefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type,
                                                       CefRefPtr<CefCommandLine> command_line) {
   // Chromium has removed --disable-surfaces as per
   // https://codereview.chromium.org/1603133003 so the workaround specified
@@ -21,7 +21,7 @@ void CefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type,
   command_line->AppendSwitch("allow-file-access-from-files");
   command_line->AppendSwitchWithValue("disable-features", "NetworkService");
 
-  if (CefGlobalSetting::gpu_enabled) {
+  if (QCefGlobalSetting::gpu_enabled) {
     command_line->AppendSwitch("enable-gpu");
     command_line->AppendSwitch("enable-gpu-compositing");
   }
@@ -31,25 +31,25 @@ void CefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type,
     command_line->AppendSwitch("disable-gpu-compositing");
   }
 
-  if (CefGlobalSetting::flush_plugin_path.length() > 0 &&
-      CefGlobalSetting::flush_plugin_ver.length() > 0) {
-    command_line->AppendSwitchWithValue("ppapi-flash-path", CefGlobalSetting::flush_plugin_path);
-    command_line->AppendSwitchWithValue("ppapi-flash-version", CefGlobalSetting::flush_plugin_ver);
+  if (QCefGlobalSetting::flush_plugin_path.length() > 0 &&
+      QCefGlobalSetting::flush_plugin_ver.length() > 0) {
+    command_line->AppendSwitchWithValue("ppapi-flash-path", QCefGlobalSetting::flush_plugin_path);
+    command_line->AppendSwitchWithValue("ppapi-flash-version", QCefGlobalSetting::flush_plugin_ver);
   }
 }
 
-void CefBrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {}
+void QCefBrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {}
 
-CefRefPtr<CefResourceBundleHandler> CefBrowserApp::GetResourceBundleHandler() {
+CefRefPtr<CefResourceBundleHandler> QCefBrowserApp::GetResourceBundleHandler() {
   return nullptr;
 }
 
-CefRefPtr<CefBrowserProcessHandler> CefBrowserApp::GetBrowserProcessHandler() { return this; }
+CefRefPtr<CefBrowserProcessHandler> QCefBrowserApp::GetBrowserProcessHandler() { return this; }
 
-CefRefPtr<CefRenderProcessHandler> CefBrowserApp::GetRenderProcessHandler() { return nullptr; }
+CefRefPtr<CefRenderProcessHandler> QCefBrowserApp::GetRenderProcessHandler() { return nullptr; }
 
 //////////////////////////////////////////////////////////////////////////
-void CefBrowserApp::OnContextInitialized() {
+void QCefBrowserApp::OnContextInitialized() {
   CEF_REQUIRE_UI_THREAD();
 
   // Register cookieable schemes with the global cookie manager.
@@ -58,12 +58,12 @@ void CefBrowserApp::OnContextInitialized() {
   manager->SetSupportedSchemes(cookieable_schemes_, true, nullptr);
 }
 
-void CefBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) {}
+void QCefBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) {}
 
-void CefBrowserApp::OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extra_info) {
+void QCefBrowserApp::OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extra_info) {
   CEF_REQUIRE_IO_THREAD();
 }
 
-CefRefPtr<CefPrintHandler> CefBrowserApp::GetPrintHandler() { return nullptr; }
+CefRefPtr<CefPrintHandler> QCefBrowserApp::GetPrintHandler() { return nullptr; }
 
-void CefBrowserApp::OnScheduleMessagePumpWork(int64 delay_ms) {}
+void QCefBrowserApp::OnScheduleMessagePumpWork(int64 delay_ms) {}

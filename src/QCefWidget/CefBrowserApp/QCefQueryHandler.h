@@ -7,10 +7,10 @@
 
 class QCefWidgetImpl;
 
-class CefQueryHandler : public CefBaseRefCounted, public CefMessageRouterBrowserSide::Handler {
+class QCefQueryHandler : public CefBaseRefCounted, public CefMessageRouterBrowserSide::Handler {
 public:
-  CefQueryHandler(QCefWidgetImpl *pCefViewImpl);
-  ~CefQueryHandler();
+  QCefQueryHandler(QCefWidgetImpl *pCefViewImpl);
+  ~QCefQueryHandler();
 
   virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id,
                        const CefString &request, bool persistent,
@@ -27,5 +27,5 @@ private:
   std::mutex mtxCallbackMap_;
 
 private:
-  IMPLEMENT_REFCOUNTING(CefQueryHandler);
+  IMPLEMENT_REFCOUNTING(QCefQueryHandler);
 };

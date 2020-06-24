@@ -4,10 +4,10 @@
 #include <set>
 #include <include/cef_app.h>
 
-class CefBrowserApp : public CefApp, public CefBrowserProcessHandler {
+class QCefBrowserApp : public CefApp, public CefBrowserProcessHandler {
 public:
-  CefBrowserApp();
-  ~CefBrowserApp();
+  QCefBrowserApp();
+  ~QCefBrowserApp();
 
 private:
 #pragma region CefApp
@@ -46,7 +46,7 @@ private:
   std::vector<CefString> cookieable_schemes_;
 
   // Include the default reference counting implementation.
-  IMPLEMENT_REFCOUNTING(CefBrowserApp);
+  IMPLEMENT_REFCOUNTING(QCefBrowserApp);
 };
 
 #endif //  QCEF_BROWSERAPP_H_

@@ -13,10 +13,10 @@
 
 // Handles IME for the native parent window that hosts an off-screen browser.
 // This object is only accessed on the CEF UI thread.
-class IMEHandlerWin {
+class QCefIMEHandlerWin {
 public:
-  explicit IMEHandlerWin(HWND hwnd);
-  virtual ~IMEHandlerWin();
+  explicit QCefIMEHandlerWin(HWND hwnd);
+  virtual ~QCefIMEHandlerWin();
 
   // Retrieves whether or not there is an ongoing composition.
   bool is_composing() const { return is_composing_; }

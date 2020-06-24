@@ -1,4 +1,4 @@
-#include "IMEHandlerWin.h"
+#include "QCefIMEHandlerWin.h"
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 
@@ -71,7 +71,7 @@ void GetCompositionUnderlines(HIMC imc, int target_start, int target_end,
 
 } // namespace
 
-IMEHandlerWin::IMEHandlerWin(HWND hwnd)
+QCefIMEHandlerWin::QCefIMEHandlerWin(HWND hwnd)
     : is_composing_(false)
     , input_language_id_(LANG_USER_DEFAULT)
     , system_caret_(false)
@@ -80,9 +80,9 @@ IMEHandlerWin::IMEHandlerWin(HWND hwnd)
   ime_rect_ = {-1, -1, 0, 0};
 }
 
-IMEHandlerWin::~IMEHandlerWin() { DestroyImeWindow(); }
+QCefIMEHandlerWin::~QCefIMEHandlerWin() { DestroyImeWindow(); }
 
-void IMEHandlerWin::SetInputLanguage() {
+void QCefIMEHandlerWin::SetInputLanguage() {
   // Retrieve the current input language from the system's keyboard layout.
   // Using GetKeyboardLayoutName instead of GetKeyboardLayout, because
   // the language from GetKeyboardLayout is the language under where the
@@ -98,7 +98,7 @@ void IMEHandlerWin::SetInputLanguage() {
   }
 }
 
-void IMEHandlerWin::CreateImeWindow() {
+void QCefIMEHandlerWin::CreateImeWindow() {
   // Chinese/Japanese IMEs somehow ignore function calls to
   // ::ImmSetCandidateWindow(), and use the position of the current system
   // caret instead -::GetCaretPos().
@@ -116,7 +116,7 @@ void IMEHandlerWin::CreateImeWindow() {
   }
 }
 
-void IMEHandlerWin::DestroyImeWindow() {
+void QCefIMEHandlerWin::DestroyImeWindow() {
   // Destroy the system caret if we have created for this IME input context.
   if (system_caret_) {
     ::DestroyCaret();
@@ -124,7 +124,7 @@ void IMEHandlerWin::DestroyImeWindow() {
   }
 }
 
-void IMEHandlerWin::MoveImeWindow() {
+void QCefIMEHandlerWin::MoveImeWindow() {
   // Does nothing when the target window has no input focus.
   if (GetFocus() != hwnd_)
     return;
@@ -189,7 +189,7 @@ void IMEHandlerWin::MoveImeWindow() {
   }
 }
 
-void IMEHandlerWin::CleanupComposition() {
+void QCefIMEHandlerWin::CleanupComposition() {
   // Notify the IMM attached to the given window to complete the ongoing
   // composition (when given window is de-activated while composing and
   // re-activated) and reset the composition status.
@@ -203,13 +203,13 @@ void IMEHandlerWin::CleanupComposition() {
   }
 }
 
-void IMEHandlerWin::ResetComposition() {
+void QCefIMEHandlerWin::ResetComposition() {
   // Reset the composition status.
   is_composing_ = false;
   cursor_index_ = -1;
 }
 
-void IMEHandlerWin::GetCompositionInfo(HIMC imc, LPARAM lparam, CefString &composition_text,
+void QCefIMEHandlerWin::GetCompositionInfo(HIMC imc, LPARAM lparam, CefString &composition_text,
                                        std::vector<CefCompositionUnderline> &underlines,
                                        int &composition_start) {
   // We only care about GCS_COMPATTR, GCS_COMPCLAUSE and GCS_CURSORPOS, and
@@ -271,7 +271,7 @@ void IMEHandlerWin::GetCompositionInfo(HIMC imc, LPARAM lparam, CefString &compo
   }
 }
 
-bool IMEHandlerWin::GetString(HIMC imc, WPARAM lparam, int type, CefString &result) {
+bool QCefIMEHandlerWin::GetString(HIMC imc, WPARAM lparam, int type, CefString &result) {
   if (!(lparam & type))
     return false;
   LONG string_size = ::ImmGetCompositionString(imc, type, NULL, 0);
@@ -287,7 +287,7 @@ bool IMEHandlerWin::GetString(HIMC imc, WPARAM lparam, int type, CefString &resu
   return true;
 }
 
-bool IMEHandlerWin::GetResult(LPARAM lparam, CefString &result) {
+bool QCefIMEHandlerWin::GetResult(LPARAM lparam, CefString &result) {
   bool ret = false;
   HIMC imc = ::ImmGetContext(hwnd_);
   if (imc) {
@@ -297,7 +297,7 @@ bool IMEHandlerWin::GetResult(LPARAM lparam, CefString &result) {
   return ret;
 }
 
-bool IMEHandlerWin::GetComposition(LPARAM lparam, CefString &composition_text,
+bool QCefIMEHandlerWin::GetComposition(LPARAM lparam, CefString &composition_text,
                                    std::vector<CefCompositionUnderline> &underlines,
                                    int &composition_start) {
   bool ret = false;
@@ -319,12 +319,12 @@ bool IMEHandlerWin::GetComposition(LPARAM lparam, CefString &composition_text,
   return ret;
 }
 
-void IMEHandlerWin::DisableIME() {
+void QCefIMEHandlerWin::DisableIME() {
   CleanupComposition();
   ::ImmAssociateContextEx(hwnd_, NULL, 0);
 }
 
-void IMEHandlerWin::CancelIME() {
+void QCefIMEHandlerWin::CancelIME() {
   if (is_composing_) {
     HIMC imc = ::ImmGetContext(hwnd_);
     if (imc) {
@@ -335,19 +335,19 @@ void IMEHandlerWin::CancelIME() {
   }
 }
 
-void IMEHandlerWin::EnableIME() {
+void QCefIMEHandlerWin::EnableIME() {
   // Load the default IME context.
   ::ImmAssociateContextEx(hwnd_, NULL, IACE_DEFAULT);
 }
 
-void IMEHandlerWin::UpdateCaretPosition(int index) {
+void QCefIMEHandlerWin::UpdateCaretPosition(int index) {
   // Save the caret position.
   cursor_index_ = index;
   // Move the IME window.
   MoveImeWindow();
 }
 
-void IMEHandlerWin::ChangeCompositionRange(const CefRange &selection_range,
+void QCefIMEHandlerWin::ChangeCompositionRange(const CefRange &selection_range,
                                            const std::vector<CefRect> &bounds) {
   composition_range_ = selection_range;
   composition_bounds_ = bounds;
