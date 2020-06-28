@@ -362,15 +362,6 @@ void TestWnd::bindUiEvent() {
   connect(cefOpenGLWidget_, &QCefOpenGLWidget::invokeMethodNotify, this, &TestWnd::onInvokeMethodNotify, Qt::QueuedConnection);
 
   connect(
-      cefWidget_, &QCefWidget::cefUrlRequest, this,
-      [this](const QString &url) {
-        QString str = QString("[CefUrlRequest] url: %1\r\n").arg(url);
-
-        plainTextEditLog_->appendPlainText(str);
-      },
-      Qt::QueuedConnection);
-
-  connect(
       cefWidget_, &QCefWidget::cefQueryRequest, this,
       [this](const QCefQuery &query) {
         QString str = QString("[QCefWidget CefQueryRequest] id: %1, reqeust: %2\r\n")
