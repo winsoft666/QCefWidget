@@ -7,10 +7,12 @@
 #include <list>
 #include <map>
 #include <qsystemdetection.h>
+#include <QObject>
 
 class QWidget;
 class QCefDevToolsWnd;
-class QCefManager {
+class QCefManager : QObject {
+  Q_OBJECT
 public:
   static QCefManager &getInstance();
   void initializeCef();
@@ -30,11 +32,14 @@ protected:
   QWidget *getTopWidget(QWidget *pWidget);
   WNDPROC hookWidget(HWND hTopWidget);
   void closeAllBrowsers(HWND hTopWidget);
+  void closeAllBrowsers(QWidget* pTopLevelWidget);
 
 private:
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   static LRESULT CALLBACK newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
+  bool eventFilter(QObject *obj, QEvent *event) override;
+
   CefRefPtr<QCefBrowserApp> app_;
   CefSettings cefSettings_;
   int64_t nCefRefCount_;

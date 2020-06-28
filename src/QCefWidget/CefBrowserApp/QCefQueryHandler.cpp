@@ -25,12 +25,13 @@ bool QCefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame
       if (p)
         emit p->cefQueryRequest(QCefQuery(strRequest, query_id));
     }
+#ifndef QT_NO_OPENGL
     else if (pCefImpl_->getWidgetType() == WT_OpenGLWidget) {
       QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefImpl_->getWidget();
       if (p)
         emit p->cefQueryRequest(QCefQuery(strRequest, query_id));
     }
-
+#endif
     return true;
   }
 

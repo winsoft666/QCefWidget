@@ -23,7 +23,7 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
     , background_color_(255, 255, 255, 255)
     , fps_(kDefaultFPS) {}
 
-QCefWidgetImpl::~QCefWidgetImpl() {}
+QCefWidgetImpl::~QCefWidgetImpl() { qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this; }
 
 bool QCefWidgetImpl::createBrowser() {
   if (browserCreated_)
@@ -48,21 +48,53 @@ bool QCefWidgetImpl::createBrowser() {
   CefBrowserSettings browserSettings;
   browserSettings.plugins = STATE_DISABLED; // disable all plugins
   browserSettings.windowless_frame_rate = fps_;
-  browserSettings.background_color =
-      CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(),
-                      background_color_.blue());
+  browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
 
   QCefManager::getInstance().initializeCef();
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
 
   // This method can be called on any browser process thread and will not block.
-  if (!CefBrowserHost::CreateBrowser(window_info, pQCefViewHandler_, "", browserSettings, nullptr,
-                                     CefRequestContext::GetGlobalContext())) {
+  if (!CefBrowserHost::CreateBrowser(window_info, pQCefViewHandler_, "", browserSettings, nullptr, CefRequestContext::GetGlobalContext())) {
     return false;
   }
 
   browserCreated_ = true;
+
+  return true;
+}
+
+bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
+  if (browserCreated_)
+    return true;
+  Q_ASSERT(pWidget_);
+  CefWindowHandle hwnd = nullptr;
+  if (pWidget_) {
+    hwnd = (CefWindowHandle)pWidget_->winId();
+  }
+  Q_ASSERT(hwnd);
+  if (!hwnd) {
+    return false;
+  }
+
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
+  RegisterTouchWindow(hwnd, 0);
+#endif
+
+  CefWindowInfo windowInfo;
+  windowInfo.SetAsWindowless(hwnd);
+
+  CefBrowserSettings browserSettings;
+  browserSettings.windowless_frame_rate = fps_;
+  browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
+
+  QCefManager::getInstance().initializeCef();
+
+  pQCefViewHandler_ = new QCefBrowserHandler(this);
+
+  if (targetBrowser) {
+    targetBrowser->GetHost()->ShowDevTools(windowInfo, pQCefViewHandler_, browserSettings, CefPoint());
+  }
 
   return true;
 }
@@ -89,8 +121,10 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 }
 
 void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
+  qInfo() << "QCefWidgetImpl::browserDestoryedNotify, this: " << this;
   browserCreated_ = false;
-  pCefUIEventWin_.reset();
+  if (pCefUIEventWin_)
+    pCefUIEventWin_.reset();
 
   QCefManager::getInstance().removeBrowser(pWidget_, browser);
 
@@ -104,9 +138,7 @@ void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void QCefWidgetImpl::OnImeCompositionRangeChanged(
-    CefRefPtr<CefBrowser> browser, const CefRange &selection_range,
-    const CefRenderHandler::RectList &character_bounds) {
+void QCefWidgetImpl::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds) {
   if (pCefUIEventWin_) {
     pCefUIEventWin_->OnImeCompositionRangeChanged(browser, selection_range, character_bounds);
   }
@@ -123,8 +155,7 @@ void QCefWidgetImpl::navigateToUrl(const QString &url) {
   CefString strUrl;
   strUrl.FromWString(url.toStdWString());
   Q_ASSERT(pQCefViewHandler_);
-  if (pQCefViewHandler_ && pQCefViewHandler_->browser() &&
-      pQCefViewHandler_->browser()->GetMainFrame()) {
+  if (pQCefViewHandler_ && pQCefViewHandler_->browser() && pQCefViewHandler_->browser()->GetMainFrame()) {
     pQCefViewHandler_->browser()->GetMainFrame()->LoadURL(strUrl);
   }
   else {
@@ -194,15 +225,12 @@ void QCefWidgetImpl::executeJavascript(const QString &javascript) {
   CefString strJavascript;
   strJavascript.FromWString(javascript.toStdWString());
 
-  if (pQCefViewHandler_ && pQCefViewHandler_->browser() &&
-      pQCefViewHandler_->browser()->GetMainFrame()) {
-    pQCefViewHandler_->browser()->GetMainFrame()->ExecuteJavaScript(
-        strJavascript, pQCefViewHandler_->browser()->GetMainFrame()->GetURL(), 0);
+  if (pQCefViewHandler_ && pQCefViewHandler_->browser() && pQCefViewHandler_->browser()->GetMainFrame()) {
+    pQCefViewHandler_->browser()->GetMainFrame()->ExecuteJavaScript(strJavascript, pQCefViewHandler_->browser()->GetMainFrame()->GetURL(), 0);
   }
 }
 
-bool QCefWidgetImpl::sendEventNotifyMessage(int frameId, const QString &name,
-                                            const QCefEvent &event) {
+bool QCefWidgetImpl::sendEventNotifyMessage(int frameId, const QString &name, const QCefEvent &event) {
   CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(TRIGGEREVENT_NOTIFY_MESSAGE);
   CefRefPtr<CefListValue> arguments = msg->GetArgumentList();
 
@@ -254,21 +282,17 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
     if (pMsg->hwnd != (HWND)pWidget_->winId())
       return false;
 
-    if (pMsg->message == WM_SYSCHAR || pMsg->message == WM_SYSKEYDOWN ||
-        pMsg->message == WM_SYSKEYUP || pMsg->message == WM_KEYDOWN || pMsg->message == WM_KEYUP ||
+    if (pMsg->message == WM_SYSCHAR || pMsg->message == WM_SYSKEYDOWN || pMsg->message == WM_SYSKEYUP || pMsg->message == WM_KEYDOWN || pMsg->message == WM_KEYUP ||
         pMsg->message == WM_CHAR) {
       if (pWidget_->isActiveWindow() && pWidget_->hasFocus()) {
         pCefUIEventWin_->OnKeyboardEvent(pMsg->message, pMsg->wParam, pMsg->lParam);
       }
     }
-    else if (pMsg->message == WM_MOUSEMOVE || pMsg->message == WM_MOUSEWHEEL ||
-             pMsg->message == WM_MOUSELEAVE || pMsg->message == WM_LBUTTONDOWN ||
-             pMsg->message == WM_RBUTTONDOWN || pMsg->message == WM_MBUTTONDOWN ||
-             pMsg->message == WM_LBUTTONUP || pMsg->message == WM_RBUTTONUP ||
+    else if (pMsg->message == WM_MOUSEMOVE || pMsg->message == WM_MOUSEWHEEL || pMsg->message == WM_MOUSELEAVE || pMsg->message == WM_LBUTTONDOWN ||
+             pMsg->message == WM_RBUTTONDOWN || pMsg->message == WM_MBUTTONDOWN || pMsg->message == WM_LBUTTONUP || pMsg->message == WM_RBUTTONUP ||
              pMsg->message == WM_MBUTTONUP) {
 
-      if (pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_RBUTTONDOWN ||
-          pMsg->message == WM_MBUTTONDOWN) {
+      if (pMsg->message == WM_LBUTTONDOWN || pMsg->message == WM_RBUTTONDOWN || pMsg->message == WM_MBUTTONDOWN) {
         pWidget_->setFocus();
       }
       else if (pMsg->message == WM_MOUSELEAVE) {
@@ -306,8 +330,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
     else if (pMsg->message == WM_CAPTURECHANGED || pMsg->message == WM_CANCELMODE) {
       pCefUIEventWin_->OnCaptureLostEvent(pMsg->message, pMsg->wParam, pMsg->lParam);
     }
-    else if (pMsg->message == WM_IME_SETCONTEXT || pMsg->message == WM_IME_STARTCOMPOSITION ||
-             pMsg->message == WM_IME_COMPOSITION || pMsg->message == WM_IME_ENDCOMPOSITION) {
+    else if (pMsg->message == WM_IME_SETCONTEXT || pMsg->message == WM_IME_STARTCOMPOSITION || pMsg->message == WM_IME_COMPOSITION || pMsg->message == WM_IME_ENDCOMPOSITION) {
       if (pWidget_->isActiveWindow() && pWidget_->hasFocus()) {
         pCefUIEventWin_->OnIMEEvent(pMsg->message, pMsg->wParam, pMsg->lParam);
         if (pMsg->message != WM_IME_ENDCOMPOSITION)
@@ -352,11 +375,9 @@ bool QCefWidgetImpl::paintEventHandle(QPaintEvent *event) {
 
   CefRenderBuffer *pRenderBuffer = pQCefViewHandler_->lockViewBuffer();
   if (pRenderBuffer) {
-    QImage image(pRenderBuffer->buffer.get(), pRenderBuffer->width, pRenderBuffer->height,
-                 QImage::Format_ARGB32);
+    QImage image(pRenderBuffer->buffer.get(), pRenderBuffer->width, pRenderBuffer->height, QImage::Format_ARGB32);
 
-    QRect destRect(pRenderBuffer->x, pRenderBuffer->y, pRenderBuffer->width / scale,
-                   pRenderBuffer->height / scale);
+    QRect destRect(pRenderBuffer->x, pRenderBuffer->y, pRenderBuffer->width / scale, pRenderBuffer->height / scale);
     paint.drawImage(destRect, image);
   }
   pQCefViewHandler_->unlockViewBuffer();
@@ -364,11 +385,9 @@ bool QCefWidgetImpl::paintEventHandle(QPaintEvent *event) {
   if (pQCefViewHandler_->isPopupShow()) {
     CefRenderBuffer *pPopupImageParam = pQCefViewHandler_->lockPopupBuffer();
     if (pPopupImageParam) {
-      QImage image(pPopupImageParam->buffer.get(), pPopupImageParam->width,
-                   pPopupImageParam->height, QImage::Format_ARGB32);
+      QImage image(pPopupImageParam->buffer.get(), pPopupImageParam->width, pPopupImageParam->height, QImage::Format_ARGB32);
 
-      QRect destRect(pPopupImageParam->x, pPopupImageParam->y, pPopupImageParam->width / scale,
-                     pPopupImageParam->height / scale);
+      QRect destRect(pPopupImageParam->x, pPopupImageParam->y, pPopupImageParam->width / scale, pPopupImageParam->height / scale);
       paint.drawImage(destRect, image);
     }
     pQCefViewHandler_->unlockPopupBuffer();
@@ -376,7 +395,7 @@ bool QCefWidgetImpl::paintEventHandle(QPaintEvent *event) {
 
   return true;
 }
-
+#ifndef QT_NO_OPENGL
 bool QCefWidgetImpl::openGLPaintEventHandle(QPaintEvent *event) {
   if (!pQCefViewHandler_ || browserClosing_)
     return false;
@@ -394,11 +413,9 @@ bool QCefWidgetImpl::openGLPaintEventHandle(QPaintEvent *event) {
 
   CefRenderBuffer *pDrawImageParam = pQCefViewHandler_->lockViewBuffer();
   if (pDrawImageParam) {
-    QImage image(pDrawImageParam->buffer.get(), pDrawImageParam->width, pDrawImageParam->height,
-                 QImage::Format_ARGB32);
+    QImage image(pDrawImageParam->buffer.get(), pDrawImageParam->width, pDrawImageParam->height, QImage::Format_ARGB32);
 
-    QRect destRect(pDrawImageParam->x, pDrawImageParam->y, pDrawImageParam->width / scale,
-                   pDrawImageParam->height / scale);
+    QRect destRect(pDrawImageParam->x, pDrawImageParam->y, pDrawImageParam->width / scale, pDrawImageParam->height / scale);
     paint.drawImage(destRect, image);
   }
   pQCefViewHandler_->unlockViewBuffer();
@@ -406,11 +423,9 @@ bool QCefWidgetImpl::openGLPaintEventHandle(QPaintEvent *event) {
   if (pQCefViewHandler_->isPopupShow()) {
     CefRenderBuffer *pPopupImageParam = pQCefViewHandler_->lockPopupBuffer();
     if (pPopupImageParam) {
-      QImage image(pPopupImageParam->buffer.get(), pPopupImageParam->width,
-                   pPopupImageParam->height, QImage::Format_ARGB32);
+      QImage image(pPopupImageParam->buffer.get(), pPopupImageParam->width, pPopupImageParam->height, QImage::Format_ARGB32);
 
-      QRect destRect(pPopupImageParam->x, pPopupImageParam->y, pPopupImageParam->width / scale,
-                     pPopupImageParam->height / scale);
+      QRect destRect(pPopupImageParam->x, pPopupImageParam->y, pPopupImageParam->width / scale, pPopupImageParam->height / scale);
       paint.drawImage(destRect, image);
     }
     pQCefViewHandler_->unlockPopupBuffer();
@@ -418,7 +433,7 @@ bool QCefWidgetImpl::openGLPaintEventHandle(QPaintEvent *event) {
 
   return true;
 }
-
+#endif
 
 void QCefWidgetImpl::setVisible(bool visible) {
   if (browserClosing_)
@@ -462,37 +477,4 @@ CefRefPtr<CefBrowser> QCefWidgetImpl::browser() {
     return nullptr;
   }
   return pQCefViewHandler_->browser();
-}
-
-bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
-  if (browserCreated_)
-    return true;
-  Q_ASSERT(pWidget_);
-  CefWindowHandle hwnd = nullptr;
-  if (pWidget_) {
-    hwnd = (CefWindowHandle)pWidget_->winId();
-  }
-  Q_ASSERT(hwnd);
-  if (!hwnd) {
-    return false;
-  }
-
-#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
-  RegisterTouchWindow(hwnd, 0);
-#endif
-
-  CefWindowInfo windowInfo;
-  windowInfo.SetAsWindowless(hwnd);
-
-  CefBrowserSettings browserSettings;
-  browserSettings.windowless_frame_rate = fps_;
-
-  pQCefViewHandler_ = new QCefBrowserHandler(this);
-
-  if (targetBrowser) {
-    targetBrowser->GetHost()->ShowDevTools(windowInfo, pQCefViewHandler_, browserSettings,
-      CefPoint());
-  }
-
-  return true;
 }

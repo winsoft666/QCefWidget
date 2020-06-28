@@ -68,9 +68,19 @@ bool QCefBrowserHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser,
 void QCefBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                         const CefString &url) {
   CEF_REQUIRE_UI_THREAD();
-  if (frame->IsMain()) {
-    // TODO
+
+  if (pCefViewImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget *p = (QCefWidget *)pCefViewImpl_->getWidget();
+    if (p)
+      emit p->urlChanged(frame->IsMain(), QString::fromStdWString(url.ToWString()));
   }
+#ifndef QT_NO_OPENGL
+  else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
+    if (p)
+      emit p->urlChanged(frame->IsMain(), QString::fromStdWString(url.ToWString()));
+  }
+#endif
 }
 
 void QCefBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString &title) {
@@ -81,11 +91,13 @@ void QCefBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefS
     if (p)
       emit p->titleChanged(QString::fromStdWString(title.ToWString()));
   }
+#ifndef QT_NO_OPENGL
   else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
     if (p)
       emit p->titleChanged(QString::fromStdWString(title.ToWString()));
   }
+#endif
 }
 
 bool QCefBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log_severity_t level,
@@ -277,11 +289,13 @@ void QCefBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, boo
     if (p)
       emit p->loadingStateChanged(isLoading, canGoBack, canGoForward);
   }
+#ifndef QT_NO_OPENGL
   else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadingStateChanged(isLoading, canGoBack, canGoForward);
   }
+#endif
 }
 
 void QCefBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -293,11 +307,13 @@ void QCefBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
     if (p)
       emit p->loadStart();
   }
+#ifndef QT_NO_OPENGL
   else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadStart();
   }
+#endif
 }
 
 void QCefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -309,11 +325,13 @@ void QCefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
     if (p)
       emit p->loadEnd(httpStatusCode);
   }
+#ifndef QT_NO_OPENGL
   else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadEnd(httpStatusCode);
   }
+#endif
 }
 
 void QCefBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -337,11 +355,13 @@ void QCefBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
     if (p)
       emit p->loadError(errorCode, msg, url);
   }
+#ifndef QT_NO_OPENGL
   else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->loadError(errorCode, msg, url);
   }
+#endif
 }
 
 bool QCefBrowserHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
@@ -399,11 +419,13 @@ void QCefBrowserHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser
     if (p)
       emit p->renderProcessTerminated((int)status);
   }
+#ifndef QT_NO_OPENGL
   else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pCefViewImpl_->getWidget());
     if (p)
       emit p->renderProcessTerminated((int)status);
   }
+#endif
 }
 
 CefResourceRequestHandler::ReturnValue
@@ -698,12 +720,13 @@ bool QCefBrowserHandler::dispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
               if (p)
                 emit p->invokeMethodNotify(browserId, frameId, method, arguments);
             }
+#ifndef QT_NO_OPENGL
             else if (pCefViewImpl_->getWidgetType() == WT_OpenGLWidget) {
               QCefOpenGLWidget *p = (QCefOpenGLWidget *)pCefViewImpl_->getWidget();
               if (p)
                 emit p->invokeMethodNotify(browserId, frameId, method, arguments);
             }
-
+#endif
             return true;
           }
         }

@@ -4,11 +4,17 @@
 
 支持：
 
-✅ 显示背景透明网页;
+✅ 在不规则窗体中显示背景透明网页;
 
 ✅ Javascript与Qt交互;
 
 ✅ OpenGL图形加速;
+
+✅ 第三方输入法;
+
+✅ 在Debug/Release模式下完美退出程序，无任何CEF断言;
+
+✅ 独立的CEF渲染进程和插件进程;
 
 ---
 
@@ -32,10 +38,7 @@
 
 5. 使用`CMake`命令生成项目文件并构建:
     ``` bat
-    REM create the build folder 
     mkdir build && cd build
-
-    REM generate and build the project
     cmake .. && cmake --build .
     ```
 

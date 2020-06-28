@@ -1,40 +1,11 @@
-#pragma region projet_headers
 #include "QCefClient.h"
-#pragma endregion projet_headers
 
-// bool QCefClient::Accessor::Get(const CefString& name,
-//	const CefRefPtr<CefV8Value> object,
-//	CefRefPtr<CefV8Value>& retval,
-//	CefString& exception)
-//{
-//	return true;
-//}
-//
-// bool QCefClient::Accessor::Set(const CefString& name,
-//	const CefRefPtr<CefV8Value> object,
-//	const CefRefPtr<CefV8Value> value,
-//	CefString& exception)
-//{
-//	return true;
-//}
+QCefClient::V8Handler::V8Handler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, QCefClient::EventListenerListMap &eventListenerListMap)
+    : browser_(browser)
+    , frame_(frame)
+    , eventListenerListMap_(eventListenerListMap) {}
 
-//////////////////////////////////////////////////////////////////////////
-
-QCefClient::V8Handler::V8Handler(CefRefPtr<CefBrowser> browser,
-                                 CefRefPtr<CefFrame> frame,
-                                 QCefClient::EventListenerListMap& eventListenerListMap)
-  : browser_(browser)
-  , frame_(frame)
-  , eventListenerListMap_(eventListenerListMap)
-{}
-
-bool
-QCefClient::V8Handler::Execute(const CefString& function,
-                               CefRefPtr<CefV8Value> object,
-                               const CefV8ValueList& arguments,
-                               CefRefPtr<CefV8Value>& retval,
-                               CefString& exception)
-{
+bool QCefClient::V8Handler::Execute(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval, CefString &exception) {
   if (function == QCEF_INVOKEMETHOD)
     ExecuteInvokeMethod(function, object, arguments, retval, exception);
   else if (function == QCEF_ADDEVENTLISTENER)
@@ -47,13 +18,8 @@ QCefClient::V8Handler::Execute(const CefString& function,
   return true;
 }
 
-void
-QCefClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
-                                           CefRefPtr<CefV8Value> object,
-                                           const CefV8ValueList& arguments,
-                                           CefRefPtr<CefV8Value>& retval,
-                                           CefString& exception)
-{
+void QCefClient::V8Handler::ExecuteInvokeMethod(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval,
+                                                CefString &exception) {
   CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
 
   CefRefPtr<CefListValue> args = msg->GetArgumentList();
@@ -83,13 +49,8 @@ QCefClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
   retval = CefV8Value::CreateUndefined();
 }
 
-void
-QCefClient::V8Handler::ExecuteAddEventListener(const CefString& function,
-                                               CefRefPtr<CefV8Value> object,
-                                               const CefV8ValueList& arguments,
-                                               CefRefPtr<CefV8Value>& retval,
-                                               CefString& exception)
-{
+void QCefClient::V8Handler::ExecuteAddEventListener(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval,
+                                                    CefString &exception) {
   bool bRet = false;
 
   if (arguments.size() == 2) {
@@ -105,8 +66,9 @@ QCefClient::V8Handler::ExecuteAddEventListener(const CefString& function,
           EventListenerList eventListenerList;
           eventListenerList.push_back(listener);
           eventListenerListMap_[eventName] = eventListenerList;
-        } else {
-          EventListenerList& eventListenerList = itListenerList->second;
+        }
+        else {
+          EventListenerList &eventListenerList = itListenerList->second;
           // does this listener exist?
           bool found = false;
           for (auto item : eventListenerList) {
@@ -120,23 +82,21 @@ QCefClient::V8Handler::ExecuteAddEventListener(const CefString& function,
             eventListenerList.push_back(listener);
         }
         bRet = true;
-      } else
+      }
+      else
         exception = "Invalid parameters; parameter 2 is expecting a function";
-    } else
+    }
+    else
       exception = "Invalid parameters; parameter 1 is expecting a string";
-  } else
+  }
+  else
     exception = "Invalid parameters; expecting 2 parameters";
 
   retval = CefV8Value::CreateBool(bRet);
 }
 
-void
-QCefClient::V8Handler::ExecuteRemoveEventListener(const CefString& function,
-                                                  CefRefPtr<CefV8Value> object,
-                                                  const CefV8ValueList& arguments,
-                                                  CefRefPtr<CefV8Value>& retval,
-                                                  CefString& exception)
-{
+void QCefClient::V8Handler::ExecuteRemoveEventListener(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval,
+                                                       CefString &exception) {
   bool bRet = false;
 
   if (arguments.size() == 2) {
@@ -149,17 +109,20 @@ QCefClient::V8Handler::ExecuteRemoveEventListener(const CefString& function,
 
         auto itListenerList = eventListenerListMap_.find(eventName);
         if (itListenerList != eventListenerListMap_.end()) {
-          EventListenerList& eventListenerList = itListenerList->second;
+          EventListenerList &eventListenerList = itListenerList->second;
           for (auto itListener = eventListenerList.begin(); itListener != eventListenerList.end(); itListener++) {
             if (itListener->callback_->IsSame(listener.callback_))
               eventListenerList.erase(itListener);
           }
         }
-      } else
+      }
+      else
         exception = "Invalid parameters; parameter 2 is expecting a function";
-    } else
+    }
+    else
       exception = "Invalid parameters; parameter 1 is expecting a string";
-  } else
+  }
+  else
     exception = "Invalid parameters; expecting 2 parameters";
 
   retval = CefV8Value::CreateBool(bRet);
@@ -168,10 +131,9 @@ QCefClient::V8Handler::ExecuteRemoveEventListener(const CefString& function,
 //////////////////////////////////////////////////////////////////////////
 
 QCefClient::QCefClient(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
-  : object_(CefV8Value::CreateObject(nullptr, nullptr))
-  , browser_(browser)
-  , frame_(frame)
-{
+    : object_(CefV8Value::CreateObject(nullptr, nullptr))
+    , browser_(browser)
+    , frame_(frame) {
   // create function handler
   CefRefPtr<V8Handler> handler = new V8Handler(browser_, frame_, eventListenerListMap_);
 
@@ -191,18 +153,12 @@ QCefClient::QCefClient(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
   object_->SetValue(QCEF_REMOVEEVENTLISTENER, funcRemoveEventListener, V8_PROPERTY_ATTRIBUTE_READONLY);
 }
 
-CefRefPtr<CefV8Value>
-QCefClient::GetObject()
-{
-  return object_;
-}
+CefRefPtr<CefV8Value> QCefClient::GetObject() { return object_; }
 
-void
-QCefClient::ExecuteEventListener(const CefString eventName, CefRefPtr<CefDictionaryValue> dict)
-{
+void QCefClient::ExecuteEventListener(const CefString eventName, CefRefPtr<CefDictionaryValue> dict) {
   auto itListenerList = eventListenerListMap_.find(eventName);
   if (itListenerList != eventListenerListMap_.end()) {
-    EventListenerList& eventListenerList = itListenerList->second;
+    EventListenerList &eventListenerList = itListenerList->second;
     for (auto listener : eventListenerList) {
       listener.context_->Enter();
 

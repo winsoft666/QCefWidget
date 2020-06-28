@@ -2,6 +2,8 @@
 #define QCEF_OPENGLWIDGET_H_
 #pragma once
 
+#ifndef QT_NO_OPENGL
+
 #include <memory>
 #include <QtCore/qglobal.h>
 #include <QOpenGLWidget>
@@ -80,6 +82,7 @@ public:
 signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);
+  void urlChanged(bool isMainFrame, const QString &url);
   void loadStart();
   void loadEnd(int httpStatusCode);
   void loadError(int errorCode, const QString &errorMsg, const QString &failedUrl);
@@ -97,5 +100,5 @@ protected:
   std::shared_ptr<QCefWidgetImpl> pImpl_;
   friend QCefDevToolsWnd;
 };
-
+#endif
 #endif // QCEF_OPENGLWIDGET_H_

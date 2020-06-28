@@ -9,13 +9,16 @@ class TransparentCefWnd : public QWidget {
   Q_OBJECT
 
 public:
-  TransparentCefWnd(QWidget *parent = 0);
+  TransparentCefWnd(bool bCefOpenGLWidget, QWidget *parent = 0);
   ~TransparentCefWnd();
+
+  void navigateToUrl(const QString &url);
+  void showDevTools();
+  void closeDevTools();
+protected:
   void mousePressEvent(QMouseEvent *event) override;
   void mouseMoveEvent(QMouseEvent *event) override;
   void mouseReleaseEvent(QMouseEvent *event) override;
-
-protected:
   void setupUi();
 
 private:
@@ -24,6 +27,8 @@ private:
 
   bool leftMousePressed_;
   QPoint beginDragPos_;
+
+  bool bCefOpenGLWidget_;
 };
 
 #endif // TRANSPARENT_WND_H__

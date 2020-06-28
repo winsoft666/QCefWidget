@@ -11,13 +11,15 @@
 #include <include/cef_sandbox_win.h>
 #include "QCefManager.h"
 
-QCefWidget::QCefWidget(QWidget *parent) : QWidget(parent) {
+QCefWidget::QCefWidget(QWidget *parent)
+    : QWidget(parent) {
   pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
 }
 
 QCefWidget::~QCefWidget() {
+  qInfo() << "QCefWidget::~QCefWidget, this: " << this;
   pImpl_.reset();
   QCefManager::getInstance().uninitializeCef();
 }
@@ -107,13 +109,9 @@ QColor QCefWidget::browserBackgroundColor() const {
   return pImpl_->browserBackgroundColor();
 }
 
-void QCefWidget::showDevTools() {
-  QCefManager::getInstance().showDevTools(this);
-}
+void QCefWidget::showDevTools() { QCefManager::getInstance().showDevTools(this); }
 
-void QCefWidget::closeDevTools() {
-  QCefManager::getInstance().closeDevTools(this);
-}
+void QCefWidget::closeDevTools() { QCefManager::getInstance().closeDevTools(this); }
 
 bool QCefWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
   Q_ASSERT(pImpl_);

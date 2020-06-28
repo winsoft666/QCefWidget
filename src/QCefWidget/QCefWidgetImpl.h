@@ -46,8 +46,9 @@ public:
   bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 
   bool paintEventHandle(QPaintEvent *event);
+#ifndef QT_NO_OPENGL
   bool openGLPaintEventHandle(QPaintEvent *event);
-
+#endif
   void setVisible(bool visible);
 
   float deviceScaleFactor();

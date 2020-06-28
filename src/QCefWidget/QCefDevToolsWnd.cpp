@@ -2,6 +2,7 @@
 #include "QCefWidgetImpl.h"
 #include "Include/QCefWidget.h"
 #include "QCefManager.h"
+#include <QDebug>
 
 QCefDevToolsWnd::QCefDevToolsWnd(CefRefPtr<CefBrowser> targetBrowser, QWidget *parent /*= nullptr*/)
     : cefWidget_(nullptr)
@@ -9,14 +10,16 @@ QCefDevToolsWnd::QCefDevToolsWnd(CefRefPtr<CefBrowser> targetBrowser, QWidget *p
   setAttribute(Qt::WA_DeleteOnClose, true);
   setupUi();
 
-  cefWidget_->setStyleSheet(QString("QWidget{background-color: rgba(0,255,0,1);}"));
+  cefWidget_->setStyleSheet(QString("QWidget {background-color: rgba(255,255,255,1);}"));
 
   if (targetBrowser_) {
+    QString str = QString::fromStdWString(targetBrowser_->GetMainFrame()->GetURL().ToWString());
+    setWindowTitle(QString("[DevTools] %1").arg(str));
     cefWidget_->pImpl_->createDevTools(targetBrowser_);
   }
 }
 
-QCefDevToolsWnd::~QCefDevToolsWnd() {  }
+QCefDevToolsWnd::~QCefDevToolsWnd() { qInfo() << "QCefDevToolsWnd::~QCefDevToolsWnd, this: " << this; }
 
 void QCefDevToolsWnd::closeEvent(QCloseEvent *event) {
   QCefManager::getInstance().devToolsClosedNotify(this);
@@ -25,7 +28,6 @@ void QCefDevToolsWnd::closeEvent(QCloseEvent *event) {
 
 void QCefDevToolsWnd::setupUi() {
   this->setObjectName("QCefWidget_DevToolsWnd");
-  this->setWindowTitle("DevTools");
   cefWidget_ = new QCefWidget();
   Q_ASSERT(cefWidget_);
   if (cefWidget_) {
@@ -34,6 +36,6 @@ void QCefDevToolsWnd::setupUi() {
   }
 
   this->setCentralWidget(cefWidget_);
-  resize(800, 600);
+  resize(1024, 600);
   this->show();
 }

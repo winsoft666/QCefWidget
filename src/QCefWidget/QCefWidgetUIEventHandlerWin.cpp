@@ -8,9 +8,7 @@ int LogicalToDevice(int value, float device_scale_factor) {
 }
 
 CefRect LogicalToDevice(const CefRect &value, float device_scale_factor) {
-  return CefRect(LogicalToDevice(value.x, device_scale_factor),
-                 LogicalToDevice(value.y, device_scale_factor),
-                 LogicalToDevice(value.width, device_scale_factor),
+  return CefRect(LogicalToDevice(value.x, device_scale_factor), LogicalToDevice(value.y, device_scale_factor), LogicalToDevice(value.width, device_scale_factor),
                  LogicalToDevice(value.height, device_scale_factor));
 }
 
@@ -170,9 +168,7 @@ void QCefWidgetUIEventHandlerWin::OnIMEComposition(UINT message, WPARAM wParam, 
     int composition_start = 0;
 
     if (ime_handler_->GetComposition(lParam, cTextStr, underlines, composition_start)) {
-      host->ImeSetComposition(
-          cTextStr, underlines, CefRange(UINT32_MAX, UINT32_MAX),
-          CefRange(composition_start, static_cast<int>(composition_start + cTextStr.length())));
+      host->ImeSetComposition(cTextStr, underlines, CefRange(UINT32_MAX, UINT32_MAX), CefRange(composition_start, static_cast<int>(composition_start + cTextStr.length())));
       ime_handler_->UpdateCaretPosition(composition_start - 1);
     }
     else {
@@ -236,8 +232,7 @@ inline BOOL IsWindows_8_Or_Newer() {
 // events. These should be ignored.
 static bool IsMouseEventFromTouch(UINT message) {
 #define MOUSEEVENTF_FROMTOUCH 0xFF515700
-  return (message >= WM_MOUSEFIRST) && (message <= WM_MOUSELAST) &&
-         (GetMessageExtraInfo() & MOUSEEVENTF_FROMTOUCH) == MOUSEEVENTF_FROMTOUCH;
+  return (message >= WM_MOUSEFIRST) && (message <= WM_MOUSELAST) && (GetMessageExtraInfo() & MOUSEEVENTF_FROMTOUCH) == MOUSEEVENTF_FROMTOUCH;
 }
 
 void QCefWidgetUIEventHandlerWin::OnMouseEvent(UINT message, WPARAM wParam, LPARAM lParam) {
@@ -251,13 +246,11 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(UINT message, WPARAM wParam, LPAR
   LONG currentTime = 0;
   bool cancelPreviousClick = false;
 
-  if (message == WM_LBUTTONDOWN || message == WM_RBUTTONDOWN || message == WM_MBUTTONDOWN ||
-      message == WM_MOUSEMOVE || message == WM_MOUSELEAVE) {
+  if (message == WM_LBUTTONDOWN || message == WM_RBUTTONDOWN || message == WM_MBUTTONDOWN || message == WM_MOUSEMOVE || message == WM_MOUSELEAVE) {
     currentTime = GetMessageTime();
     int x = GET_X_LPARAM(lParam);
     int y = GET_Y_LPARAM(lParam);
-    cancelPreviousClick = (abs(last_click_x_ - x) > (GetSystemMetrics(SM_CXDOUBLECLK) / 2)) ||
-                          (abs(last_click_y_ - y) > (GetSystemMetrics(SM_CYDOUBLECLK) / 2)) ||
+    cancelPreviousClick = (abs(last_click_x_ - x) > (GetSystemMetrics(SM_CXDOUBLECLK) / 2)) || (abs(last_click_y_ - y) > (GetSystemMetrics(SM_CYDOUBLECLK) / 2)) ||
                           ((currentTime - last_click_time_) > GetDoubleClickTime());
     if (cancelPreviousClick && (message == WM_MOUSEMOVE || message == WM_MOUSELEAVE)) {
       last_click_count_ = 0;
@@ -281,9 +274,7 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(UINT message, WPARAM wParam, LPAR
       mouse_rotation_ = true;
     }
     else {
-      CefBrowserHost::MouseButtonType btnType =
-          (message == WM_LBUTTONDOWN ? MBT_LEFT
-                                     : (message == WM_RBUTTONDOWN ? MBT_RIGHT : MBT_MIDDLE));
+      CefBrowserHost::MouseButtonType btnType = (message == WM_LBUTTONDOWN ? MBT_LEFT : (message == WM_RBUTTONDOWN ? MBT_RIGHT : MBT_MIDDLE));
       if (!cancelPreviousClick && (btnType == last_click_button_)) {
         ++last_click_count_;
       }
@@ -324,8 +315,7 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(UINT message, WPARAM wParam, LPAR
       }
       int x = GET_X_LPARAM(lParam);
       int y = GET_Y_LPARAM(lParam);
-      CefBrowserHost::MouseButtonType btnType =
-          (message == WM_LBUTTONUP ? MBT_LEFT : (message == WM_RBUTTONUP ? MBT_RIGHT : MBT_MIDDLE));
+      CefBrowserHost::MouseButtonType btnType = (message == WM_LBUTTONUP ? MBT_LEFT : (message == WM_RBUTTONUP ? MBT_RIGHT : MBT_MIDDLE));
       CefMouseEvent mouse_event;
       mouse_event.x = x;
       mouse_event.y = y;
@@ -412,8 +402,7 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(UINT message, WPARAM wParam, LPAR
     //ApplyPopupOffset(mouse_event.x, mouse_event.y);
     DeviceToLogical(mouse_event, deviceScaleFactor_);
     mouse_event.modifiers = GetCefMouseModifiers(wParam);
-    host->SendMouseWheelEvent(mouse_event, IsKeyDown(VK_SHIFT) ? delta : 0,
-                              !IsKeyDown(VK_SHIFT) ? delta : 0);
+    host->SendMouseWheelEvent(mouse_event, IsKeyDown(VK_SHIFT) ? delta : 0, !IsKeyDown(VK_SHIFT) ? delta : 0);
     break;
   }
 }
@@ -429,8 +418,7 @@ void QCefWidgetUIEventHandlerWin::OnTouchEvent(UINT message, WPARAM wParam, LPAR
   if (num_points < 0 || num_points > 16)
     return;
   std::unique_ptr<TOUCHINPUT[]> input(new TOUCHINPUT[num_points]);
-  if (GetTouchInputInfo(reinterpret_cast<HTOUCHINPUT>(lParam), num_points, input.get(),
-                        sizeof(TOUCHINPUT))) {
+  if (GetTouchInputInfo(reinterpret_cast<HTOUCHINPUT>(lParam), num_points, input.get(), sizeof(TOUCHINPUT))) {
     CefTouchEvent touch_event;
     for (int i = 0; i < num_points; ++i) {
       POINT point;
@@ -527,9 +515,7 @@ void QCefWidgetUIEventHandlerWin::OnCaptureLostEvent(UINT message, WPARAM wParam
     host->SendCaptureLostEvent();
 }
 
-void QCefWidgetUIEventHandlerWin::OnImeCompositionRangeChanged(
-    CefRefPtr<CefBrowser> browser, const CefRange &selection_range,
-    const CefRenderHandler::RectList &character_bounds) {
+void QCefWidgetUIEventHandlerWin::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds) {
   if (ime_handler_) {
     // Convert from view coordinates to device coordinates.
     CefRenderHandler::RectList device_bounds;

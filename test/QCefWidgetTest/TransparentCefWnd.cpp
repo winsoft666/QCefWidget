@@ -6,26 +6,46 @@
 
 #pragma execution_character_set("utf-8")
 
-TransparentCefWnd::TransparentCefWnd(QWidget *parent)
+TransparentCefWnd::TransparentCefWnd(bool bCefOpenGLWidget, QWidget *parent)
     : QWidget(parent)
+    , bCefOpenGLWidget_(bCefOpenGLWidget)
     , cefWidget_(nullptr)
     , cefOpenGLWidget_(nullptr)
     , leftMousePressed_(false) {
 
   setupUi();
+}
 
-  if (cefWidget_) {
-    cefWidget_->setBrowserBackgroundColor(QColor(0, 0, 0, 0));
-    cefWidget_->navigateToUrl(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html");
+TransparentCefWnd::~TransparentCefWnd() {
+  qInfo() << "TransparentCefWnd::~TransparentCefWnd, this: " << this;
+}
+
+void TransparentCefWnd::navigateToUrl(const QString &url) {
+  if (bCefOpenGLWidget_) {
+    cefOpenGLWidget_->navigateToUrl(url);
   }
-
-  if (cefOpenGLWidget_) {
-    cefOpenGLWidget_->setBrowserBackgroundColor(QColor(0, 0, 0, 0));
-    cefOpenGLWidget_->navigateToUrl(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html");
+  else {
+    cefWidget_->navigateToUrl(url);
   }
 }
 
-TransparentCefWnd::~TransparentCefWnd() {}
+void TransparentCefWnd::showDevTools() {
+  if (bCefOpenGLWidget_) {
+    cefOpenGLWidget_->showDevTools();
+  }
+  else {
+    cefWidget_->showDevTools();
+  }
+}
+
+void TransparentCefWnd::closeDevTools() {
+  if (bCefOpenGLWidget_) {
+    cefOpenGLWidget_->closeDevTools();
+  }
+  else {
+    cefWidget_->closeDevTools();
+  }
+}
 
 void TransparentCefWnd::mousePressEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
@@ -58,23 +78,22 @@ void TransparentCefWnd::setupUi() {
   setWindowFlags(Qt::FramelessWindowHint);
   setMouseTracking(true);
 
-  cefWidget_ = new QCefWidget();
-  if(cefWidget_)
-    cefWidget_->setObjectName("cefView");
-
-  cefOpenGLWidget_ = new QCefOpenGLWidget();
-  if(cefOpenGLWidget_)
-    cefOpenGLWidget_->setObjectName("cefOpenGLWidget");
-
   QHBoxLayout *hLayout = new QHBoxLayout();
-  hLayout->setSpacing(30);
-  if(cefWidget_)
-    hLayout->addWidget(cefWidget_);
-  if(cefOpenGLWidget_)
+
+  if (bCefOpenGLWidget_) {
+    cefOpenGLWidget_ = new QCefOpenGLWidget();
+    cefOpenGLWidget_->setObjectName("cefOpenGLWidget");
+    cefOpenGLWidget_->setBrowserBackgroundColor(QColor(0, 0, 0, 0));
     hLayout->addWidget(cefOpenGLWidget_);
+  }
+  else {
+    cefWidget_ = new QCefWidget();
+    cefWidget_->setObjectName("cefView");
+    cefWidget_->setBrowserBackgroundColor(QColor(0, 0, 0, 0));
+    hLayout->addWidget(cefWidget_);
+  }
 
   this->setLayout(hLayout);
 
-  this->setFixedWidth(1000);
-  this->setFixedHeight(400);
+  resize(800, 800);
 }

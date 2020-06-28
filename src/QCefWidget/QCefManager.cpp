@@ -2,6 +2,7 @@
 #include "QCefManager.h"
 #include "QCefGlobalSetting.h"
 #include <QWidget>
+#include <QDebug>
 #include "QCefDevToolsWnd.h"
 
 QCefManager::QCefManager()
@@ -72,13 +73,13 @@ void QCefManager::uninitializeCef() {
   initialized_ = false;
 }
 
-QWidget* QCefManager::addBrowser(QWidget *pCefWidget, CefRefPtr<CefBrowser> browser) {
+QWidget *QCefManager::addBrowser(QWidget *pCefWidget, CefRefPtr<CefBrowser> browser) {
   std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
   Q_ASSERT(pCefWidget && browser);
   if (!pCefWidget || !browser)
     return nullptr;
 
-  QWidget* pTopWidget = getTopWidget(pCefWidget);
+  QWidget *pTopWidget = getTopWidget(pCefWidget);
   Q_ASSERT(pTopWidget);
 
   if (!pTopWidget)
@@ -97,8 +98,10 @@ QWidget* QCefManager::addBrowser(QWidget *pCefWidget, CefRefPtr<CefBrowser> brow
     }
   }
 #if 1
-  if (!cefInfo.cefWidgetTopWidgetPrevWndProc)
+  if (!cefInfo.cefWidgetTopWidgetPrevWndProc) {
     cefInfo.cefWidgetTopWidgetPrevWndProc = hookWidget(cefInfo.cefWidgetTopWidgetHwnd);
+    cefInfo.cefWidgetTopWidget->installEventFilter(this);
+  }
   Q_ASSERT(cefInfo.cefWidgetTopWidgetPrevWndProc);
 #endif
   cefs_.push_back(cefInfo);
@@ -106,7 +109,7 @@ QWidget* QCefManager::addBrowser(QWidget *pCefWidget, CefRefPtr<CefBrowser> brow
   return pTopWidget;
 }
 
-void QCefManager::removeBrowser(QWidget* pCefWidget, CefRefPtr<CefBrowser> browser) {
+void QCefManager::removeBrowser(QWidget *pCefWidget, CefRefPtr<CefBrowser> browser) {
   Q_ASSERT(pCefWidget && browser);
   if (!pCefWidget || !browser)
     return;
@@ -130,7 +133,19 @@ void QCefManager::closeAllBrowsers(HWND hTopWidget) {
 
   for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
     if (it->cefWidgetTopWidgetHwnd == hTopWidget && it->browser->GetHost()) {
+      it->browser->GetHost()->CloseBrowser(false);
+    }
+  }
+}
 
+void QCefManager::closeAllBrowsers(QWidget *pTopLevelWidget) {
+  std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
+  Q_ASSERT(pTopLevelWidget);
+  if (!pTopLevelWidget)
+    return;
+
+  for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
+    if (it->cefWidgetTopWidget == pTopLevelWidget && it->browser->GetHost()) {
       it->browser->GetHost()->CloseBrowser(false);
     }
   }
@@ -161,10 +176,14 @@ void QCefManager::showDevTools(QWidget *pCefWidget) {
   for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
     if (it->cefWidget == pCefWidget) {
       if (it->devToolsWnd) {
-        it->devToolsWnd->show();
+        if (it->devToolsWnd->isMinimized())
+          it->devToolsWnd->showNormal();
+        else
+          it->devToolsWnd->show();
+        it->devToolsWnd->activateWindow();
         return;
       }
-      
+
       it->devToolsWnd = new QCefDevToolsWnd(it->browser, nullptr);
       break;
     }
@@ -241,6 +260,7 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     return 0;
 
   if (uMsg == WM_CLOSE) {
+    qInfo() << "QCefManager::newWndProc WM_CLOSE, hwnd: " << (int)hWnd;
     pThis->closeAllBrowsers(hWnd);
     ::SetWindowLongPtr(hWnd, GWLP_USERDATA, 0L);
     SetWindowLongPtr(hWnd, GWL_WNDPROC, (LONG_PTR)preWndProc);
@@ -249,5 +269,23 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
   return ::CallWindowProc(preWndProc, hWnd, uMsg, wParam, lParam);
 }
-#endif
 
+bool QCefManager::eventFilter(QObject *obj, QEvent *event) {
+  if (event->type() == QEvent::Close) {
+    qInfo() << "QCefManager::eventFilter Close event, obj: " << obj;
+    std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
+    for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
+      if (it->cefWidgetTopWidget == obj) {
+        this->closeAllBrowsers(it->cefWidgetTopWidget);
+        it->cefWidgetTopWidget->removeEventFilter(this);
+        event->ignore();
+        return true; // filter
+      }
+    }
+  }
+
+  return QObject::eventFilter(obj, event);
+  ;
+}
+
+#endif

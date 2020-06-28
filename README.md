@@ -4,11 +4,17 @@ The QCefWidget project provide a widget that is used to view webpage. QCefWidget
 
 Support:
 
-✅ Show background transparent webpage;
+✅ Show background transparent webpage in irregularity window;
 
 ✅ Javascript and Qt interaction;
 
-✅ OpenGL graphics acceleratio;
+✅ OpenGL graphics acceleration;
+
+✅ Third-party input method software;
+
+✅ Perfect exit app without any CEF assert in debug/release mode;
+
+✅ Separate CEF rendering process and plugin process;
 
 ---
 
@@ -32,10 +38,8 @@ Support:
 
 5. Using CMake to build the project, for example:
     ``` bat
-    REM create the build folder 
     mkdir build && cd build
-
-    REM generate and build the project
     cmake .. && cmake --build .
     ```
+
 > Thanks to [QCefView] (https://github.com/tishion/QCefView) project, `QCefWidget` great reference for the project in terms of engineering structure.

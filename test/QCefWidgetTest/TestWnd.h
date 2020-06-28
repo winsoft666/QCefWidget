@@ -6,6 +6,7 @@
 
 class QCefWidget;
 class QCefOpenGLWidget;
+class TransparentCefWnd;
 class TestWnd : public QMainWindow {
   Q_OBJECT
 
@@ -18,31 +19,39 @@ public:
   void resizeEvent(QResizeEvent *event) override;
 protected:
   void setupUi();
+  void bindUiEvent();
 private slots:
-  void onShowTransparentCefWnd();
   void onTriggerTestEvent();
-  void onPushButtonApplyClicked();
-  void onPushButtonOpenDevToolsClicked();
 private:
-  QWidget* centralWidget_;
+  QWidget *widgetTop_;
+
+  QCheckBox *checkBoxOpacityCefWidget_;
+  QCheckBox *checkBoxOpacityCefOpenGLWidget_;
+  QCheckBox *checkBoxTransparentCefWidget_;
+  QCheckBox *checkBoxTransparentCefOpenGLWidget_;
+
   QPushButton* pushButtonBack_;
   QPushButton* pushButtonForward_;
   QPushButton* pushButtonReload_;
-  QPushButton* pushButtonTest_;
-  QPushButton* pushButtonApply_;
   QPushButton* pushButtonOpenDevTools_;
-  QMenu* menuTest_;
-  QAction* actionShowTransparentCef_;
-  QAction* actionTriggerTestEvent_;
+  QPushButton* pushButtonCloseDevTools_;
+  QPushButton* pushButtonExit_;
   QComboBox* comboBoxUrl_;
+
+
+
+  QAction* actionTriggerTestEvent_;
+
   QPlainTextEdit* plainTextEditLog_;
+
   QCefWidget* cefWidget_;
   QCefOpenGLWidget* cefOpenGLWidget_;
-  QSplitter* splitterMain_;
   QSplitter* splitterCef_;
-  QWidget* widgetBottom_;
-  QCheckBox* checkboxHookTopLevelCloseMsg_;
-  QCheckBox* checkboxIgnoreTopLevelCloseMsg_;
+
+  QSplitter* splitterMain_;
+
+  TransparentCefWnd *transWidgetCefWnd_;
+  TransparentCefWnd *transOpenGLWidgetCefWnd_;
 };
 
 #endif // TEST_WND_H__

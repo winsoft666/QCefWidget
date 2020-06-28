@@ -13,8 +13,7 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type
                                                       CefRefPtr<CefCommandLine> command_line) {
   // Chromium has removed --disable-surfaces as per
   // https://codereview.chromium.org/1603133003 so the workaround specified
-  // here is no longer applicable
-  // command_line->AppendSwitch("disable-surfaces");
+  // here is no longer applicable command_line->AppendSwitch("disable-surfaces");
 
   command_line->AppendSwitch("no-proxy-server");
   command_line->AppendSwitch("disable-extensions");

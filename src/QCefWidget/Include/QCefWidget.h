@@ -80,6 +80,7 @@ public:
 signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);
+  void urlChanged(bool isMainFrame, const QString &url);
   void loadStart();
   void loadEnd(int httpStatusCode);
   void loadError(int errorCode, const QString &errorMsg, const QString &failedUrl);
