@@ -3,55 +3,57 @@
   <meta name="description" content="Test Page" /> 
   <script>
         function onEventTest(event) {
-            var kvlist = [];
-            for (var key in event) {
-                kvlist.push(key + ":" + event[key])
-            }
-            var msg = kvlist.join('\r\n');
-            document.getElementById("eventMessage").value += msg;
+          var kvlist = [];
+          for (var key in event) {
+              kvlist.push(key + ":" + event[key])
+          }
+          var msg = kvlist.join('\r\n');
+          document.getElementById("eventMessage").value += msg;
 
-            document.getElementById("eventMessage").value += "\r\n\r\n";
+          document.getElementById("eventMessage").value += "\r\n\r\n";
         }
 
         function onLoad() {
-            if (typeof(QCef) == 'undefined') {
-                return;
-            }
+          if (typeof(QCefWidget) == 'undefined') {
+            document.getElementById("eventMessage").value += "Warning: typeof(QCefWidget) != 'undefined'";
+            return;
+          }
 
-            QCef.addEventListener("eventTest", onEventTest)
+          QCefWidget.addEventListener("eventTest", onEventTest)
         }
 
         function onInvokeMethodClicked() {
-            QCef.invoke("TestMethod", 1, false, "arg3");
+          QCefWidget.invoke("TestMethod", 1, false, "arg3");
         }
 
         function onDragAreaMouseDown() {
-            QCef.invoke("onDragAreaMouseDown");
+          QCefWidget.invoke("onDragAreaMouseDown");
         }
 
         function onQCefQueryClicked() {
-            var query = {
-                request: document.getElementById("message").value,
-                onSuccess: function(response) {
-                    alert(response);
-                },
-                onFailure: function(error_code, error_message) {
-                    alert(error_message);
-                }
+          var query = {
+            request: document.getElementById("message").value,
+            onSuccess: function(response) {
+                alert("onSuccess: " + response);
+            },
+            onFailure: function(error_code, error_message) {
+                alert("onFailure: " + error_code + ", " + error_message);
             }
-            window.QCefQuery(query);
+          }
+          window.QCefWidgetQuery(query);
         }
 
         function OpenPopup() {
-            var popup = window.open("", "PopupWindow", "width=800, height=600");
-            popup.document.write("<p>This is popup window.</p>");
+          var popup = window.open("", "PopupWindow", "width=800, height=600");
+          popup.document.write("<p>This is popup window.</p>");
         }
     </script> 
   <style>
-dt{
-font-weight: bold;
-    font-size: 20px;
-}
+    dt{
+      font-weight: bold;
+      font-size: 20px;
+    }
+    
     dd{
     display: flex;
     flex-direction: column;
@@ -69,16 +71,6 @@ font-weight: bold;
     </style>
  </head>  
  <body onload="onLoad()" id="main"> 
-  <input TYPE="TEXT" NAME="TT" ID="KK">
-  <select NAME="TEMP" οnchange="KK.innerText =this.options[this.selectedIndex].value">
-    <option value="AAAAAA">AAAAAA</option>
-    <option value="BBBBBB">BBBBBB</option>
-    <option value="CCCCCC">CCCCCC</option>
-    <option value="DDDDDD">DDDDDD</option>
-    <option value="EEEEEE">EEEEEE</option>
-    <option value="FFFFFF">FFFFFF</option>
-  </select>
-
   <dl> 
    <dt>
     Javascript and Qt interaction
@@ -92,9 +84,23 @@ font-weight: bold;
    </dd> 
    <dd> 
     <span>QCefQuery Test:</span> 
-    <textarea id="message" style="width:320px; height:120px;">this message will be processed by native code.</textarea> 
+    <textarea id="message" style="width:320px; height:120px;">this is a query request message from javascript.</textarea> 
     <input type="button" value="Query" onclick="onQCefQueryClicked()" /> 
    </dd> 
+   
+   <dt>
+    HTML Controls
+   </dt>
+   <dd>
+    <select NAME="TEMP" οnchange="KK.innerText =this.options[this.selectedIndex].value">
+      <option value="AAAAAA">AAAAAA</option>
+      <option value="BBBBBB">BBBBBB</option>
+      <option value="CCCCCC">CCCCCC</option>
+      <option value="DDDDDD">DDDDDD</option>
+      <option value="EEEEEE">EEEEEE</option>
+      <option value="FFFFFF">FFFFFF</option>
+    </select>
+   </dd>
   </dl>  
  </body>
 </html>

@@ -1,3 +1,5 @@
+#ifndef QCEF_BROWSER_HANDLER_H_
+#define QCEF_BROWSER_HANDLER_H_
 #pragma once
 #include <map>
 #include <mutex>
@@ -29,3 +31,4 @@ private:
 private:
   IMPLEMENT_REFCOUNTING(QCefQueryHandler);
 };
+#endif // !QCEF_BROWSER_HANDLER_H_

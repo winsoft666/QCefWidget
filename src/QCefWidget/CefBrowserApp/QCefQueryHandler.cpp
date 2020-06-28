@@ -7,12 +7,9 @@
 QCefQueryHandler::QCefQueryHandler(QCefWidgetImpl *pCefViewImpl)
     : pCefImpl_(pCefViewImpl) {}
 
-QCefQueryHandler::~QCefQueryHandler() {
-}
+QCefQueryHandler::~QCefQueryHandler() {}
 
-bool QCefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                              int64 query_id, const CefString &request, bool persistent,
-                              CefRefPtr<Callback> callback) {
+bool QCefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id, const CefString &request, bool persistent, CefRefPtr<Callback> callback) {
   if (pCefImpl_ && pCefImpl_->getWidget()) {
     mtxCallbackMap_.lock();
     mapCallback_[query_id] = callback;
@@ -38,8 +35,7 @@ bool QCefQueryHandler::OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame
   return false;
 }
 
-void QCefQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                      int64 query_id) {
+void QCefQueryHandler::OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id) {
   mtxCallbackMap_.lock();
   auto it = mapCallback_.find(query_id);
   if (it != mapCallback_.end())

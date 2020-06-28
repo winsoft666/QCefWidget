@@ -105,11 +105,6 @@ void TestWnd::setupUi() {
   hlTargetCefWidget->addWidget(checkBoxTransparentCefOpenGLWidget_);
   hlTargetCefWidget->addStretch();
 
-  actionTriggerTestEvent_ = new QAction();
-  actionTriggerTestEvent_->setShortcut(QKeySequence("Ctrl+E"));
-  actionTriggerTestEvent_->setText("Trigger Test Event");
-  connect(actionTriggerTestEvent_, &QAction::triggered, this, &TestWnd::onTriggerTestEvent);
-
   pushButtonBack_ = new QPushButton("Back");
   pushButtonBack_->setObjectName("pushButtonBack");
   pushButtonBack_->setCursor(QCursor(Qt::PointingHandCursor));
@@ -121,6 +116,14 @@ void TestWnd::setupUi() {
   pushButtonReload_ = new QPushButton("Reload");
   pushButtonReload_->setObjectName("pushButtonReload");
   pushButtonReload_->setCursor(QCursor(Qt::PointingHandCursor));
+
+  pushButtonTriggerAnEvent_ = new QPushButton("Trigger An Event");
+  pushButtonTriggerAnEvent_->setObjectName("pushButtonTriggerAnEvent");
+  pushButtonTriggerAnEvent_->setCursor(QCursor(Qt::PointingHandCursor));
+
+  pushButtonTrigger100Event_ = new QPushButton("Trigger 100 Event");
+  pushButtonTrigger100Event_->setObjectName("pushButtonTrigger100Event");
+  pushButtonTrigger100Event_->setCursor(QCursor(Qt::PointingHandCursor));
 
   pushButtonOpenDevTools_ = new QPushButton("Open DevTools");
   pushButtonOpenDevTools_->setCursor(QCursor(Qt::PointingHandCursor));
@@ -149,6 +152,8 @@ void TestWnd::setupUi() {
   hlFunction->addWidget(pushButtonBack_);
   hlFunction->addWidget(pushButtonForward_);
   hlFunction->addWidget(pushButtonReload_);
+  hlFunction->addWidget(pushButtonTriggerAnEvent_);
+  hlFunction->addWidget(pushButtonTrigger100Event_);
   hlFunction->addWidget(pushButtonOpenDevTools_);
   hlFunction->addWidget(pushButtonCloseDevTools_);
   hlFunction->addStretch();
@@ -161,7 +166,6 @@ void TestWnd::setupUi() {
 
   widgetTop_ = new QWidget();
   widgetTop_->setLayout(vlTop);
-
 #pragma endregion
 
 #pragma region CEF
@@ -184,7 +188,6 @@ void TestWnd::setupUi() {
     splitterCef_->addWidget(cefWidget_);
   if (cefOpenGLWidget_)
     splitterCef_->addWidget(cefOpenGLWidget_);
-
 #pragma endregion
 
 #pragma region Bottom
@@ -272,6 +275,47 @@ void TestWnd::bindUiEvent() {
     }
   });
 
+  connect(pushButtonTriggerAnEvent_, &QPushButton::clicked, [this]() {
+    unsigned int random_index = time(nullptr);
+    QCefEvent event(QString("TestEvent%1").arg(random_index));
+    event.setStringProperty("StrProp1", QString("String_%1").arg(random_index));
+    event.setStringProperty("StrProp2", QString("String_%1").arg(random_index));
+    event.setIntProperty("IntProp1", 1000 + random_index);
+    event.setIntProperty("IntProp2", 1000 + random_index);
+    event.setDoubleProperty("DoubleProp1", 3.1415926f + (double)random_index);
+    event.setDoubleProperty("DoubleProp2", 3.1415926f + (double)random_index);
+    event.setBoolProperty("BoolProp1", random_index % 2 == 0);
+    event.setBoolProperty("BoolProp2", random_index % 2 == 0);
+
+    if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_) {
+      cefWidget_->triggerEvent("eventTest", event);
+    }
+
+    if (checkBoxOpacityCefOpenGLWidget_->isChecked() && cefOpenGLWidget_) {
+      cefOpenGLWidget_->triggerEvent("eventTest", event);
+    }
+  });
+
+  connect(pushButtonTrigger100Event_, &QPushButton::clicked, [this]() {
+    unsigned int base_index = 1;
+    for (int i = 0; i < 100; i++) {
+      unsigned int index = base_index + i;
+      QCefEvent event(QString("TestEvent%1").arg(index));
+      event.setStringProperty("StrProp", QString("String_%1").arg(index));
+      event.setIntProperty("IntProp", 1000 + index);
+      event.setDoubleProperty("DoubleProp", 3.1415926f + (double)index);
+      event.setBoolProperty("BoolProp", index % 2 == 0);
+
+      if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_) {
+        cefWidget_->triggerEvent("eventTest", event);
+      }
+
+      if (checkBoxOpacityCefOpenGLWidget_->isChecked() && cefOpenGLWidget_) {
+        cefOpenGLWidget_->triggerEvent("eventTest", event);
+      }
+    }
+  });
+
   connect(pushButtonOpenDevTools_, &QPushButton::clicked, this, [this]() {
     if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_) {
       cefWidget_->showDevTools();
@@ -304,34 +348,23 @@ void TestWnd::bindUiEvent() {
 
   connect(pushButtonExit_, &QPushButton::clicked, this, [this]() { this->close(); });
 
-  connect(
-      cefWidget_, &QCefWidget::loadingStateChanged, this,
-      [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {
-        plainTextEditLog_->appendPlainText(QString("QCefWidget isLoadingBrowser: %1, canGoBack: %2, canGoForward: %3").arg(isLoadingBrowser).arg(canGoBack).arg(canGoForward));
-      },
-      Qt::QueuedConnection);
+  connect(cefWidget_, &QCefWidget::loadingStateChanged, this, [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {
+    plainTextEditLog_->appendPlainText(QString("[QCefWidget] isLoadingBrowser: %1, canGoBack: %2, canGoForward: %3\r\n").arg(isLoadingBrowser).arg(canGoBack).arg(canGoForward));
+  });
 
-  connect(
-      cefOpenGLWidget_, &QCefOpenGLWidget::loadingStateChanged, this,
-      [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {
-        plainTextEditLog_->appendPlainText(
-            QString("QCefOpenGLWidget isLoadingBrowser: %1, canGoBack: %2, canGoForward: %3").arg(isLoadingBrowser).arg(canGoBack).arg(canGoForward));
-      },
-      Qt::QueuedConnection);
+  connect(cefOpenGLWidget_, &QCefOpenGLWidget::loadingStateChanged, this, [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {
+    plainTextEditLog_->appendPlainText(
+        QString("[QCefOpenGLWidget] isLoadingBrowser: %1, canGoBack: %2, canGoForward: %3\r\n").arg(isLoadingBrowser).arg(canGoBack).arg(canGoForward));
+  });
 
-  connect(
-      cefWidget_, &QCefWidget::invokeMethodNotify, this,
-      [this](int browserId, int frameId, const QString &method, const QVariantList &arguments) {
-        QString str = QString("[InvokeMethodNotify]\r\nbrowserId: %1\r\nframeId: %2\r\nmethod: %3\r\n").arg(browserId).arg(frameId).arg(method);
+  connect(cefWidget_, &QCefWidget::invokeMethodNotify, this, &TestWnd::onInvokeMethodNotify, Qt::QueuedConnection);
 
-        plainTextEditLog_->appendPlainText(str);
-      },
-      Qt::QueuedConnection);
+  connect(cefOpenGLWidget_, &QCefOpenGLWidget::invokeMethodNotify, this, &TestWnd::onInvokeMethodNotify, Qt::QueuedConnection);
 
   connect(
       cefWidget_, &QCefWidget::cefUrlRequest, this,
       [this](const QString &url) {
-        QString str = QString("[CefUrlRequest]\r\nurl: %1\r\n").arg(url);
+        QString str = QString("[CefUrlRequest] url: %1\r\n").arg(url);
 
         plainTextEditLog_->appendPlainText(str);
       },
@@ -340,45 +373,44 @@ void TestWnd::bindUiEvent() {
   connect(
       cefWidget_, &QCefWidget::cefQueryRequest, this,
       [this](const QCefQuery &query) {
-        QString str = QString("[CefQueryRequest]\r\nid: %1\r\nreqeust: %2\r\nresponse: %3\r\nresult: %4\r\nerror: %5\r\n")
+        QString str = QString("[QCefWidget CefQueryRequest] id: %1, reqeust: %2\r\n")
                           .arg(query.id())
-                          .arg(query.reqeust())
-                          .arg(query.response())
-                          .arg(query.result())
-                          .arg(query.error());
-
+                          .arg(query.reqeust());
         plainTextEditLog_->appendPlainText(str);
-      },
-      Qt::QueuedConnection);
 
-  connect(
-      cefWidget_, &QCefWidget::titleChanged, this, [this](QString title) { plainTextEditLog_->appendPlainText(QString("QCefWidget titleChanged: %1").arg(title)); },
-      Qt::QueuedConnection);
+        QCefQuery rsp = query;
+        rsp.setResponseResult(true, "this is a query response message from c++.", 0);
+        cefWidget_->responseCefQuery(rsp);
+      });
 
-  connect(
-      cefWidget_, &QCefWidget::titleChanged, this, [this](QString title) { plainTextEditLog_->appendPlainText(QString("QCefOpenGLWidget titleChanged: %1").arg(title)); },
-      Qt::QueuedConnection);
+  connect(cefOpenGLWidget_, &QCefOpenGLWidget::cefQueryRequest, this, [this](const QCefQuery &query) {
+    QString str = QString("[QCefOpenGLWidget CefQueryRequest] id: %1, reqeust: %2\r\n").arg(query.id()).arg(query.reqeust());
+    plainTextEditLog_->appendPlainText(str);
 
-  connect(
-      cefWidget_, &QCefWidget::urlChanged, this,
-      [this](bool isMainFrame, QString url) { plainTextEditLog_->appendPlainText(QString("QCefWidget urlChanged, isMainFrame: %1, url: %2").arg(isMainFrame).arg(url)); },
-      Qt::QueuedConnection);
+    QCefQuery rsp = query;
+    rsp.setResponseResult(false, "this is a query response message from c++.", 123);
+    cefOpenGLWidget_->responseCefQuery(rsp);
+  });
 
-  connect(
-      cefWidget_, &QCefWidget::urlChanged, this,
-      [this](bool isMainFrame, QString url) { plainTextEditLog_->appendPlainText(QString("QCefOpenGLWidget urlChanged, isMainFrame: %1, url: %2").arg(isMainFrame).arg(url)); },
-      Qt::QueuedConnection);
+  connect(cefWidget_, &QCefWidget::titleChanged, this, [this](QString title) { plainTextEditLog_->appendPlainText(QString("[QCefWidget] titleChanged: %1\r\n").arg(title)); });
+
+  connect(cefWidget_, &QCefWidget::titleChanged, this,
+          [this](QString title) { plainTextEditLog_->appendPlainText(QString("[QCefOpenGLWidget] titleChanged: %1\r\n").arg(title)); });
+
+  connect(cefWidget_, &QCefWidget::urlChanged, this, [this](bool isMainFrame, QString url) {
+    plainTextEditLog_->appendPlainText(QString("[QCefWidget] urlChanged, isMainFrame: %1, url: %2\r\n").arg(isMainFrame).arg(url));
+  });
+
+  connect(cefWidget_, &QCefWidget::urlChanged, this, [this](bool isMainFrame, QString url) {
+    plainTextEditLog_->appendPlainText(QString("[QCefOpenGLWidget] urlChanged, isMainFrame: %1, url: %2\r\n").arg(isMainFrame).arg(url));
+  });
 }
 
-void TestWnd::onTriggerTestEvent() {
-  static int eventIndex = 1;
-  QCefEvent event(QString("TestEvent%1").arg(eventIndex));
-  event.setStringProperty("StrProp", QString("String_%1").arg(eventIndex));
-  event.setIntProperty("IntProp", 1000 + eventIndex);
-  event.setDoubleProperty("DoubleProp", 3.1415926f + (double)eventIndex);
-  event.setBoolProperty("BoolProp", eventIndex % 2 == 0);
-
-  cefWidget_->broadcastEvent("eventTest", event);
-
-  eventIndex++;
+void TestWnd::onInvokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments) {
+  QString str = QString("[InvokeMethodNotify] browserId: %1, frameId: %2, method: %3\r\n").arg(browserId).arg(frameId).arg(method);
+  QString strArgs;
+  for (int i = 0; i < arguments.size(); i++) {
+    strArgs += QString("[%1]: %2\r\n").arg(i).arg(arguments[i].toString());
+  }
+  plainTextEditLog_->appendPlainText(str + strArgs);
 }

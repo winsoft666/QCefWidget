@@ -80,9 +80,9 @@ bool QCefOpenGLWidget::broadcastEvent(const QString &name, const QCefEvent &even
   return pImpl_->triggerEvent(name, event, QCefBrowserHandler::ALL_FRAMES);
 }
 
-bool QCefOpenGLWidget::responseQCefQuery(const QCefQuery &query) {
+bool QCefOpenGLWidget::responseCefQuery(const QCefQuery &query) {
   Q_ASSERT(pImpl_);
-  return pImpl_->responseQCefQuery(query);
+  return pImpl_->responseCefQuery(query);
 }
 
 void QCefOpenGLWidget::executeJavascript(const QString &javascript) {

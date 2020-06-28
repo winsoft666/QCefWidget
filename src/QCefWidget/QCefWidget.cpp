@@ -79,9 +79,9 @@ bool QCefWidget::broadcastEvent(const QString &name, const QCefEvent &event) {
   return pImpl_->triggerEvent(name, event, QCefBrowserHandler::ALL_FRAMES);
 }
 
-bool QCefWidget::responseQCefQuery(const QCefQuery &query) {
+bool QCefWidget::responseCefQuery(const QCefQuery &query) {
   Q_ASSERT(pImpl_);
-  return pImpl_->responseQCefQuery(query);
+  return pImpl_->responseCefQuery(query);
 }
 
 void QCefWidget::executeJavascript(const QString &javascript) {

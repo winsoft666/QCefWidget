@@ -1,25 +1,25 @@
-#ifndef QCEFCOMMON_H
-#define QCEFCOMMON_H
+#ifndef QCEFPROTOCOL_H_
+#define QCEFPROTOCOL_H_
 #if defined(_MSVC_) && _MSC_VER > 1000
 #pragma once
 #endif // _MSC_VER > 1000
 
 
-#define QCEF_SCHEMA "qcef"
+#define QCEF_SCHEMA "qcefwidget"
 
-#define QCEF_QUERY_NAME "QCefQuery"
+#define QCEF_QUERY_NAME "QCefWidgetQuery"
 
-#define QCEF_QUERY_CANCEL_NAME "QCefQueryCancel"
+#define QCEF_QUERY_CANCEL_NAME "QCefWidgetQueryCancel"
 
-#define QCEF_OBJECT_NAME "QCef"
+#define QCEF_OBJECT_NAME "QCefWidget"
 
-// QCef.invoke("method_name", ...)
+// QCefWidget.invoke("method_name", ...)
 #define QCEF_INVOKEMETHOD "invoke"
 
-// QCef.addEventListener(type, listener)
+// QCefWidget.addEventListener(type, listener)
 #define QCEF_ADDEVENTLISTENER "addEventListener"
 
-// QCef.removeEventListener(type, listener)
+// QCefWidget.removeEventListener(type, listener)
 #define QCEF_REMOVEEVENTLISTENER "removeEventListener"
 
 
@@ -31,7 +31,7 @@
 //   msg.arg[0]: frame id
 //   msg.arg[1]: function name
 //   msg.arg[2~...]: function parameters
-#define INVOKEMETHOD_NOTIFY_MESSAGE "QCef891201ZJ0228#InvokeMethodNotify"
+#define INVOKEMETHOD_NOTIFY_MESSAGE "QCefWidget891201ZJ0228#InvokeMethodNotify"
 
 
 // this message is sent from browser process to render process
@@ -42,7 +42,7 @@
 //	  msg.arg[0]: frame id
 //	  msg.arg[1]: function name
 //	  msg.arg[2~...]: function parameters
-#define TRIGGEREVENT_NOTIFY_MESSAGE "QCef891201ZJ0228#TriggerEventNotify"
+#define TRIGGEREVENT_NOTIFY_MESSAGE "QCefWidget891201ZJ0228#TriggerEventNotify"
 
 
 #define RENDER_PROCESS_NAME "QCefWing.exe"
@@ -51,6 +51,6 @@
 
 #define LOCALES_DIRECTORY_NAME "locales"
 
-#define QCEF_USER_AGENT "QCef/1.1 (Windows; en-us)"
+#define QCEF_USER_AGENT "QCefWidget/1.1 (Windows; en-us)"
 
-#endif
+#endif // !QCEFPROTOCOL_H_

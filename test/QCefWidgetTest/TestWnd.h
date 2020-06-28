@@ -21,7 +21,8 @@ protected:
   void setupUi();
   void bindUiEvent();
 private slots:
-  void onTriggerTestEvent();
+  void onInvokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
+
 private:
   QWidget *widgetTop_;
 
@@ -33,14 +34,13 @@ private:
   QPushButton* pushButtonBack_;
   QPushButton* pushButtonForward_;
   QPushButton* pushButtonReload_;
+  QPushButton* pushButtonTriggerAnEvent_;
+  QPushButton* pushButtonTrigger100Event_;
   QPushButton* pushButtonOpenDevTools_;
   QPushButton* pushButtonCloseDevTools_;
   QPushButton* pushButtonExit_;
   QComboBox* comboBoxUrl_;
 
-
-
-  QAction* actionTriggerTestEvent_;
 
   QPlainTextEdit* plainTextEditLog_;
 

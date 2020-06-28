@@ -1,14 +1,21 @@
-## QCefOpenGLWidget render performance optimization.
+# BUG
 
-## Interface about browser custom context menu.
+- QCefOpenGLWidget has some problems with transparent background.
 
-## Signal about browser address changed.
+- QCefOpenGLWidget render performance optimization.
 
-## Image manager.
 
-## Signal about fullscreen mode changed.
 
-## Signal about favicon url changed.
+# New Feature
 
-## Interface about special custom protocol.
+- Interface about browser custom context menu.
 
+- Signal about browser address changed.
+
+- Image manager.
+
+- Signal about fullscreen mode changed.
+
+- Signal about favicon url changed.
+
+- Interface about special custom protocol.

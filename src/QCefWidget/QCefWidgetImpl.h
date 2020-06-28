@@ -28,7 +28,7 @@ public:
 
   bool triggerEvent(const QString &name, const QCefEvent &event,
                     int frameId = QCefBrowserHandler::MAIN_FRAME);
-  bool responseQCefQuery(const QCefQuery &query);
+  bool responseCefQuery(const QCefQuery &query);
   void executeJavascript(const QString &javascript);
 
   bool createBrowser();

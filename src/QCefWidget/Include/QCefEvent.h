@@ -30,7 +30,7 @@ public:
 
   void setDoubleProperty(const QString &key, double value);
 
-  void setStringProperty(const QString &key, QString value);
+  void setStringProperty(const QString &key, const QString& value);
 
   void setBoolProperty(const QString &key, bool value);
 };

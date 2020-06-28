@@ -212,7 +212,7 @@ bool QCefWidgetImpl::triggerEvent(const QString &name, const QCefEvent &event, i
   return false;
 }
 
-bool QCefWidgetImpl::responseQCefQuery(const QCefQuery &query) {
+bool QCefWidgetImpl::responseCefQuery(const QCefQuery &query) {
   if (pQCefViewHandler_) {
     CefString res;
     res.FromString(query.response().toStdString());
@@ -258,6 +258,7 @@ bool QCefWidgetImpl::sendEventNotifyMessage(int frameId, const QString &name, co
       dict->SetString(key.data(), cefStr);
     }
     else {
+      Q_ASSERT(false);
     }
   }
 
