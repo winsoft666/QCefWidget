@@ -42,4 +42,6 @@
     cmake .. && cmake --build .
     ```
 
-> 感谢[QCefView](https://github.com/tishion/QCefView)项目，`QCefWidget`在工程结构方面极大的参考了该项目.
+---
+
+感谢[QCefView](https://github.com/tishion/QCefView)项目，`QCefWidget`在工程结构方面参考了该项目。但`QCefWidget`基于CEF离屏渲染(OSR)模式实现，这和`QCefView`完全不同。

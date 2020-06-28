@@ -42,4 +42,6 @@ Support:
     cmake .. && cmake --build .
     ```
 
-> Thanks to [QCefView] (https://github.com/tishion/QCefView) project, `QCefWidget` great reference for the project in terms of engineering structure.
+---
+
+Thanks to [QCefView] (https://github.com/tishion/QCefView) project, `QCefWidget` reference for the project in terms of engineering structure. However `QCefWidget` based on CEF OSR mode, this is quite different from `QCefView`. 
