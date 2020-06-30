@@ -23,6 +23,9 @@ void QCefManager::initializeCef() {
   CefEnableHighDPISupport();
   QCefGlobalSetting::initializeInstance();
 
+  // Applications should specify a unique GUID here to enable trusted downloads.
+  // CefString(&cefSettings_.application_client_id_for_file_scanning).FromString("2A8DE24D-B822-4C6C-8259-5A848FEA1E68");
+
   CefString(&cefSettings_.browser_subprocess_path) = QCefGlobalSetting::browser_sub_process_path;
   CefString(&cefSettings_.resources_dir_path) = QCefGlobalSetting::resource_directory_path;
   CefString(&cefSettings_.locales_dir_path) = QCefGlobalSetting::locales_directory_path;
@@ -41,7 +44,7 @@ void QCefManager::initializeCef() {
   cefSettings_.windowless_rendering_enabled = true;
 
 #ifndef NDEBUG
-  cefSettings_.log_severity = LOGSEVERITY_VERBOSE;
+  cefSettings_.log_severity = LOGSEVERITY_INFO;
   cefSettings_.remote_debugging_port = 7777;
 #else
   cefSettings_.log_severity = LOGSEVERITY_WARNING;

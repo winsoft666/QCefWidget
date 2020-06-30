@@ -1,9 +1,10 @@
 #include "Include/QCefSetting.h"
 #include "QCefGlobalSetting.h"
+#include <QDir>
 
 void QCefSetting::setBrowserSubProcessPath(const QString &path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::browser_sub_process_path.FromWString(path.toStdWString());
+  QCefGlobalSetting::browser_sub_process_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::browserSubProcessPath() {
@@ -13,7 +14,7 @@ const QString QCefSetting::browserSubProcessPath() {
 
 void QCefSetting::setResourceDirectoryPath(const QString &path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::resource_directory_path.FromWString(path.toStdWString());
+  QCefGlobalSetting::resource_directory_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::resourceDirectoryPath() {
@@ -23,7 +24,7 @@ const QString QCefSetting::resourceDirectoryPath() {
 
 void QCefSetting::setLocalesDirectoryPath(const QString &path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::locales_directory_path.FromWString(path.toStdWString());
+  QCefGlobalSetting::locales_directory_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::localesDirectoryPath() {
@@ -43,7 +44,7 @@ const QString QCefSetting::userAgent() {
 
 void QCefSetting::setCachePath(const QString &path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::cache_path.FromWString(path.toStdWString());
+  QCefGlobalSetting::cache_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::cachePath() {
@@ -123,6 +124,7 @@ const bool QCefSetting::gpuEnabled() {
 
 void QCefSetting::setFlashPlugin(const QString &path, const QString &ver) {
   QCefGlobalSetting::initializeInstance();
+  
   QCefGlobalSetting::flush_plugin_path.FromWString(path.toStdWString());
   QCefGlobalSetting::flush_plugin_ver.FromWString(ver.toStdWString());
 }

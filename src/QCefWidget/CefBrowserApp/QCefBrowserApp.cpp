@@ -11,21 +11,29 @@ QCefBrowserApp::~QCefBrowserApp() {}
 
 void QCefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type,
                                                       CefRefPtr<CefCommandLine> command_line) {
-  // Chromium has removed --disable-surfaces as per
-  // https://codereview.chromium.org/1603133003 so the workaround specified
-  // here is no longer applicable command_line->AppendSwitch("disable-surfaces");
+  // All of switch can find from these:
+  //   base/base_switches.cc
+  //   cef/libcef/common/cef_switches.cc
+  //   chrome/common/chrome_switches.cc (not all apply)
+  //   content/public/common/content_switches.cc
 
   command_line->AppendSwitch("no-proxy-server");
-  command_line->AppendSwitch("disable-extensions");
+  command_line->AppendSwitch("disable-web-security");
+  command_line->AppendSwitch("allow-outdated-plugins");
+  command_line->AppendSwitchWithValue("enable-npapi", "1");
+  command_line->AppendSwitchWithValue("plugin-policy", "allow");
   command_line->AppendSwitch("allow-file-access-from-files");
-  command_line->AppendSwitchWithValue("disable-features", "NetworkService");
+  command_line->AppendSwitch("allow-universal-access-from-files");
+  command_line->AppendSwitch("disable-spell-checking");
 
+  // Can not disable GPU in D3D mode.
+  // D3D mode not be support in CEF 2623 version.
+  //
   if (QCefGlobalSetting::gpu_enabled) {
     command_line->AppendSwitch("enable-gpu");
     command_line->AppendSwitch("enable-gpu-compositing");
   }
   else {
-    // D3D11模式不能禁用GPU加速，2623版本不会使用D3D11模式
     command_line->AppendSwitch("disable-gpu");
     command_line->AppendSwitch("disable-gpu-compositing");
   }

@@ -14,7 +14,8 @@ void QCefRenderApp::CreateRenderDelegates(RenderDelegateSet &delegates) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-void QCefRenderApp::OnBeforeCommandLineProcessing(const CefString &process_type, CefRefPtr<CefCommandLine> command_line) {}
+void QCefRenderApp::OnBeforeCommandLineProcessing(const CefString &process_type, CefRefPtr<CefCommandLine> command_line) {
+}
 
 void QCefRenderApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {}
 

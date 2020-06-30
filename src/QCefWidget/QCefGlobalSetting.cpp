@@ -38,7 +38,7 @@ QCefGlobalSetting::QCefGlobalSetting() {
 
   user_agent.FromString(QCEF_USER_AGENT);
 
-  accept_language_list.FromWString(L"zh-CN,en-US,en");
+  accept_language_list.FromWString(L"zh-CN,en-US,en,en-GB");
   locale.FromWString(L"zh-CN");
 
   gpu_enabled = true;

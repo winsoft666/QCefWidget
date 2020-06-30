@@ -42,7 +42,7 @@ bool QCefBrowserHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
 void QCefBrowserHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, CefRefPtr<CefMenuModel> model) {
   CEF_REQUIRE_UI_THREAD();
 
-  model->Clear();
+  //model->Clear();
 
   // TODO
 }
@@ -53,6 +53,7 @@ bool QCefBrowserHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, Cef
 
   // TODO
 
+  // Allow default handling to proceed.
   return false;
 }
 

@@ -4,7 +4,9 @@
 
 - QCefOpenGLWidget render performance optimization.
 
+- PDF, Flash can not display.
 
+- Context menu position error.
 
 # New Feature
 

@@ -31,7 +31,7 @@ public:
   bool responseCefQuery(const QCefQuery &query);
   void executeJavascript(const QString &javascript);
 
-  bool createBrowser();
+  bool createBrowser(const QString &url);
   bool createDevTools(CefRefPtr<CefBrowser> targetBrowser);
 
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);
@@ -75,9 +75,6 @@ private:
 
   CefRefPtr<QCefBrowserHandler> pQCefViewHandler_;
   std::shared_ptr<QCefWidgetUIEventHandlerWin> pCefUIEventWin_;
-
-  // Cached url will be navigated when browser created
-  CefString cachedNavigateUrl_;
 
   bool browserClosing_;
   bool browserCreated_;

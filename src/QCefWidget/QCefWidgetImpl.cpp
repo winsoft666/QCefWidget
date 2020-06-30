@@ -8,6 +8,7 @@
 #include "Include/QCefWidget.h"
 #include "Include/QCefOpenGLWidget.h"
 #include "QCefGlobalSetting.h"
+#include "CefBrowserApp/QCefRequestContextHandler.h"
 
 namespace {
 int kDefaultFPS = 30;
@@ -25,7 +26,7 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
 
 QCefWidgetImpl::~QCefWidgetImpl() { qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this; }
 
-bool QCefWidgetImpl::createBrowser() {
+bool QCefWidgetImpl::createBrowser(const QString &url) {
   if (browserCreated_)
     return true;
   Q_ASSERT(pWidget_);
@@ -54,8 +55,10 @@ bool QCefWidgetImpl::createBrowser() {
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
 
+  CefRefPtr<CefRequestContext> requestContext = CefRequestContext::CreateContext(CefRequestContext::GetGlobalContext(), new RequestContextHandler);
+
   // This method can be called on any browser process thread and will not block.
-  if (!CefBrowserHost::CreateBrowser(window_info, pQCefViewHandler_, "", browserSettings, nullptr, CefRequestContext::GetGlobalContext())) {
+  if (!CefBrowserHost::CreateBrowser(window_info, pQCefViewHandler_, url.toStdWString(), browserSettings, nullptr, requestContext)) {
     return false;
   }
 
@@ -113,11 +116,6 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 #endif
 
   pTopWidget_ = QCefManager::getInstance().addBrowser(pWidget_, browser);
-
-  if (cachedNavigateUrl_.length() > 0) {
-    browser->GetMainFrame()->LoadURL(cachedNavigateUrl_);
-    cachedNavigateUrl_.clear();
-  }
 }
 
 void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
@@ -146,10 +144,10 @@ void QCefWidgetImpl::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser,
 
 void QCefWidgetImpl::navigateToUrl(const QString &url) {
   if (!browserCreated_) {
-    if (!createBrowser()) {
+    if (!createBrowser(url)) {
       Q_ASSERT(false);
-      return;
     }
+    return;
   }
 
   CefString strUrl;
@@ -157,9 +155,6 @@ void QCefWidgetImpl::navigateToUrl(const QString &url) {
   Q_ASSERT(pQCefViewHandler_);
   if (pQCefViewHandler_ && pQCefViewHandler_->browser() && pQCefViewHandler_->browser()->GetMainFrame()) {
     pQCefViewHandler_->browser()->GetMainFrame()->LoadURL(strUrl);
-  }
-  else {
-    cachedNavigateUrl_ = strUrl;
   }
 }
 

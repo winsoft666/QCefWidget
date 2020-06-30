@@ -19,6 +19,9 @@ TestWnd::TestWnd(QWidget *parent)
     , cefOpenGLWidget_(nullptr)
     , transWidgetCefWnd_(nullptr)
     , transOpenGLWidgetCefWnd_(nullptr) {
+  //QCefSetting::setFlashPlugin("TestResource/pepperflash/26.0.0.126/pepflashplayer.dll", "26.0.0.126");
+  //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer.dll", "32.0.0.387");
+
   setupUi();
 
   transWidgetCefWnd_ = new TransparentCefWnd(false, nullptr);
@@ -138,8 +141,11 @@ void TestWnd::setupUi() {
   comboBoxUrl_->setObjectName("comboBoxUrl");
   comboBoxUrl_->setFixedHeight(22);
   comboBoxUrl_->setEditable(true);
-  comboBoxUrl_->addItems(QStringList() << "about:blank" << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
+  comboBoxUrl_->addItems(QStringList() << "about:blank" << "chrome://version"  << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
+                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/FlashPlayerTest.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
+    << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/PDF.html")
+    << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/OsrTest.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Clock.html") << "https://html5test.com/"
                                        << "https://www.bing.com"
                                        << "https://www.google.com"
@@ -361,18 +367,14 @@ void TestWnd::bindUiEvent() {
 
   connect(cefOpenGLWidget_, &QCefOpenGLWidget::invokeMethodNotify, this, &TestWnd::onInvokeMethodNotify, Qt::QueuedConnection);
 
-  connect(
-      cefWidget_, &QCefWidget::cefQueryRequest, this,
-      [this](const QCefQuery &query) {
-        QString str = QString("[QCefWidget CefQueryRequest] id: %1, reqeust: %2\r\n")
-                          .arg(query.id())
-                          .arg(query.reqeust());
-        plainTextEditLog_->appendPlainText(str);
+  connect(cefWidget_, &QCefWidget::cefQueryRequest, this, [this](const QCefQuery &query) {
+    QString str = QString("[QCefWidget CefQueryRequest] id: %1, reqeust: %2\r\n").arg(query.id()).arg(query.reqeust());
+    plainTextEditLog_->appendPlainText(str);
 
-        QCefQuery rsp = query;
-        rsp.setResponseResult(true, "this is a query response message from c++.", 0);
-        cefWidget_->responseCefQuery(rsp);
-      });
+    QCefQuery rsp = query;
+    rsp.setResponseResult(true, "this is a query response message from c++.", 0);
+    cefWidget_->responseCefQuery(rsp);
+  });
 
   connect(cefOpenGLWidget_, &QCefOpenGLWidget::cefQueryRequest, this, [this](const QCefQuery &query) {
     QString str = QString("[QCefOpenGLWidget CefQueryRequest] id: %1, reqeust: %2\r\n").arg(query.id()).arg(query.reqeust());
@@ -385,14 +387,14 @@ void TestWnd::bindUiEvent() {
 
   connect(cefWidget_, &QCefWidget::titleChanged, this, [this](QString title) { plainTextEditLog_->appendPlainText(QString("[QCefWidget] titleChanged: %1\r\n").arg(title)); });
 
-  connect(cefWidget_, &QCefWidget::titleChanged, this,
+  connect(cefOpenGLWidget_, &QCefOpenGLWidget::titleChanged, this,
           [this](QString title) { plainTextEditLog_->appendPlainText(QString("[QCefOpenGLWidget] titleChanged: %1\r\n").arg(title)); });
 
   connect(cefWidget_, &QCefWidget::urlChanged, this, [this](bool isMainFrame, QString url) {
     plainTextEditLog_->appendPlainText(QString("[QCefWidget] urlChanged, isMainFrame: %1, url: %2\r\n").arg(isMainFrame).arg(url));
   });
 
-  connect(cefWidget_, &QCefWidget::urlChanged, this, [this](bool isMainFrame, QString url) {
+  connect(cefOpenGLWidget_, &QCefOpenGLWidget::urlChanged, this, [this](bool isMainFrame, QString url) {
     plainTextEditLog_->appendPlainText(QString("[QCefOpenGLWidget] urlChanged, isMainFrame: %1, url: %2\r\n").arg(isMainFrame).arg(url));
   });
 }
