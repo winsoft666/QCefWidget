@@ -44,4 +44,4 @@ Support:
 
 ---
 
-Thanks to [QCefView] (https://github.com/tishion/QCefView) project, `QCefWidget` reference for the project in terms of engineering structure. However `QCefWidget` based on CEF OSR mode, this is quite different from `QCefView`. 
+Thanks to [QCefView](https://github.com/tishion/QCefView) project, `QCefWidget` reference for the project in terms of engineering structure. However `QCefWidget` based on CEF OSR mode, this is quite different from `QCefView`. 
