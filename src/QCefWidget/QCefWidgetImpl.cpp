@@ -25,9 +25,13 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
     , pQCefViewHandler_(nullptr)
     , background_color_(255, 255, 255, 255)
     , fps_(kDefaultFPS) {
+  QCefManager::getInstance().initializeCef();
 }
 
-QCefWidgetImpl::~QCefWidgetImpl() { qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this; }
+QCefWidgetImpl::~QCefWidgetImpl() { 
+  qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this; 
+  QCefManager::getInstance().uninitializeCef();
+}
 
 bool QCefWidgetImpl::createBrowser(const QString &url) {
   if (browserCreated_)
@@ -70,7 +74,6 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
     browserSettings.plugins = STATE_DISABLED; // disable all plugins
     browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
   }
-  QCefManager::getInstance().initializeCef();
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
 

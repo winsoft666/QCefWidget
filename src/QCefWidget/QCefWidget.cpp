@@ -20,7 +20,6 @@ QCefWidget::QCefWidget(QWidget *parent)
 
 QCefWidget::~QCefWidget() {
   qInfo() << "QCefWidget::~QCefWidget, this: " << this;
-  QCefManager::getInstance().uninitializeCef();
 }
 
 void QCefWidget::navigateToUrl(const QString &url) {
