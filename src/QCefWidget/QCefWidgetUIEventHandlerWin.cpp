@@ -40,7 +40,9 @@ QCefWidgetUIEventHandlerWin::QCefWidgetUIEventHandlerWin(HWND h, CefRefPtr<CefBr
   ime_handler_ = std::make_unique<QCefIMEHandlerWin>(hwnd_);
 }
 
-QCefWidgetUIEventHandlerWin::~QCefWidgetUIEventHandlerWin() {}
+QCefWidgetUIEventHandlerWin::~QCefWidgetUIEventHandlerWin() {
+  pCefBrowser_ = nullptr;
+}
 
 void QCefWidgetUIEventHandlerWin::OnSize(UINT message, WPARAM wparam, LPARAM lparam) {
   CefRefPtr<CefBrowserHost> host = browserHost();

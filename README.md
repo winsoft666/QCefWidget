@@ -1,9 +1,11 @@
 [ >>> 中文版](README_ch.md)
 
-The QCefWidget project provide a widget that is used to view webpage. QCefWidget is implemented based on the OSR mode of [CEF](https://bitbucket.org/chromiumembedded/cef/src/master/).
+The QCefWidget project provide a widget that is used to view webpage. 
 
 Support:
 
+✅ Supports both CEF OSR and non-OSR mode;
+   
 ✅ Show background transparent webpage in irregularity window;
 
 ✅ Javascript and Qt interaction;
@@ -12,7 +14,7 @@ Support:
 
 ✅ Third-party input method software;
 
-✅ Perfect exit app without any CEF assert in debug/release mode;
+✅ Perfect exit app without any CEF assert/exception in debug/release mode;
 
 ✅ Separate CEF rendering process and plugin process;
 
@@ -41,7 +43,3 @@ Support:
     mkdir build && cd build
     cmake .. && cmake --build .
     ```
-
----
-
-Thanks to [QCefView](https://github.com/tishion/QCefView) project, `QCefWidget` reference for the project in terms of engineering structure. However `QCefWidget` based on CEF OSR mode, this is quite different from `QCefView`. 

@@ -11,16 +11,23 @@
 
 class QWidget;
 class QCefDevToolsWnd;
-class QCefManager : QObject {
+class QCefManager : public QObject {
   Q_OBJECT
 public:
+  enum BrowserStatus { BS_NOT_CREATE = 0, BS_CREATED, BS_CLOSING, BS_CLOSED };
   static QCefManager &getInstance();
   void initializeCef();
   void uninitializeCef();
 
-  QWidget* addBrowser(QWidget* pCefWidget, CefRefPtr<CefBrowser> browser); // return top-level widget
-  void removeBrowser(QWidget* pCefWidget, CefRefPtr<CefBrowser> browser);
-  int browserCount(QWidget* pTopWidget);
+  QWidget* addBrowser(QWidget* pCefWidget, CefRefPtr<CefBrowser> browser, bool osrMode); // return top-level widget
+
+  void removeCefWidget(QWidget *pCefWidget);
+
+  int aliveBrowserCount(HWND hTopWidget);
+  int aliveBrowserCount(QWidget* pTopWidget);
+
+  void setBrowserClosing(QWidget* pCefWidget);
+  void setBrowserClosed(QWidget* pCefWidget);
   
   void showDevTools(QWidget* pCefWidget);
   void closeDevTools(QWidget* pCefWidget);
@@ -31,8 +38,8 @@ protected:
 
   QWidget *getTopWidget(QWidget *pWidget);
   WNDPROC hookWidget(HWND hTopWidget);
-  void closeAllBrowsers(HWND hTopWidget);
-  void closeAllBrowsers(QWidget* pTopLevelWidget);
+  void tryCloseAllBrowsers(HWND hTopWidget);
+  void tryCloseAllBrowsers(QWidget* pTopLevelWidget);
 
 private:
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
@@ -45,6 +52,8 @@ private:
   int64_t nCefRefCount_;
   bool initialized_;
 
+
+
   typedef struct _CefInfo {
     QWidget* cefWidget;
 
@@ -53,6 +62,8 @@ private:
     WNDPROC cefWidgetTopWidgetPrevWndProc;
     CefRefPtr<CefBrowser> browser;
     QCefDevToolsWnd* devToolsWnd;
+    bool osrMode;
+    BrowserStatus browserStatus;
 
     _CefInfo() {
       cefWidget = nullptr;
@@ -61,11 +72,12 @@ private:
       cefWidgetTopWidgetPrevWndProc = nullptr;
       browser = nullptr;
       devToolsWnd = nullptr;
+      osrMode = false;
+      browserStatus = BS_NOT_CREATE;
     }
   } CefInfo;
 
   std::recursive_mutex cefsMutex_;
   std::list<CefInfo> cefs_;
-
 };
 #endif // !QCEF_MANAGER_H_

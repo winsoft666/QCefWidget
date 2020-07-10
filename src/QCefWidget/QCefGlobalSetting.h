@@ -23,9 +23,6 @@ public:
   static int persist_user_preferences;
   static int remote_debugging_port;
   static bool gpu_enabled;
-  static bool hook_top_level_window_close_msg;
-  static bool ignore_top_level_window_close_msg;
-
 protected:
   QCefGlobalSetting();
   ~QCefGlobalSetting();

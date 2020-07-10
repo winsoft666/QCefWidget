@@ -61,6 +61,12 @@ public:
 
   virtual void executeJavascript(const QString &javascript);
 
+  // Must be set before browser created, otherwise return false.
+  // OSR is enabled by default.
+  //
+  virtual bool setOsrEnabled(bool b);
+  virtual bool osrEnabled();
+
   virtual void setFPS(int fps);
   virtual int fps() const;
 
@@ -80,6 +86,7 @@ signals:
   void cefQueryRequest(const QCefQuery &query);
   void invokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
 protected:
+  bool event(QEvent *event) override;
   bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
   void paintEvent(QPaintEvent *event) override;
   void setVisible(bool visible) override;

@@ -21,7 +21,6 @@ QCefOpenGLWidget::QCefOpenGLWidget(QWidget *parent /*= nullptr*/)
 
 QCefOpenGLWidget::~QCefOpenGLWidget() {
   qInfo() << "QCefOpenGLWidget::~QCefOpenGLWidget, this: " << this;
-  pImpl_.reset();
   QCefManager::getInstance().uninitializeCef();
 }
 
@@ -90,6 +89,16 @@ void QCefOpenGLWidget::executeJavascript(const QString &javascript) {
   pImpl_->executeJavascript(javascript);
 }
 
+bool QCefOpenGLWidget::setOsrEnabled(bool b) {
+  Q_ASSERT(pImpl_);
+  return pImpl_->setOsrEnabled(b);
+}
+
+bool QCefOpenGLWidget::osrEnabled() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->osrEnabled();
+}
+
 void QCefOpenGLWidget::setFPS(int fps) {
   Q_ASSERT(pImpl_);
   pImpl_->setFPS(fps);
@@ -115,13 +124,28 @@ void QCefOpenGLWidget::showDevTools() { QCefManager::getInstance().showDevTools(
 void QCefOpenGLWidget::closeDevTools() { QCefManager::getInstance().closeDevTools(this); }
 
 bool QCefOpenGLWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
-  Q_ASSERT(pImpl_);
-  return pImpl_->nativeEvent(eventType, message, result);
+  // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
+  if (!pImpl_)
+    return QOpenGLWidget::nativeEvent(eventType, message, result);
+  if (pImpl_->nativeEvent(eventType, message, result))
+    return true;
+  return QOpenGLWidget::nativeEvent(eventType, message, result);
+}
+
+bool QCefOpenGLWidget::event(QEvent *event) {
+  // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
+  if (!pImpl_)
+    return QOpenGLWidget::event(event);
+
+  if (pImpl_->event(event)) {
+    return true;
+  }
+  return QOpenGLWidget::event(event);
 }
 
 void QCefOpenGLWidget::paintEvent(QPaintEvent *event) {
   Q_ASSERT(pImpl_);
-  if (!pImpl_->openGLPaintEventHandle(event)) {
+  if (!pImpl_ || !pImpl_->openGLPaintEventHandle(event)) {
     QOpenGLWidget::paintEvent(event);
   }
 }
@@ -129,6 +153,7 @@ void QCefOpenGLWidget::paintEvent(QPaintEvent *event) {
 void QCefOpenGLWidget::setVisible(bool visible) {
   QOpenGLWidget::setVisible(visible);
   Q_ASSERT(pImpl_);
-  pImpl_->setVisible(visible);
+  if(pImpl_)
+    pImpl_->setVisible(visible);
 }
 #endif

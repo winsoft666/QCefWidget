@@ -18,11 +18,14 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
     : pWidget_(pWidget)
     , pTopWidget_(nullptr)
     , vt_(vt)
+    , widgetWId_(0)
     , browserCreated_(false)
     , browserClosing_(false)
+    , osrEnabled_(true)
     , pQCefViewHandler_(nullptr)
     , background_color_(255, 255, 255, 255)
-    , fps_(kDefaultFPS) {}
+    , fps_(kDefaultFPS) {
+}
 
 QCefWidgetImpl::~QCefWidgetImpl() { qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this; }
 
@@ -32,7 +35,8 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   Q_ASSERT(pWidget_);
   CefWindowHandle hwnd = nullptr;
   if (pWidget_) {
-    hwnd = (CefWindowHandle)pWidget_->winId();
+    Q_ASSERT(widgetWId_);
+    hwnd = (CefWindowHandle)widgetWId_;
   }
   Q_ASSERT(hwnd);
   if (!hwnd) {
@@ -44,13 +48,28 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
 #endif
 
   CefWindowInfo window_info;
-  window_info.SetAsWindowless(hwnd);
-
   CefBrowserSettings browserSettings;
-  browserSettings.plugins = STATE_DISABLED; // disable all plugins
-  browserSettings.windowless_frame_rate = fps_;
-  browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
+  if (osrEnabled_) {
+    window_info.SetAsWindowless(hwnd);
 
+    browserSettings.plugins = STATE_DISABLED; // disable all plugins
+    browserSettings.windowless_frame_rate = fps_;
+    browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
+  }
+  else {
+    float scale = pWidget_->devicePixelRatioF();
+    QRect viewRect = pWidget_->rect();
+    RECT rc;
+    rc.left = 0;
+    rc.top = 0;
+    rc.right = rc.left + viewRect.width() * scale;
+    rc.bottom = rc.top + viewRect.height() * scale;
+
+    window_info.SetAsChild(hwnd, rc);
+
+    browserSettings.plugins = STATE_DISABLED; // disable all plugins
+    browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
+  }
   QCefManager::getInstance().initializeCef();
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
@@ -73,7 +92,7 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   Q_ASSERT(pWidget_);
   CefWindowHandle hwnd = nullptr;
   if (pWidget_) {
-    hwnd = (CefWindowHandle)pWidget_->winId();
+    hwnd = (CefWindowHandle)widgetWId_;
   }
   Q_ASSERT(hwnd);
   if (!hwnd) {
@@ -106,7 +125,7 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
-  pCefUIEventWin_ = std::make_shared<QCefWidgetUIEventHandlerWin>((HWND)pWidget_->winId(), browser);
+  pCefUIEventWin_ = std::make_shared<QCefWidgetUIEventHandlerWin>((HWND)widgetWId_, browser);
   Q_ASSERT(pCefUIEventWin_);
   if (pCefUIEventWin_) {
     pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor());
@@ -115,23 +134,28 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 #error("No default implement")
 #endif
 
-  pTopWidget_ = QCefManager::getInstance().addBrowser(pWidget_, browser);
+  pTopWidget_ = QCefManager::getInstance().addBrowser(pWidget_, browser, osrEnabled_);
+}
+
+void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
+  qInfo() << "QCefWidgetImpl::browserClosingNotify, this: " << this;
+  browserCreated_ = false;
+  Q_ASSERT(pCefUIEventWin_);
+  if (pCefUIEventWin_)
+    pCefUIEventWin_.reset();
+  QCefManager::getInstance().setBrowserClosing(pWidget_);
 }
 
 void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
   qInfo() << "QCefWidgetImpl::browserDestoryedNotify, this: " << this;
-  browserCreated_ = false;
-  if (pCefUIEventWin_)
-    pCefUIEventWin_.reset();
+  Q_ASSERT(!pCefUIEventWin_);
 
-  QCefManager::getInstance().removeBrowser(pWidget_, browser);
+  QCefManager::getInstance().setBrowserClosed(pWidget_);
 
-  if (QCefManager::getInstance().browserCount(pTopWidget_) == 0) {
-    if (QCefGlobalSetting::hook_top_level_window_close_msg) {
-      if (pTopWidget_) {
-        QMetaObject::invokeMethod(
-            pTopWidget_, [this]() { pTopWidget_->close(); }, Qt::QueuedConnection);
-      }
+  if (QCefManager::getInstance().aliveBrowserCount(pTopWidget_) == 0) {
+    if (pTopWidget_) {
+      QMetaObject::invokeMethod(
+          pTopWidget_, [this]() { pTopWidget_->close(); }, Qt::QueuedConnection);
     }
   }
 }
@@ -269,13 +293,23 @@ QWidget *QCefWidgetImpl::getWidget() {
 
 WidgetType QCefWidgetImpl::getWidgetType() { return vt_; }
 
+bool QCefWidgetImpl::event(QEvent *event) {
+  if (event->type() == QEvent::WinIdChange) {
+    if(pWidget_)
+      widgetWId_ = pWidget_->winId();
+  }
+  
+  return false;
+}
+
 bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, long *result) {
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   if (eventType == "windows_generic_MSG") {
     MSG *pMsg = (MSG *)message;
     if (!pMsg || !pWidget_ || !pCefUIEventWin_)
       return false;
-    if (pMsg->hwnd != (HWND)pWidget_->winId())
+
+    if (pMsg->hwnd != (HWND)widgetWId_)
       return false;
 
     if (pMsg->message == WM_SYSCHAR || pMsg->message == WM_SYSKEYDOWN || pMsg->message == WM_SYSKEYUP || pMsg->message == WM_KEYDOWN || pMsg->message == WM_KEYUP ||
@@ -302,7 +336,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
 
         // winsoft666:
         //::SetCursor(NULL);
-        SetClassLongPtr((HWND)pWidget_->winId(), GCLP_HCURSOR, NULL);
+        SetClassLongPtr((HWND)widgetWId_, GCLP_HCURSOR, NULL);
       }
 
       if (pWidget_->isActiveWindow()) {
@@ -310,12 +344,25 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
       }
     }
     else if (pMsg->message == WM_SIZE) {
-      // winsoft666:
-      // Old cef version maybe has some bugs about resize with dpi scale.
-      // https://bitbucket.org/chromiumembedded/cef/issues/2823/osr-on-a-monitor-at-125x-scale-onpaint
-      // https://bitbucket.org/chromiumembedded/cef/issues/2733/viz-osr-might-be-causing-some-graphic
-      // https://bitbucket.org/chromiumembedded/cef/issues/2833/osr-gpu-consume-cpu-and-may-not-draw
-      pCefUIEventWin_->OnSize(pMsg->message, pMsg->wParam, pMsg->lParam);
+      if (osrEnabled_) {
+        // winsoft666:
+        // Old cef version maybe has some bugs about resize with dpi scale.
+        // https://bitbucket.org/chromiumembedded/cef/issues/2823/osr-on-a-monitor-at-125x-scale-onpaint
+        // https://bitbucket.org/chromiumembedded/cef/issues/2733/viz-osr-might-be-causing-some-graphic
+        // https://bitbucket.org/chromiumembedded/cef/issues/2833/osr-gpu-consume-cpu-and-may-not-draw
+        pCefUIEventWin_->OnSize(pMsg->message, pMsg->wParam, pMsg->lParam);
+      }
+      else {
+        CefWindowHandle cefhwnd = NULL;
+        CefRefPtr<CefBrowser> browser = this->browser();
+        if (browser)
+          cefhwnd = browser->GetHost()->GetWindowHandle();
+        if (cefhwnd) {
+          QRect rc = pWidget_->rect();
+          float scale = pWidget_->devicePixelRatioF();
+          SetWindowPos(cefhwnd, NULL, rc.left() * scale, rc.top() * scale, rc.width() * scale, rc.height() * scale, SWP_NOZORDER);
+        }
+      }
     }
     else if (pMsg->message == WM_TOUCH) {
       pCefUIEventWin_->OnTouchEvent(pMsg->message, pMsg->wParam, pMsg->lParam);
@@ -445,6 +492,17 @@ void QCefWidgetImpl::setVisible(bool visible) {
     host->SendFocusEvent(false);
     host->WasHidden(true);
   }
+}
+
+bool QCefWidgetImpl::setOsrEnabled(bool b) {
+  if (browserCreated_)
+    return false;
+  osrEnabled_ = b;
+  return true;
+}
+
+bool QCefWidgetImpl::osrEnabled() {
+  return osrEnabled_;
 }
 
 float QCefWidgetImpl::deviceScaleFactor() {

@@ -25,42 +25,60 @@ TestWnd::TestWnd(QWidget *parent)
   setupUi();
 
   transWidgetCefWnd_ = new TransparentCefWnd(false, nullptr);
-  connect(transWidgetCefWnd_, &QWidget::destroyed, transWidgetCefWnd_, [this]() {
-    qInfo() << "transWidgetCefWnd_::destroyed";
-    transWidgetCefWnd_ = nullptr;
-  });
-  transWidgetCefWnd_->show();
+  if (transWidgetCefWnd_) {
+    connect(transWidgetCefWnd_, &QWidget::destroyed, transWidgetCefWnd_, [this]() {
+      qInfo() << "transWidgetCefWnd_::destroyed";
+      transWidgetCefWnd_ = nullptr;
+    });
+    transWidgetCefWnd_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
+    transWidgetCefWnd_->show();
+  }
 
   transOpenGLWidgetCefWnd_ = new TransparentCefWnd(true, nullptr);
-  connect(transOpenGLWidgetCefWnd_, &QWidget::destroyed, transOpenGLWidgetCefWnd_, [this]() {
-    qInfo() << "transOpenGLWidgetCefWnd_::destroyed";
-    transOpenGLWidgetCefWnd_ = nullptr;
-  });
-  transOpenGLWidgetCefWnd_->show();
+  if (transOpenGLWidgetCefWnd_) {
+    connect(transOpenGLWidgetCefWnd_, &QWidget::destroyed, transOpenGLWidgetCefWnd_, [this]() {
+      qInfo() << "transOpenGLWidgetCefWnd_::destroyed";
+      transOpenGLWidgetCefWnd_ = nullptr;
+    });
+    transOpenGLWidgetCefWnd_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
+    transOpenGLWidgetCefWnd_->show();
+  }
 
   bindUiEvent();
 
-  // Set FPS
-  if (cefWidget_)
+  if (cefWidget_) {
     cefWidget_->setFPS(30);
+    cefWidget_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
+  }
 
-  if (cefOpenGLWidget_)
+  if (cefOpenGLWidget_) {
     cefOpenGLWidget_->setFPS(30);
+    cefOpenGLWidget_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
+  }
 
-  QString url1 = QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html");
-  QString url2 = QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html");
+  QString url;
+  if(comboBoxUrl_->count() > 0)
+    url = comboBoxUrl_->itemText(0);
 
-  if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_)
-    cefWidget_->navigateToUrl(url1);
+  if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_) {
+    if(url.length() > 0)
+      cefWidget_->navigateToUrl(url);
+  }
 
-  if (checkBoxOpacityCefOpenGLWidget_->isChecked() && cefOpenGLWidget_)
-    cefOpenGLWidget_->navigateToUrl(url1);
+  if (checkBoxOpacityCefOpenGLWidget_->isChecked() && cefOpenGLWidget_) {
+    if (url.length() > 0)
+      cefOpenGLWidget_->navigateToUrl(url);
+  }
 
-  if (checkBoxTransparentCefWidget_->isChecked() && transWidgetCefWnd_)
-    transWidgetCefWnd_->navigateToUrl(url2);
+  if (checkBoxTransparentCefWidget_->isChecked() && transWidgetCefWnd_) {
+    if (url.length() > 0)
+      transWidgetCefWnd_->navigateToUrl(url);
+  }
 
-  if (checkBoxTransparentCefOpenGLWidget_->isChecked() && transOpenGLWidgetCefWnd_)
-    transOpenGLWidgetCefWnd_->navigateToUrl(url2);
+  if (checkBoxTransparentCefOpenGLWidget_->isChecked() && transOpenGLWidgetCefWnd_) {
+    if (url.length() > 0)
+      transOpenGLWidgetCefWnd_->navigateToUrl(url);
+  }
 }
 
 TestWnd::~TestWnd() { qInfo() << "TestWnd::~TestWnd, this: " << this; }
@@ -86,6 +104,16 @@ void TestWnd::setupUi() {
   this->setObjectName("QCefWidgetDemo");
 
 #pragma region Top
+  QLabel* lblOption = new QLabel("Options: ");
+
+  checkboxOsrEnabled_ = new QCheckBox("CEF OSR(off-screen render)");
+  checkboxOsrEnabled_->setChecked(false);
+
+  QHBoxLayout* hlOptions = new QHBoxLayout();
+  hlOptions->addWidget(lblOption);
+  hlOptions->addWidget(checkboxOsrEnabled_);
+  hlOptions->addStretch();
+
   QLabel *lblTarget = new QLabel("Target browser: ");
 
   checkBoxOpacityCefOpenGLWidget_ = new QCheckBox("Opacity QCefOpenGLWidget");
@@ -95,10 +123,10 @@ void TestWnd::setupUi() {
   checkBoxOpacityCefWidget_->setChecked(true);
 
   checkBoxTransparentCefWidget_ = new QCheckBox("Transparent QCefWidget");
-  checkBoxTransparentCefWidget_->setChecked(true);
+  checkBoxTransparentCefWidget_->setChecked(false);
 
   checkBoxTransparentCefOpenGLWidget_ = new QCheckBox("Transparent QCefOpenGLWidget");
-  checkBoxTransparentCefOpenGLWidget_->setChecked(true);
+  checkBoxTransparentCefOpenGLWidget_->setChecked(false);
 
   QHBoxLayout *hlTargetCefWidget = new QHBoxLayout();
   hlTargetCefWidget->addWidget(lblTarget);
@@ -141,7 +169,7 @@ void TestWnd::setupUi() {
   comboBoxUrl_->setObjectName("comboBoxUrl");
   comboBoxUrl_->setFixedHeight(22);
   comboBoxUrl_->setEditable(true);
-  comboBoxUrl_->addItems(QStringList() << "about:blank" << "chrome://version"  << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
+  comboBoxUrl_->addItems(QStringList() << "" << "about:blank" << "chrome://version"  << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/FlashPlayerTest.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
     << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/PDF.html")
@@ -166,6 +194,7 @@ void TestWnd::setupUi() {
   hlFunction->addWidget(pushButtonExit_);
 
   QVBoxLayout *vlTop = new QVBoxLayout();
+  vlTop->addLayout(hlOptions);
   vlTop->addLayout(hlTargetCefWidget);
   vlTop->addWidget(comboBoxUrl_);
   vlTop->addLayout(hlFunction);
@@ -396,6 +425,17 @@ void TestWnd::bindUiEvent() {
 
   connect(cefOpenGLWidget_, &QCefOpenGLWidget::urlChanged, this, [this](bool isMainFrame, QString url) {
     plainTextEditLog_->appendPlainText(QString("[QCefOpenGLWidget] urlChanged, isMainFrame: %1, url: %2\r\n").arg(isMainFrame).arg(url));
+  });
+
+  connect(checkboxOsrEnabled_, &QCheckBox::stateChanged, this, [this](int state) {
+    if (cefWidget_)
+      cefWidget_->setOsrEnabled(state == Qt::Checked);
+    if (cefOpenGLWidget_)
+      cefOpenGLWidget_->setOsrEnabled(state == Qt::Checked);
+    if (transWidgetCefWnd_)
+      transWidgetCefWnd_->setOsrEnabled(state == Qt::Checked);
+    if (transOpenGLWidgetCefWnd_)
+      transOpenGLWidgetCefWnd_->setOsrEnabled(state == Qt::Checked);
   });
 }
 

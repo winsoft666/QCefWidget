@@ -20,6 +20,15 @@ TransparentCefWnd::~TransparentCefWnd() {
   qInfo() << "TransparentCefWnd::~TransparentCefWnd, this: " << this;
 }
 
+void TransparentCefWnd::setOsrEnabled(bool b) {
+  if (bCefOpenGLWidget_) {
+    cefOpenGLWidget_->setOsrEnabled(b);
+  }
+  else {
+    cefWidget_->setOsrEnabled(b);
+  }
+}
+
 void TransparentCefWnd::navigateToUrl(const QString &url) {
   if (bCefOpenGLWidget_) {
     cefOpenGLWidget_->navigateToUrl(url);

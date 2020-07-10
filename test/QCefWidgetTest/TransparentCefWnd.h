@@ -12,6 +12,7 @@ public:
   TransparentCefWnd(bool bCefOpenGLWidget, QWidget *parent = 0);
   ~TransparentCefWnd();
 
+  void setOsrEnabled(bool b);
   void navigateToUrl(const QString &url);
   void showDevTools();
   void closeDevTools();

@@ -20,7 +20,6 @@ QCefWidget::QCefWidget(QWidget *parent)
 
 QCefWidget::~QCefWidget() {
   qInfo() << "QCefWidget::~QCefWidget, this: " << this;
-  pImpl_.reset();
   QCefManager::getInstance().uninitializeCef();
 }
 
@@ -89,6 +88,16 @@ void QCefWidget::executeJavascript(const QString &javascript) {
   pImpl_->executeJavascript(javascript);
 }
 
+bool QCefWidget::setOsrEnabled(bool b) {
+  Q_ASSERT(pImpl_);
+  return pImpl_->setOsrEnabled(b);
+}
+
+bool QCefWidget::osrEnabled() { 
+  Q_ASSERT(pImpl_);
+  return pImpl_->osrEnabled();
+}
+
 void QCefWidget::setFPS(int fps) {
   Q_ASSERT(pImpl_);
   pImpl_->setFPS(fps);
@@ -114,13 +123,28 @@ void QCefWidget::showDevTools() { QCefManager::getInstance().showDevTools(this);
 void QCefWidget::closeDevTools() { QCefManager::getInstance().closeDevTools(this); }
 
 bool QCefWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
-  Q_ASSERT(pImpl_);
-  return pImpl_->nativeEvent(eventType, message, result);
+  // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
+  if (!pImpl_)
+    return QWidget::nativeEvent(eventType, message, result);
+  if (pImpl_->nativeEvent(eventType, message, result))
+    return true;
+  return QWidget::nativeEvent(eventType, message, result);
+}
+
+bool QCefWidget::event(QEvent *event) {
+  // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
+  if (!pImpl_)
+    return QWidget::event(event);
+
+  if (pImpl_->event(event)) {
+    return true;
+  }
+  return QWidget::event(event);
 }
 
 void QCefWidget::paintEvent(QPaintEvent *event) {
   Q_ASSERT(pImpl_);
-  if (!pImpl_->paintEventHandle(event)) {
+  if (!pImpl_ || !pImpl_->paintEventHandle(event)) {
     QWidget::paintEvent(event);
   }
 }
@@ -128,5 +152,6 @@ void QCefWidget::paintEvent(QPaintEvent *event) {
 void QCefWidget::setVisible(bool visible) {
   QWidget::setVisible(visible);
   Q_ASSERT(pImpl_);
-  pImpl_->setVisible(visible);
+  if(pImpl_)
+    pImpl_->setVisible(visible);
 }

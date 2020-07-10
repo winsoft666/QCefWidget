@@ -26,6 +26,8 @@ private slots:
 private:
   QWidget *widgetTop_;
 
+  QCheckBox* checkboxOsrEnabled_;
+
   QCheckBox *checkBoxOpacityCefWidget_;
   QCheckBox *checkBoxOpacityCefOpenGLWidget_;
   QCheckBox *checkBoxTransparentCefWidget_;

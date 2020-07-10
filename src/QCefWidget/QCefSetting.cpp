@@ -138,23 +138,3 @@ const QString QCefSetting::flashPluginVersion() {
   QCefGlobalSetting::initializeInstance();
   return QString::fromStdWString(QCefGlobalSetting::flush_plugin_ver.ToWString());
 }
-
-void QCefSetting::setHookTopLevelWindowCloseMessage(bool hook) {
-  QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::hook_top_level_window_close_msg = hook;
-}
-
-const bool QCefSetting::isHookTopLevelWindowCloseMessage() {
-  QCefGlobalSetting::initializeInstance();
-  return QCefGlobalSetting::hook_top_level_window_close_msg;
-}
-
-void QCefSetting::setIgnoreTopLevelCloseMessage(bool ignore) {
-  QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::ignore_top_level_window_close_msg = ignore;
-}
-
-const bool QCefSetting::isIgnoreTopLevelCloseMessage() {
-  QCefGlobalSetting::initializeInstance();
-  return QCefGlobalSetting::ignore_top_level_window_close_msg;
-}

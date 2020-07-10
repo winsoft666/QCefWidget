@@ -18,8 +18,7 @@ int QCefGlobalSetting::persist_session_cookies = 1;
 int QCefGlobalSetting::persist_user_preferences = 1;
 int QCefGlobalSetting::remote_debugging_port = 0;
 bool QCefGlobalSetting::gpu_enabled = true;
-bool QCefGlobalSetting::hook_top_level_window_close_msg = true;
-bool QCefGlobalSetting::ignore_top_level_window_close_msg = false;
+
 
 void QCefGlobalSetting::initializeInstance() { static QCefGlobalSetting s_instance; }
 

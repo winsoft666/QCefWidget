@@ -18,6 +18,7 @@ public:
 
 public:
   void navigateToUrl(const QString &url);
+
   bool canGoBack();
   bool canGoForward();
   void goBack();
@@ -34,6 +35,7 @@ public:
   bool createBrowser(const QString &url);
   bool createDevTools(CefRefPtr<CefBrowser> targetBrowser);
 
+  void browserClosingNotify(CefRefPtr<CefBrowser> browser);
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);
   void browserDestoryedNotify(CefRefPtr<CefBrowser> browser);
 
@@ -44,12 +46,15 @@ public:
   WidgetType getWidgetType();
 
   bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-
+  bool event(QEvent *event);
   bool paintEventHandle(QPaintEvent *event);
 #ifndef QT_NO_OPENGL
   bool openGLPaintEventHandle(QPaintEvent *event);
 #endif
   void setVisible(bool visible);
+
+  bool setOsrEnabled(bool b);
+  bool osrEnabled();
 
   float deviceScaleFactor();
 
@@ -73,13 +78,17 @@ private:
   QWidget *pWidget_;
   QWidget* pTopWidget_;
 
+  WId widgetWId_;
+
   CefRefPtr<QCefBrowserHandler> pQCefViewHandler_;
   std::shared_ptr<QCefWidgetUIEventHandlerWin> pCefUIEventWin_;
 
   bool browserClosing_;
   bool browserCreated_;
+  bool osrEnabled_;
 
   int fps_;
   QColor background_color_;
+
 };
 #endif

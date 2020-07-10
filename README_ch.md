@@ -1,8 +1,10 @@
 [ >>> English Version](README.md)
 
-`QCefWidget`项目提供一个widget来显示网页，基于[CEF](https://bitbucket.org/chromiumembedded/cef/src/master/)离屏渲染(Offscreen Rendering)模式实现。
+`QCefWidget`项目提供一个Widget来显示网页.
 
 支持：
+
+✅ 同时支持CEF OSR和非OSR模式;
 
 ✅ 在不规则窗体中显示背景透明的网页;
 
@@ -41,7 +43,3 @@
     mkdir build && cd build
     cmake .. && cmake --build .
     ```
-
----
-
-感谢[QCefView](https://github.com/tishion/QCefView)项目，`QCefWidget`在工程结构方面参考了该项目。但`QCefWidget`基于CEF离屏渲染(OSR)模式实现，这和`QCefView`完全不同。

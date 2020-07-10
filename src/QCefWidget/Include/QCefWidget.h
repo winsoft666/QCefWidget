@@ -30,6 +30,7 @@ public:
   virtual ~QCefWidget();
 
   virtual void navigateToUrl(const QString &url);
+
   virtual bool canGoBack();
   virtual bool canGoForward();
   virtual void goBack();
@@ -59,6 +60,12 @@ public:
 
   virtual void executeJavascript(const QString &javascript);
 
+  // Must be set before browser created, otherwise return false.
+  // OSR is enabled by default.
+  //
+  virtual bool setOsrEnabled(bool b);
+  virtual bool osrEnabled();
+
   virtual void setFPS(int fps);
   virtual int fps() const;
 
@@ -79,6 +86,7 @@ signals:
   void invokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
 protected:
   bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
+  bool event(QEvent *event) override;
   void paintEvent(QPaintEvent *event) override;
   void setVisible(bool visible) override;
 

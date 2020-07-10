@@ -197,8 +197,13 @@ void QCefBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
 bool QCefBrowserHandler::DoClose(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_UI_THREAD();
 
-  if (pMainBrowser_ && pMainBrowser_->IsSame(browser))
+  if (pMainBrowser_ && pMainBrowser_->IsSame(browser)) {
     isClosing_ = true;
+
+    if (pCefViewImpl_) {
+      pCefViewImpl_->browserClosingNotify(browser);
+    }
+  }
 
   return false;
 }

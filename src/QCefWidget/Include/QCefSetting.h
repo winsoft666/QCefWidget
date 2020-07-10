@@ -150,15 +150,6 @@ const QCEFWIDGET_EXPORT QString flashPluginPath();
 
 const QCEFWIDGET_EXPORT QString flashPluginVersion();
 
-QCEFWIDGET_EXPORT void setHookTopLevelWindowCloseMessage(bool hook);
-
-const QCEFWIDGET_EXPORT bool isHookTopLevelWindowCloseMessage();
-
-
-QCEFWIDGET_EXPORT void setIgnoreTopLevelCloseMessage(bool ignore);
-
-const QCEFWIDGET_EXPORT bool isIgnoreTopLevelCloseMessage();
-
 }; // namespace QCefSetting
 
 #endif
