@@ -56,7 +56,9 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   if (osrEnabled_) {
     window_info.SetAsWindowless(hwnd);
 
-    browserSettings.plugins = STATE_DISABLED; // disable all plugins
+    // Enable all plugins here. 
+    // If not set enabled, PDF will cannot be render correctly, even if add command lines in OnBeforeCommandLineProcessing function.
+    browserSettings.plugins = STATE_ENABLED;
     browserSettings.windowless_frame_rate = fps_;
     browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
   }
@@ -71,7 +73,14 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
 
     window_info.SetAsChild(hwnd, rc);
 
-    browserSettings.plugins = STATE_DISABLED; // disable all plugins
+    if (GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_NOACTIVATE) {
+      // Don't activate the browser window on creation.
+      window_info.ex_style |= WS_EX_NOACTIVATE;
+    }
+
+    // Enable all plugins here.
+    // If not set enabled, PDF will cannot be render correctly, even if add command lines in OnBeforeCommandLineProcessing function.
+    browserSettings.plugins = STATE_ENABLED;
     browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
   }
 

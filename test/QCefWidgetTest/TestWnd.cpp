@@ -21,6 +21,8 @@ TestWnd::TestWnd(QWidget *parent)
     , transOpenGLWidgetCefWnd_(nullptr) {
   QCefSetting::setFlashPlugin("TestResource/pepperflash/26.0.0.126/pepflashplayer.dll", "26.0.0.126");
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer.dll", "32.0.0.387");
+  //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.192/pepflashplayer.dll", "32.0.0.192");
+
 
   setupUi();
 
@@ -179,6 +181,11 @@ void TestWnd::setupUi() {
                                        << "https://www.google.com"
                                        << "https://map.baidu.com/"
                                        << "https://ant.design/components/overview/");
+
+  QLineEdit* pLineEdit = comboBoxUrl_->lineEdit();
+  if (pLineEdit) {
+    pLineEdit->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
+  }
 
   QHBoxLayout *hlFunction = new QHBoxLayout();
   hlFunction->setSpacing(6);

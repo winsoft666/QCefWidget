@@ -19,12 +19,13 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type
 
   command_line->AppendSwitch("no-proxy-server");
   command_line->AppendSwitch("disable-web-security");
-  command_line->AppendSwitch("allow-outdated-plugins");
-  command_line->AppendSwitchWithValue("enable-npapi", "1");
-  command_line->AppendSwitchWithValue("plugin-policy", "allow");
   command_line->AppendSwitch("allow-file-access-from-files");
   command_line->AppendSwitch("allow-universal-access-from-files");
   command_line->AppendSwitch("disable-spell-checking");
+
+  command_line->AppendSwitch("enable-extensions");
+  command_line->AppendSwitch("allow-outdated-plugins");
+  command_line->AppendSwitch("enable-npapi");
 
   // Can not disable GPU in D3D mode.
   // D3D mode not be support in CEF 2623 version.
@@ -37,6 +38,9 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type
     command_line->AppendSwitch("disable-gpu");
     command_line->AppendSwitch("disable-gpu-compositing");
   }
+
+  //command_line->AppendSwitch("disable-surfaces");
+  //command_line->AppendSwitch("enable-begin-frame-scheduling");
 
   if (QCefGlobalSetting::flush_plugin_path.length() > 0 &&
       QCefGlobalSetting::flush_plugin_ver.length() > 0) {

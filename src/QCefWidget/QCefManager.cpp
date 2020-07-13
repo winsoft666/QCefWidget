@@ -25,7 +25,7 @@ void QCefManager::initializeCef() {
   QCefGlobalSetting::initializeInstance();
 
   // Applications should specify a unique GUID here to enable trusted downloads.
-  // CefString(&cefSettings_.application_client_id_for_file_scanning).FromString("2A8DE24D-B822-4C6C-8259-5A848FEA1E68");
+  //CefString(&cefSettings_.application_client_id_for_file_scanning).FromString("2A8DE24D-B822-4C6C-8259-5A848FEA1E68");
 
   CefString(&cefSettings_.browser_subprocess_path) = QCefGlobalSetting::browser_sub_process_path;
   CefString(&cefSettings_.resources_dir_path) = QCefGlobalSetting::resource_directory_path;
@@ -42,10 +42,10 @@ void QCefManager::initializeCef() {
   cefSettings_.no_sandbox = true;
   cefSettings_.pack_loading_disabled = false;
   cefSettings_.multi_threaded_message_loop = true;
-  cefSettings_.windowless_rendering_enabled = true;
+  cefSettings_.windowless_rendering_enabled = false;
 
 #ifndef NDEBUG
-  cefSettings_.log_severity = LOGSEVERITY_INFO;
+  cefSettings_.log_severity = LOGSEVERITY_VERBOSE;
   cefSettings_.remote_debugging_port = 7777;
 #else
   cefSettings_.log_severity = LOGSEVERITY_WARNING;
