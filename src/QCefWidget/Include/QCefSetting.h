@@ -143,12 +143,33 @@ const QCEFWIDGET_EXPORT bool gpuEnabled();
 /// </summary>
 QCEFWIDGET_EXPORT void setFlashPlugin(const QString& path, const QString &ver);
 
+
+const QCEFWIDGET_EXPORT QString flashPluginPath();
+
 /// <summary>
 ///
 /// </summary>
-const QCEFWIDGET_EXPORT QString flashPluginPath();
-
 const QCEFWIDGET_EXPORT QString flashPluginVersion();
+
+/// <summary>
+///
+/// </summary>
+const QCEFWIDGET_EXPORT void setOsrEnabled(bool b);
+
+/// <summary>
+///
+/// </summary>
+const QCEFWIDGET_EXPORT bool osrEnabled();
+
+/// <summary>
+///
+/// </summary>
+void QCEFWIDGET_EXPORT setDebugLogPath(const QString &path);
+
+/// <summary>
+///
+/// </summary>
+const QCEFWIDGET_EXPORT QString debugLogPath();
 
 }; // namespace QCefSetting
 

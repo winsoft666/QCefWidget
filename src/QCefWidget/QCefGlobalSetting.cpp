@@ -14,21 +14,22 @@ CefString QCefGlobalSetting::cache_path;
 CefString QCefGlobalSetting::user_data_path;
 CefString QCefGlobalSetting::locale;
 CefString QCefGlobalSetting::accept_language_list;
+CefString QCefGlobalSetting::debug_log_path;
 int QCefGlobalSetting::persist_session_cookies = 1;
 int QCefGlobalSetting::persist_user_preferences = 1;
 int QCefGlobalSetting::remote_debugging_port = 0;
 bool QCefGlobalSetting::gpu_enabled = true;
-
+bool QCefGlobalSetting::osr_enabled = true;
 
 void QCefGlobalSetting::initializeInstance() { static QCefGlobalSetting s_instance; }
 
 QCefGlobalSetting::QCefGlobalSetting() {
-  QDir ExeDir = QCoreApplication::applicationDirPath();
+  QDir exeDir = QCoreApplication::applicationDirPath();
 
-  QString strExePath = ExeDir.filePath(RENDER_PROCESS_NAME);
+  QString strExePath = exeDir.filePath(RENDER_PROCESS_NAME);
   browser_sub_process_path.FromString(QDir::toNativeSeparators(strExePath).toStdString());
 
-  QString strResPath = ExeDir.filePath(RESOURCE_DIRECTORY_NAME);
+  QString strResPath = exeDir.filePath(RESOURCE_DIRECTORY_NAME);
   resource_directory_path.FromString(QDir::toNativeSeparators(strResPath).toStdString());
 
   QDir ResPath(strResPath);
@@ -40,7 +41,8 @@ QCefGlobalSetting::QCefGlobalSetting() {
   accept_language_list.FromWString(L"zh-CN,en-US,en,en-GB");
   locale.FromWString(L"zh-CN");
 
-  gpu_enabled = true;
+  QString debugLogPath = exeDir.filePath("CEF.log");
+  debug_log_path.FromString(QDir::toNativeSeparators(debugLogPath).toStdString());
 }
 
 QCefGlobalSetting::~QCefGlobalSetting() {}

@@ -19,10 +19,12 @@ public:
   static CefString accept_language_list;
   static CefString flush_plugin_path;
   static CefString flush_plugin_ver;
+  static CefString debug_log_path;
   static int persist_session_cookies;
   static int persist_user_preferences;
   static int remote_debugging_port;
   static bool gpu_enabled;
+  static bool osr_enabled;
 protected:
   QCefGlobalSetting();
   ~QCefGlobalSetting();

@@ -45,6 +45,7 @@ void QCefBrowserHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefR
   //model->Clear();
 
   // TODO
+  qInfo() << params->GetXCoord() << ", " << params->GetYCoord();
 }
 
 bool QCefBrowserHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefContextMenuParams> params, int command_id,
@@ -421,12 +422,16 @@ bool QCefBrowserHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX
   if (!pWidget)
     return false;
 
-  QPoint p = {(int)(viewX * pCefViewImpl_->deviceScaleFactor()), (int)(viewY * pCefViewImpl_->deviceScaleFactor())};
-  QPoint global_p = pWidget->mapToGlobal(p);
+  float fScale = pCefViewImpl_->deviceScaleFactor();
 
-  screenX = global_p.x();
-  screenY = global_p.y();
+  QPoint p = { static_cast<int>(std::floor(static_cast<float>(viewX) * fScale)), 
+    static_cast<int>(std::floor(static_cast<float>(viewY) * fScale)) };
+  QPoint globalPos = pWidget->mapToGlobal(p);
 
+  screenX = globalPos.x();
+  screenY = globalPos.y();
+
+  //qInfo() << "screenX: " << screenX << ", screenY: " << screenY;
   return true;
 }
 
@@ -443,6 +448,11 @@ void QCefBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect &rec
   rect.y = 0;
   rect.width = viewRect.width();
   rect.height = viewRect.height();
+
+  if (rect.width == 0)
+    rect.width = 1;
+  if (rect.height == 0)
+    rect.height = 1;
 }
 
 bool QCefBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo &screen_info) {
@@ -575,7 +585,7 @@ void QCefBrowserHandler::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> brow
     pCefViewImpl_->OnImeCompositionRangeChanged(browser, selection_range, character_bounds);
 }
 
-CefRefPtr<CefBrowser> QCefBrowserHandler::browser() {
+CefRefPtr<CefBrowser> QCefBrowserHandler::browser() const {
   std::lock_guard<std::recursive_mutex> lock(mtx_);
   return pMainBrowser_;
 }
@@ -700,6 +710,21 @@ CefRenderBuffer *QCefBrowserHandler::lockPopupBuffer() {
 void QCefBrowserHandler::unlockPopupBuffer() { popupRenderBufMtx_.unlock(); }
 
 bool QCefBrowserHandler::isPopupShow() { return !popupRect_.IsEmpty(); }
+
+bool QCefBrowserHandler::isOverPopupWidget(int x, int y) const {
+  const CefRect &rc = popupRect_;
+  int popup_right = rc.x + rc.width;
+  int popup_bottom = rc.y + rc.height;
+  return (x >= rc.x) && (x < popup_right) && (y >= rc.y) && (y < popup_bottom);
+}
+
+int QCefBrowserHandler::getPopupXOffset() const {
+  return originalPopupRect_.x - popupRect_.x;
+}
+
+int QCefBrowserHandler::getPopupYOffset() const {
+  return originalPopupRect_.y - popupRect_.y;
+}
 
 CefRect QCefBrowserHandler::getPopupRectInWebView(const CefRect &original_rect) const {
   CefRect rc(original_rect);

@@ -19,8 +19,8 @@ TestWnd::TestWnd(QWidget *parent)
     , cefOpenGLWidget_(nullptr)
     , transWidgetCefWnd_(nullptr)
     , transOpenGLWidgetCefWnd_(nullptr) {
-  QCefSetting::setFlashPlugin("TestResource/pepperflash/26.0.0.126/pepflashplayer.dll", "26.0.0.126");
-  //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer.dll", "32.0.0.387");
+  QCefSetting::setFlashPlugin("TestResource\\pepperflash\\26.0.0.126\\pepflashplayer.dll", "26.0.0.126");
+  //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer32.dll", "32.0.0.387");
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.192/pepflashplayer.dll", "32.0.0.192");
 
 

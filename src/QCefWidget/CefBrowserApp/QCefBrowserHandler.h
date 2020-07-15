@@ -233,7 +233,7 @@ public:
 
   /////////////////////////////////////////////////////////////////////////
 
-  CefRefPtr<CefBrowser> browser();
+  CefRefPtr<CefBrowser> browser() const;
 
   bool triggerEvent(const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
 
@@ -249,6 +249,9 @@ public:
   void unlockPopupBuffer();
 
   bool isPopupShow();
+  bool isOverPopupWidget(int x, int y) const;
+  int getPopupXOffset() const;
+  int getPopupYOffset() const;
 
 protected:
   CefRect getPopupRectInWebView(const CefRect &original_rect) const;
@@ -259,7 +262,7 @@ private:
   int browserCount_;
 
   bool isClosing_;
-  std::recursive_mutex mtx_;
+  mutable std::recursive_mutex mtx_;
 
   CefRefPtr<CefBrowser> pMainBrowser_;
   std::list<CefRefPtr<CefBrowser>> popupBrowserList_;

@@ -23,10 +23,15 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type
   command_line->AppendSwitch("allow-universal-access-from-files");
   command_line->AppendSwitch("disable-spell-checking");
 
-  command_line->AppendSwitch("enable-extensions");
-  command_line->AppendSwitch("allow-outdated-plugins");
-  command_line->AppendSwitch("enable-npapi");
+  /*
+  In CEF cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32, cannot disable extensions, otherwise PDF will not be shown.
+  command_line->AppendSwitch("disable-extensions");
+  */
 
+  // avoid prompting for plugin upgrades, eg. flash
+  command_line->AppendSwitch("allow-outdated-plugins");
+
+  //QCefGlobalSetting::gpu_enabled = false;
   // Can not disable GPU in D3D mode.
   // D3D mode not be support in CEF 2623 version.
   //
@@ -39,8 +44,7 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(const CefString &process_type
     command_line->AppendSwitch("disable-gpu-compositing");
   }
 
-  //command_line->AppendSwitch("disable-surfaces");
-  //command_line->AppendSwitch("enable-begin-frame-scheduling");
+  command_line->AppendSwitch("enable-begin-frame-scheduling");
 
   if (QCefGlobalSetting::flush_plugin_path.length() > 0 &&
       QCefGlobalSetting::flush_plugin_ver.length() > 0) {

@@ -137,7 +137,8 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
-  pCefUIEventWin_ = std::make_shared<QCefWidgetUIEventHandlerWin>((HWND)widgetWId_, browser);
+  Q_ASSERT(pQCefViewHandler_);
+  pCefUIEventWin_ = std::make_shared<QCefWidgetUIEventHandlerWin>((HWND)widgetWId_, browser, pQCefViewHandler_);
   Q_ASSERT(pCefUIEventWin_);
   if (pCefUIEventWin_) {
     pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor());
@@ -304,6 +305,13 @@ QWidget *QCefWidgetImpl::getWidget() {
 }
 
 WidgetType QCefWidgetImpl::getWidgetType() { return vt_; }
+
+QRect QCefWidgetImpl::rect() {
+  QRect rc;
+  if (pWidget_)
+    rc = pWidget_->rect();
+  return rc;
+}
 
 bool QCefWidgetImpl::event(QEvent *event) {
   if (event->type() == QEvent::WinIdChange) {
@@ -522,9 +530,21 @@ float QCefWidgetImpl::deviceScaleFactor() {
   return pWidget_->devicePixelRatioF();
 }
 
-void QCefWidgetImpl::setFPS(int fps) { fps_ = fps; }
+void QCefWidgetImpl::setFPS(int fps) { 
+  fps_ = fps;
+  CefRefPtr<CefBrowser> b = browser();
+  if (b && b->GetHost()) {
+    b->GetHost()->SetWindowlessFrameRate(fps_);
+  }
+}
 
-int QCefWidgetImpl::fps() const { return fps_; }
+int QCefWidgetImpl::fps() const { 
+  CefRefPtr<CefBrowser> b = browser();
+  if (b && b->GetHost()) {
+    return b->GetHost()->GetWindowlessFrameRate();
+  }
+  return fps_;
+}
 
 void QCefWidgetImpl::setBrowserBackgroundColor(const QColor &color) { background_color_ = color; }
 
@@ -538,7 +558,7 @@ void QCefWidgetImpl::updateCefWidget() {
 
 void QCefWidgetImpl::setBrowserClosing(bool b) { browserClosing_ = b; }
 
-CefRefPtr<CefBrowser> QCefWidgetImpl::browser() {
+CefRefPtr<CefBrowser> QCefWidgetImpl::browser() const {
   if (!pQCefViewHandler_) {
     return nullptr;
   }

@@ -4,15 +4,11 @@
 
 - QCefOpenGLWidget render performance optimization.
 
-- PDF, Flash can not display.
-
 - Context menu position error.
 
 # New Feature
 
 - Interface about browser custom context menu.
-
-- Signal about browser address changed.
 
 - Image manager.
 

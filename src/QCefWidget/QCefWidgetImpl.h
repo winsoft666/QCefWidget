@@ -44,6 +44,7 @@ public:
 
   QWidget* getWidget();
   WidgetType getWidgetType();
+  QRect rect();
 
   bool nativeEvent(const QByteArray &eventType, void *message, long *result);
   bool event(QEvent *event);
@@ -68,7 +69,7 @@ public:
 
   void setBrowserClosing(bool b);
 
-  CefRefPtr<CefBrowser> browser();
+  CefRefPtr<CefBrowser> browser() const;
 protected:
   bool sendEventNotifyMessage(int frameId, const QString &name, const QCefEvent &event);
   CefRefPtr<CefBrowserHost> getCefBrowserHost();

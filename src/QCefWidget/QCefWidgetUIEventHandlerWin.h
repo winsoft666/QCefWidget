@@ -10,11 +10,12 @@
 
 class QCefWidgetUIEventHandlerWin {
 public:
-  QCefWidgetUIEventHandlerWin(HWND h, CefRefPtr<CefBrowser> pCefBrowser);
+  QCefWidgetUIEventHandlerWin(HWND h, CefRefPtr<CefBrowser> pCefBrowser, CefRefPtr<QCefBrowserHandler> pBrowserHandler);
   ~QCefWidgetUIEventHandlerWin();
 
   void OnSize(UINT message, WPARAM wParam, LPARAM lParam);
   void OnKeyboardEvent(UINT message, WPARAM wParam, LPARAM lParam);
+
   void OnMouseEvent(UINT message, WPARAM wParam, LPARAM lParam);
   void OnTouchEvent(UINT message, WPARAM wParam, LPARAM lParam);
   void OnFocusEvent(UINT message, WPARAM wParam, LPARAM lParam);
@@ -25,6 +26,11 @@ public:
                                     const CefRenderHandler::RectList &character_bounds);
 
   void setDeviceScaleFactor(float factor);
+  bool IsOverPopupWidget(int x, int y) const;
+  int GetPopupXOffset() const;
+  int GetPopupYOffset() const;
+  void ApplyPopupOffset(int &x, int &y) const;
+
 private:
   bool IsKeyDown(WPARAM wParam);
   int GetCefMouseModifiers(WPARAM wParam);
@@ -37,21 +43,22 @@ private:
 private:
   HWND hwnd_;
   CefRefPtr<CefBrowser> pCefBrowser_;
+  CefRefPtr<QCefBrowserHandler> pBrowserHandler_;
   float deviceScaleFactor_;
 
   // Mouse state tracking.
-  POINT last_mouse_pos_;
-  POINT current_mouse_pos_;
-  bool mouse_rotation_;
-  bool mouse_tracking_;
-  int last_click_x_;
-  int last_click_y_;
-  CefBrowserHost::MouseButtonType last_click_button_;
-  int last_click_count_;
-  double last_click_time_;
-  bool last_mouse_down_on_view_;
+  POINT lastMousePos_;
+  POINT currentMousePos_;
+  bool mouseRotation_;
+  bool mouseTracking_;
+  int lastClickX_;
+  int lastClickY_;
+  CefBrowserHost::MouseButtonType lastClickButton_;
+  int lastClickCount_;
+  double lastClickTime_;
+  bool lastMouseDownOnView_;
 
-  std::unique_ptr<QCefIMEHandlerWin> ime_handler_;
+  std::unique_ptr<QCefIMEHandlerWin> imeHandler_;
 };
 
 #endif

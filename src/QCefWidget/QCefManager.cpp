@@ -25,7 +25,7 @@ void QCefManager::initializeCef() {
   QCefGlobalSetting::initializeInstance();
 
   // Applications should specify a unique GUID here to enable trusted downloads.
-  //CefString(&cefSettings_.application_client_id_for_file_scanning).FromString("2A8DE24D-B822-4C6C-8259-5A848FEA1E68");
+  CefString(&cefSettings_.application_client_id_for_file_scanning).FromString("2A8DE24D-B822-4C6C-8259-5A848FEA1E68");
 
   CefString(&cefSettings_.browser_subprocess_path) = QCefGlobalSetting::browser_sub_process_path;
   CefString(&cefSettings_.resources_dir_path) = QCefGlobalSetting::resource_directory_path;
@@ -35,17 +35,19 @@ void QCefManager::initializeCef() {
   CefString(&cefSettings_.user_data_path) = QCefGlobalSetting::user_data_path;
   CefString(&cefSettings_.locale) = QCefGlobalSetting::locale;
   CefString(&cefSettings_.accept_language_list) = QCefGlobalSetting::accept_language_list;
+  CefString(&cefSettings_.log_file) = QCefGlobalSetting::debug_log_path;
 
-  cefSettings_.persist_session_cookies = QCefGlobalSetting::persist_session_cookies;
-  cefSettings_.persist_user_preferences = QCefGlobalSetting::persist_user_preferences;
+  cefSettings_.persist_session_cookies = QCefGlobalSetting::persist_session_cookies ? 1 : 0;
+  cefSettings_.persist_user_preferences = QCefGlobalSetting::persist_user_preferences ? 1 : 0;
   cefSettings_.remote_debugging_port = QCefGlobalSetting::remote_debugging_port;
-  cefSettings_.no_sandbox = true;
-  cefSettings_.pack_loading_disabled = false;
-  cefSettings_.multi_threaded_message_loop = true;
-  cefSettings_.windowless_rendering_enabled = false;
+  cefSettings_.no_sandbox = 1;
+  cefSettings_.pack_loading_disabled = 0;
+  cefSettings_.multi_threaded_message_loop = 1;
+  cefSettings_.windowless_rendering_enabled = QCefGlobalSetting::osr_enabled ? 1 : 0;
+  cefSettings_.ignore_certificate_errors = 1;
 
 #ifndef NDEBUG
-  cefSettings_.log_severity = LOGSEVERITY_VERBOSE;
+  cefSettings_.log_severity = LOGSEVERITY_INFO;
   cefSettings_.remote_debugging_port = 7777;
 #else
   cefSettings_.log_severity = LOGSEVERITY_WARNING;

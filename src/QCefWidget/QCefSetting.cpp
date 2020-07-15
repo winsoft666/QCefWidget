@@ -138,3 +138,23 @@ const QString QCefSetting::flashPluginVersion() {
   QCefGlobalSetting::initializeInstance();
   return QString::fromStdWString(QCefGlobalSetting::flush_plugin_ver.ToWString());
 }
+
+const void QCefSetting::setOsrEnabled(bool b) {
+  QCefGlobalSetting::initializeInstance();
+  QCefGlobalSetting::osr_enabled = b;
+}
+
+const bool QCefSetting::osrEnabled() {
+  QCefGlobalSetting::initializeInstance();
+  return QCefGlobalSetting::osr_enabled;
+}
+
+void QCefSetting::setDebugLogPath(const QString &path) {
+  QCefGlobalSetting::initializeInstance();
+  QCefGlobalSetting::debug_log_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
+}
+
+const QString QCefSetting::debugLogPath() {
+  QCefGlobalSetting::initializeInstance();
+  return QString::fromStdWString(QCefGlobalSetting::debug_log_path.ToWString());
+}
