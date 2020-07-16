@@ -70,7 +70,7 @@ void QCefBrowserApp::OnContextInitialized() {
   // Register cookieable schemes with the global cookie manager.
   CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(nullptr);
   DCHECK(manager.get());
-  manager->SetSupportedSchemes(cookieable_schemes_, true, nullptr);
+  manager->SetSupportedSchemes(cookieable_schemes_, nullptr);
 }
 
 void QCefBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) {}

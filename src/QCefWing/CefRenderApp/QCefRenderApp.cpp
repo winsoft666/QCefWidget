@@ -44,11 +44,11 @@ void QCefRenderApp::OnWebKitInitialized() {
       (*it)->OnWebKitInitialized(this);
 }
 
-void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) {
+void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_RENDERER_THREAD();
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end(); ++it)
-    (*it)->OnBrowserCreated(this, browser, extra_info);
+    (*it)->OnBrowserCreated(this, browser);
 }
 
 void QCefRenderApp::OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) {
@@ -97,7 +97,7 @@ void QCefRenderApp::OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser, CefRefPt
     (*it)->OnFocusedNodeChanged(this, browser, frame, node);
 }
 
-bool QCefRenderApp::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) {
+bool QCefRenderApp::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) {
   CEF_REQUIRE_RENDERER_THREAD();
   DCHECK_EQ(source_process, PID_BROWSER);
 
@@ -105,7 +105,7 @@ bool QCefRenderApp::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefR
 
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end() && !handled; ++it)
-    handled = (*it)->OnProcessMessageReceived(this, browser, frame, source_process, message);
+    handled = (*it)->OnProcessMessageReceived(this, browser, browser->GetMainFrame(), source_process, message);
 
   return handled;
 }

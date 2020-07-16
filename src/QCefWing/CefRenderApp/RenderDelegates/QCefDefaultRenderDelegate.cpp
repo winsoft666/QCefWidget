@@ -39,7 +39,7 @@ void RenderDelegate::OnContextReleased(CefRefPtr<QCefRenderApp> app, CefRefPtr<C
 
 bool RenderDelegate::OnProcessMessageReceived(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process,
                                               CefRefPtr<CefProcessMessage> message) {
-  if (render_message_router_->OnProcessMessageReceived(browser, frame, source_process, message)) {
+  if (render_message_router_->OnProcessMessageReceived(browser, source_process, message)) {
     return true;
   }
 

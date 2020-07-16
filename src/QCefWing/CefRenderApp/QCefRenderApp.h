@@ -17,7 +17,7 @@ public:
 
     virtual void OnWebKitInitialized(CefRefPtr<QCefRenderApp> app) {}
 
-    virtual void OnBrowserCreated(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) {}
+    virtual void OnBrowserCreated(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser) {}
 
     virtual void OnBrowserDestroyed(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser) {}
 
@@ -69,7 +69,7 @@ private:
 
   virtual void OnWebKitInitialized() override;
 
-  virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) override;
+  virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
 
   virtual void OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) override;
 
@@ -84,7 +84,7 @@ private:
 
   virtual void OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefDOMNode> node) override;
 
-  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) override;
+  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) override;
 
 #pragma endregion CefRenderProcessHandler
 

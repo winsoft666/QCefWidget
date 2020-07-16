@@ -89,7 +89,7 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   CefRefPtr<CefRequestContext> requestContext = CefRequestContext::CreateContext(CefRequestContext::GetGlobalContext(), new RequestContextHandler);
 
   // This method can be called on any browser process thread and will not block.
-  if (!CefBrowserHost::CreateBrowser(window_info, pQCefViewHandler_, url.toStdWString(), browserSettings, nullptr, requestContext)) {
+  if (!CefBrowserHost::CreateBrowser(window_info, pQCefViewHandler_, url.toStdWString(), browserSettings, requestContext)) {
     return false;
   }
 

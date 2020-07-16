@@ -15,7 +15,7 @@ set(QT_SDK_DIR
 #
 set(CEF_SDK_DIR
   # Change this value to the CEF binary distribution path of your build environment
-  "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_81.3.10+gb223419+chromium-81.0.4044.138_windows32"
+  "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_3.3626.1895.g7001d56_windows32"
 )
 
 #################################################################################

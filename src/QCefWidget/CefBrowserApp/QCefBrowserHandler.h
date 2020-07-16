@@ -46,7 +46,7 @@ class QCefBrowserHandler : public CefClient,
                           public CefLifeSpanHandler,
                           public CefLoadHandler,
                           public CefRequestHandler,
-                          public CefResourceRequestHandler,
+                          //public CefResourceRequestHandler,
                           public CefRenderHandler {
 public:
   enum {
@@ -75,7 +75,7 @@ public:
   virtual CefRefPtr<CefRequestHandler> GetRequestHandler() override { return this; }
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override { return this; }
 
-  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message) override;
 
@@ -142,14 +142,9 @@ public:
 #pragma region CefLifeSpanHandler
 
   // CefLifeSpanHandler methods:
-  virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                             const CefString &target_url, const CefString &target_frame_name,
-                             CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-                             bool user_gesture, const CefPopupFeatures &popupFeatures,
-                             CefWindowInfo &windowInfo, CefRefPtr<CefClient> &client,
-                             CefBrowserSettings &settings,
-                             CefRefPtr<CefDictionaryValue> &extra_info,
-                             bool *no_javascript_access) override;
+  virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString &target_url, const CefString &target_frame_name,
+    CefLifeSpanHandler::WindowOpenDisposition target_disposition, bool user_gesture, const CefPopupFeatures &popupFeatures, CefWindowInfo &windowInfo,
+                             CefRefPtr<CefClient> &client, CefBrowserSettings &settings, bool *no_javascript_access) override;
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
@@ -183,11 +178,11 @@ public:
                                 CefRequestHandler::WindowOpenDisposition target_disposition,
                                 bool user_gesture) override;
 
-  virtual CefRefPtr<CefResourceRequestHandler>
-  GetResourceRequestHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                            CefRefPtr<CefRequest> request, bool is_navigation, bool is_download,
-                            const CefString &request_initiator,
-                            bool &disable_default_handling) override;
+  //virtual CefRefPtr<CefResourceRequestHandler>
+  //GetResourceRequestHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+  //                          CefRefPtr<CefRequest> request, bool is_navigation, bool is_download,
+  //                          const CefString &request_initiator,
+  //                          bool &disable_default_handling) override;
 
   virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser, const CefString &origin_url,
                               int64 new_size, CefRefPtr<CefRequestCallback> callback) override;
@@ -199,7 +194,7 @@ public:
 
 #pragma region CefResourceRequestHandler
 
-  virtual ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
+  virtual CefRequestHandler::ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
                                            CefRefPtr<CefRequest> request,
                                            CefRefPtr<CefRequestCallback> callback) override;
 
@@ -207,9 +202,7 @@ public:
                                                            CefRefPtr<CefFrame> frame,
                                                            CefRefPtr<CefRequest> request) override;
 
-  virtual void OnProtocolExecution(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-                                   CefRefPtr<CefRequest> request,
-                                   bool &allow_os_execution) override;
+  virtual void OnProtocolExecution(CefRefPtr<CefBrowser> browser, const CefString &url, bool &allow_os_execution) override;
 
 #pragma endregion CefResourceRequestHandler
 

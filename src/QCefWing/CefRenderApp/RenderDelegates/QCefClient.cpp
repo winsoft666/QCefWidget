@@ -44,7 +44,7 @@ void QCefClient::V8Handler::ExecuteInvokeMethod(const CefString &function, CefRe
 
   bool bRet = false;
   if (browser_)
-    frame_->SendProcessMessage(PID_BROWSER, msg);
+    browser_->SendProcessMessage(PID_BROWSER, msg);
 
   retval = CefV8Value::CreateUndefined();
 }

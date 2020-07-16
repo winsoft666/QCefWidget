@@ -432,7 +432,9 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(UINT message, WPARAM wParam, LPAR
   }
 }
 
+
 void QCefWidgetUIEventHandlerWin::OnTouchEvent(UINT message, WPARAM wParam, LPARAM lParam) {
+#if 0
   CefRefPtr<CefBrowserHost> host = browserHost();
   if (!host)
     return;
@@ -488,6 +490,7 @@ void QCefWidgetUIEventHandlerWin::OnTouchEvent(UINT message, WPARAM wParam, LPAR
     }
     CloseTouchInputHandle(reinterpret_cast<HTOUCHINPUT>(lParam));
   }
+#endif
 }
 
 void QCefWidgetUIEventHandlerWin::OnFocusEvent(UINT message, WPARAM wParam, LPARAM lParam) {
