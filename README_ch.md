@@ -18,6 +18,8 @@
 
 ✅ 独立的CEF渲染进程和插件进程;
 
+✅ 支持Adobe Flash, 没有任何警告，如"Control-click to run Adobe Flash Player".
+
 ---
 
 

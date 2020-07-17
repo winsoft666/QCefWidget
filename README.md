@@ -18,6 +18,8 @@ Support:
 
 ✅ Separate CEF rendering process and plugin process;
 
+✅ Support Adobe Flash without any warnning, eg "Control-click to run Adobe Flash Player".
+
 ---
 
 

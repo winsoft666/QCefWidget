@@ -7,13 +7,13 @@
 #include "QCefWidgetUIEventHandlerWin.h"
 #include <QString>
 #include <QWidget>
-
+#include "QCefBrowserSetting.h"
 
 enum WidgetType { WT_Widget = 0, WT_OpenGLWidget };
 
 class QCefWidgetImpl {
 public:
-  explicit QCefWidgetImpl(WidgetType vt, QWidget* pWidget);
+  explicit QCefWidgetImpl(WidgetType vt, QWidget *pWidget);
   ~QCefWidgetImpl();
 
 public:
@@ -27,8 +27,7 @@ public:
   void reloadBrowser();
   void stopLoadBrowser();
 
-  bool triggerEvent(const QString &name, const QCefEvent &event,
-                    int frameId = QCefBrowserHandler::MAIN_FRAME);
+  bool triggerEvent(const QString &name, const QCefEvent &event);
   bool responseCefQuery(const QCefQuery &query);
   void executeJavascript(const QString &javascript);
 
@@ -39,10 +38,9 @@ public:
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);
   void browserDestoryedNotify(CefRefPtr<CefBrowser> browser);
 
-  void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range,
-                                    const CefRenderHandler::RectList &character_bounds);
+  void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds);
 
-  QWidget* getWidget();
+  QWidget *getWidget();
   WidgetType getWidgetType();
   QRect rect();
 
@@ -54,30 +52,28 @@ public:
 #endif
   void setVisible(bool visible);
 
-  bool setOsrEnabled(bool b);
-  bool osrEnabled();
-
-  float deviceScaleFactor();
-
-  void setFPS(int fps);
-  int fps() const;
-
   void setBrowserBackgroundColor(const QColor &color);
-  QColor browserBackgroundColor() const;
+  bool setOsrEnabled(bool b);
+  void setContextMenuEnabled(bool b);
+  void setAllowExecuteUnknownProtocolViaOS(bool b);
+  float deviceScaleFactor();
+  void setFPS(int fps);
+  QCefBrowserSetting browserSetting() const;
 
   void updateCefWidget();
 
   void setBrowserClosing(bool b);
 
   CefRefPtr<CefBrowser> browser() const;
+
 protected:
-  bool sendEventNotifyMessage(int frameId, const QString &name, const QCefEvent &event);
+  bool sendEventNotifyMessage(const QString &name, const QCefEvent &event);
   CefRefPtr<CefBrowserHost> getCefBrowserHost();
 
 private:
   WidgetType vt_;
   QWidget *pWidget_;
-  QWidget* pTopWidget_;
+  QWidget *pTopWidget_;
 
   WId widgetWId_;
 
@@ -86,10 +82,7 @@ private:
 
   bool browserClosing_;
   bool browserCreated_;
-  bool osrEnabled_;
 
-  int fps_;
-  QColor background_color_;
-
+  QCefBrowserSetting browserSetting_;
 };
 #endif

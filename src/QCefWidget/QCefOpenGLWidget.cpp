@@ -66,17 +66,7 @@ void QCefOpenGLWidget::stopLoadBrowser() {
 
 bool QCefOpenGLWidget::triggerEvent(const QString &name, const QCefEvent &event) {
   Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::MAIN_FRAME);
-}
-
-bool QCefOpenGLWidget::triggerEvent(const QString &name, const QCefEvent &event, int frameId) {
-  Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, frameId);
-}
-
-bool QCefOpenGLWidget::broadcastEvent(const QString &name, const QCefEvent &event) {
-  Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::ALL_FRAMES);
+  return pImpl_->triggerEvent(name, event);
 }
 
 bool QCefOpenGLWidget::responseCefQuery(const QCefQuery &query) {
@@ -96,7 +86,27 @@ bool QCefOpenGLWidget::setOsrEnabled(bool b) {
 
 bool QCefOpenGLWidget::osrEnabled() {
   Q_ASSERT(pImpl_);
-  return pImpl_->osrEnabled();
+  return pImpl_->browserSetting().osrEnabled;
+}
+
+void QCefOpenGLWidget::setContextMenuEnabled(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setContextMenuEnabled(b);
+}
+
+bool QCefOpenGLWidget::contextMenuEnabled() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().contextMenuEnabled;
+}
+
+void QCefOpenGLWidget::setAllowExecuteUnknownProtocolViaOS(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setAllowExecuteUnknownProtocolViaOS(b);
+}
+
+bool QCefOpenGLWidget::allowExecuteUnknownProtocolViaOS() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().executeUnknownProtocolViaOS;
 }
 
 void QCefOpenGLWidget::setFPS(int fps) {
@@ -106,7 +116,7 @@ void QCefOpenGLWidget::setFPS(int fps) {
 
 int QCefOpenGLWidget::fps() const {
   Q_ASSERT(pImpl_);
-  return pImpl_->fps();
+  return pImpl_->browserSetting().fps;
 }
 
 void QCefOpenGLWidget::setBrowserBackgroundColor(const QColor &color) {
@@ -116,7 +126,7 @@ void QCefOpenGLWidget::setBrowserBackgroundColor(const QColor &color) {
 
 QColor QCefOpenGLWidget::browserBackgroundColor() const {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserBackgroundColor();
+  return pImpl_->browserSetting().backgroundColor;
 }
 
 void QCefOpenGLWidget::showDevTools() { QCefManager::getInstance().showDevTools(this); }
@@ -153,7 +163,7 @@ void QCefOpenGLWidget::paintEvent(QPaintEvent *event) {
 void QCefOpenGLWidget::setVisible(bool visible) {
   QOpenGLWidget::setVisible(visible);
   Q_ASSERT(pImpl_);
-  if(pImpl_)
+  if (pImpl_)
     pImpl_->setVisible(visible);
 }
 #endif

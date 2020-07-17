@@ -27,6 +27,7 @@ private:
   QWidget *widgetTop_;
 
   QCheckBox* checkboxOsrEnabled_;
+  QCheckBox* checkboxContextMenuEnabled_;
 
   QCheckBox *checkBoxOpacityCefWidget_;
   QCheckBox *checkBoxOpacityCefOpenGLWidget_;

@@ -23,7 +23,6 @@ TestWnd::TestWnd(QWidget *parent)
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer32.dll", "32.0.0.387");
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.192/pepflashplayer.dll", "32.0.0.192");
 
-
   setupUi();
 
   transWidgetCefWnd_ = new TransparentCefWnd(false, nullptr);
@@ -51,19 +50,21 @@ TestWnd::TestWnd(QWidget *parent)
   if (cefWidget_) {
     cefWidget_->setFPS(30);
     cefWidget_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
+    cefWidget_->setContextMenuEnabled(checkboxContextMenuEnabled_->isChecked());
   }
 
   if (cefOpenGLWidget_) {
     cefOpenGLWidget_->setFPS(30);
     cefOpenGLWidget_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
+    cefOpenGLWidget_->setContextMenuEnabled(checkboxContextMenuEnabled_->isChecked());
   }
 
   QString url;
-  if(comboBoxUrl_->count() > 0)
+  if (comboBoxUrl_->count() > 0)
     url = comboBoxUrl_->itemText(0);
 
   if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_) {
-    if(url.length() > 0)
+    if (url.length() > 0)
       cefWidget_->navigateToUrl(url);
   }
 
@@ -106,14 +107,18 @@ void TestWnd::setupUi() {
   this->setObjectName("QCefWidgetDemo");
 
 #pragma region Top
-  QLabel* lblOption = new QLabel("Options: ");
+  QLabel *lblOption = new QLabel("Options: ");
 
   checkboxOsrEnabled_ = new QCheckBox("CEF OSR(off-screen render)");
   checkboxOsrEnabled_->setChecked(false);
 
-  QHBoxLayout* hlOptions = new QHBoxLayout();
+  checkboxContextMenuEnabled_ = new QCheckBox("Enable Context Menu");
+  checkboxContextMenuEnabled_->setChecked(true);
+
+  QHBoxLayout *hlOptions = new QHBoxLayout();
   hlOptions->addWidget(lblOption);
   hlOptions->addWidget(checkboxOsrEnabled_);
+  hlOptions->addWidget(checkboxContextMenuEnabled_);
   hlOptions->addStretch();
 
   QLabel *lblTarget = new QLabel("Target browser: ");
@@ -171,18 +176,20 @@ void TestWnd::setupUi() {
   comboBoxUrl_->setObjectName("comboBoxUrl");
   comboBoxUrl_->setFixedHeight(22);
   comboBoxUrl_->setEditable(true);
-  comboBoxUrl_->addItems(QStringList() << "" << "about:blank" << "chrome://version"  << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
+  comboBoxUrl_->addItems(QStringList() << ""
+                                       << "about:blank"
+                                       << "chrome://version" << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/FlashPlayerTest.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
-    << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/PDF.html")
-    << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/OsrTest.html")
+                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/PDF.html")
+                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/OsrTest.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Clock.html") << "https://html5test.com/"
                                        << "https://www.bing.com"
                                        << "https://www.google.com"
                                        << "https://map.baidu.com/"
                                        << "https://ant.design/components/overview/");
 
-  QLineEdit* pLineEdit = comboBoxUrl_->lineEdit();
+  QLineEdit *pLineEdit = comboBoxUrl_->lineEdit();
   if (pLineEdit) {
     pLineEdit->setFocusPolicy(Qt::FocusPolicy::ClickFocus);
   }
@@ -443,6 +450,13 @@ void TestWnd::bindUiEvent() {
       transWidgetCefWnd_->setOsrEnabled(state == Qt::Checked);
     if (transOpenGLWidgetCefWnd_)
       transOpenGLWidgetCefWnd_->setOsrEnabled(state == Qt::Checked);
+  });
+
+  connect(checkboxContextMenuEnabled_, &QCheckBox::stateChanged, this, [this](int state) {
+    if (cefWidget_)
+      cefWidget_->setContextMenuEnabled(state == Qt::Checked);
+    if (cefOpenGLWidget_)
+      cefOpenGLWidget_->setContextMenuEnabled(state == Qt::Checked);
   });
 }
 

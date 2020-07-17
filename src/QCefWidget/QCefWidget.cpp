@@ -18,9 +18,7 @@ QCefWidget::QCefWidget(QWidget *parent)
   setAttribute(Qt::WA_InputMethodEnabled, true);
 }
 
-QCefWidget::~QCefWidget() {
-  qInfo() << "QCefWidget::~QCefWidget, this: " << this;
-}
+QCefWidget::~QCefWidget() { qInfo() << "QCefWidget::~QCefWidget, this: " << this; }
 
 void QCefWidget::navigateToUrl(const QString &url) {
   Q_ASSERT(pImpl_);
@@ -64,17 +62,7 @@ void QCefWidget::stopLoadBrowser() {
 
 bool QCefWidget::triggerEvent(const QString &name, const QCefEvent &event) {
   Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::MAIN_FRAME);
-}
-
-bool QCefWidget::triggerEvent(const QString &name, const QCefEvent &event, int frameId) {
-  Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, frameId);
-}
-
-bool QCefWidget::broadcastEvent(const QString &name, const QCefEvent &event) {
-  Q_ASSERT(pImpl_);
-  return pImpl_->triggerEvent(name, event, QCefBrowserHandler::ALL_FRAMES);
+  return pImpl_->triggerEvent(name, event);
 }
 
 bool QCefWidget::responseCefQuery(const QCefQuery &query) {
@@ -92,9 +80,29 @@ bool QCefWidget::setOsrEnabled(bool b) {
   return pImpl_->setOsrEnabled(b);
 }
 
-bool QCefWidget::osrEnabled() { 
+bool QCefWidget::osrEnabled() {
   Q_ASSERT(pImpl_);
-  return pImpl_->osrEnabled();
+  return pImpl_->browserSetting().osrEnabled;
+}
+
+void QCefWidget::setContextMenuEnabled(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setContextMenuEnabled(b);
+}
+
+bool QCefWidget::contextMenuEnabled() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().contextMenuEnabled;
+}
+
+void QCefWidget::setAllowExecuteUnknownProtocolViaOS(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setAllowExecuteUnknownProtocolViaOS(b);
+}
+
+bool QCefWidget::allowExecuteUnknownProtocolViaOS() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().executeUnknownProtocolViaOS;
 }
 
 void QCefWidget::setFPS(int fps) {
@@ -104,7 +112,7 @@ void QCefWidget::setFPS(int fps) {
 
 int QCefWidget::fps() const {
   Q_ASSERT(pImpl_);
-  return pImpl_->fps();
+  return pImpl_->browserSetting().fps;
 }
 
 void QCefWidget::setBrowserBackgroundColor(const QColor &color) {
@@ -114,7 +122,7 @@ void QCefWidget::setBrowserBackgroundColor(const QColor &color) {
 
 QColor QCefWidget::browserBackgroundColor() const {
   Q_ASSERT(pImpl_);
-  return pImpl_->browserBackgroundColor();
+  return pImpl_->browserSetting().backgroundColor;
 }
 
 void QCefWidget::showDevTools() { QCefManager::getInstance().showDevTools(this); }
@@ -151,6 +159,6 @@ void QCefWidget::paintEvent(QPaintEvent *event) {
 void QCefWidget::setVisible(bool visible) {
   QWidget::setVisible(visible);
   Q_ASSERT(pImpl_);
-  if(pImpl_)
+  if (pImpl_)
     pImpl_->setVisible(visible);
 }

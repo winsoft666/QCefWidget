@@ -40,19 +40,7 @@ public:
   virtual void reloadBrowser();
   virtual void stopLoadBrowser();
 
-  // frameId:
-  //    MAIN_FRAME = 0
-  //    ALL_FRAME  = -1
-  //
-  virtual bool triggerEvent(const QString &name, const QCefEvent &event, int frameId);
-
-  // An easy interface, equal to triggerEvent(name, event, 0);
-  //
   virtual bool triggerEvent(const QString &name, const QCefEvent &event);
-
-  // An easy interface, equal to triggerEvent(name, event, -1);
-  //
-  virtual bool broadcastEvent(const QString &name, const QCefEvent &event);
 
   // When received cefQueryRequest signal notify, can call this function to response.
   //
@@ -65,6 +53,14 @@ public:
   //
   virtual bool setOsrEnabled(bool b);
   virtual bool osrEnabled();
+
+  // Context menu is enabled by default.
+  //
+  virtual void setContextMenuEnabled(bool b);
+  virtual bool contextMenuEnabled();
+
+  virtual void setAllowExecuteUnknownProtocolViaOS(bool b);
+  virtual bool allowExecuteUnknownProtocolViaOS();
 
   virtual void setFPS(int fps);
   virtual int fps() const;

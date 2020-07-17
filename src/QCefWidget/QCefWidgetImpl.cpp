@@ -10,10 +10,6 @@
 #include "QCefGlobalSetting.h"
 #include "CefBrowserApp/QCefRequestContextHandler.h"
 
-namespace {
-int kDefaultFPS = 30;
-}
-
 QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
     : pWidget_(pWidget)
     , pTopWidget_(nullptr)
@@ -21,15 +17,12 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
     , widgetWId_(0)
     , browserCreated_(false)
     , browserClosing_(false)
-    , osrEnabled_(true)
-    , pQCefViewHandler_(nullptr)
-    , background_color_(255, 255, 255, 255)
-    , fps_(kDefaultFPS) {
+    , pQCefViewHandler_(nullptr) {
   QCefManager::getInstance().initializeCef();
 }
 
-QCefWidgetImpl::~QCefWidgetImpl() { 
-  qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this; 
+QCefWidgetImpl::~QCefWidgetImpl() {
+  qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this;
   QCefManager::getInstance().uninitializeCef();
 }
 
@@ -53,14 +46,15 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
 
   CefWindowInfo window_info;
   CefBrowserSettings browserSettings;
-  if (osrEnabled_) {
+  if (browserSetting_.osrEnabled) {
     window_info.SetAsWindowless(hwnd);
 
-    // Enable all plugins here. 
+    // Enable all plugins here.
     // If not set enabled, PDF will cannot be render correctly, even if add command lines in OnBeforeCommandLineProcessing function.
     browserSettings.plugins = STATE_ENABLED;
-    browserSettings.windowless_frame_rate = fps_;
-    browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
+    browserSettings.windowless_frame_rate = browserSetting_.fps;
+    browserSettings.background_color = CefColorSetARGB(browserSetting_.backgroundColor.alpha(), browserSetting_.backgroundColor.red(), browserSetting_.backgroundColor.green(),
+                                                       browserSetting_.backgroundColor.blue());
   }
   else {
     float scale = pWidget_->devicePixelRatioF();
@@ -81,7 +75,8 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
     // Enable all plugins here.
     // If not set enabled, PDF will cannot be render correctly, even if add command lines in OnBeforeCommandLineProcessing function.
     browserSettings.plugins = STATE_ENABLED;
-    browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
+    browserSettings.background_color = CefColorSetARGB(browserSetting_.backgroundColor.alpha(), browserSetting_.backgroundColor.red(), browserSetting_.backgroundColor.green(),
+                                                       browserSetting_.backgroundColor.blue());
   }
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
@@ -119,8 +114,9 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   windowInfo.SetAsWindowless(hwnd);
 
   CefBrowserSettings browserSettings;
-  browserSettings.windowless_frame_rate = fps_;
-  browserSettings.background_color = CefColorSetARGB(background_color_.alpha(), background_color_.red(), background_color_.green(), background_color_.blue());
+  browserSettings.windowless_frame_rate = browserSetting_.fps;
+  browserSettings.background_color = CefColorSetARGB(browserSetting_.backgroundColor.alpha(), browserSetting_.backgroundColor.red(), browserSetting_.backgroundColor.green(),
+                                                     browserSetting_.backgroundColor.blue());
 
   QCefManager::getInstance().initializeCef();
 
@@ -147,7 +143,7 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 #error("No default implement")
 #endif
 
-  pTopWidget_ = QCefManager::getInstance().addBrowser(pWidget_, browser, osrEnabled_);
+  pTopWidget_ = QCefManager::getInstance().addBrowser(pWidget_, browser, browserSetting_.osrEnabled);
 }
 
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
@@ -236,9 +232,9 @@ void QCefWidgetImpl::stopLoadBrowser() {
     pQCefViewHandler_->browser()->StopLoad();
 }
 
-bool QCefWidgetImpl::triggerEvent(const QString &name, const QCefEvent &event, int frameId) {
+bool QCefWidgetImpl::triggerEvent(const QString &name, const QCefEvent &event) {
   if (!name.isEmpty()) {
-    return sendEventNotifyMessage(frameId, name, event);
+    return sendEventNotifyMessage(name, event);
   }
 
   return false;
@@ -262,7 +258,7 @@ void QCefWidgetImpl::executeJavascript(const QString &javascript) {
   }
 }
 
-bool QCefWidgetImpl::sendEventNotifyMessage(int frameId, const QString &name, const QCefEvent &event) {
+bool QCefWidgetImpl::sendEventNotifyMessage(const QString &name, const QCefEvent &event) {
   CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(TRIGGEREVENT_NOTIFY_MESSAGE);
   CefRefPtr<CefListValue> arguments = msg->GetArgumentList();
 
@@ -296,7 +292,7 @@ bool QCefWidgetImpl::sendEventNotifyMessage(int frameId, const QString &name, co
 
   arguments->SetDictionary(idx++, dict);
 
-  return pQCefViewHandler_->triggerEvent(frameId, msg);
+  return pQCefViewHandler_->triggerEvent(msg);
 }
 
 QWidget *QCefWidgetImpl::getWidget() {
@@ -315,10 +311,10 @@ QRect QCefWidgetImpl::rect() {
 
 bool QCefWidgetImpl::event(QEvent *event) {
   if (event->type() == QEvent::WinIdChange) {
-    if(pWidget_)
+    if (pWidget_)
       widgetWId_ = pWidget_->winId();
   }
-  
+
   return false;
 }
 
@@ -364,7 +360,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
       }
     }
     else if (pMsg->message == WM_SIZE) {
-      if (osrEnabled_) {
+      if (browserSetting_.osrEnabled) {
         // winsoft666:
         // Old cef version maybe has some bugs about resize with dpi scale.
         // https://bitbucket.org/chromiumembedded/cef/issues/2823/osr-on-a-monitor-at-125x-scale-onpaint
@@ -517,38 +513,30 @@ void QCefWidgetImpl::setVisible(bool visible) {
 bool QCefWidgetImpl::setOsrEnabled(bool b) {
   if (browserCreated_)
     return false;
-  osrEnabled_ = b;
+  browserSetting_.osrEnabled = b;
   return true;
 }
 
-bool QCefWidgetImpl::osrEnabled() {
-  return osrEnabled_;
-}
+void QCefWidgetImpl::setContextMenuEnabled(bool b) { browserSetting_.contextMenuEnabled = b; }
+
+void QCefWidgetImpl::setAllowExecuteUnknownProtocolViaOS(bool b) { browserSetting_.executeUnknownProtocolViaOS = b; }
 
 float QCefWidgetImpl::deviceScaleFactor() {
   Q_ASSERT(pWidget_);
   return pWidget_->devicePixelRatioF();
 }
 
-void QCefWidgetImpl::setFPS(int fps) { 
-  fps_ = fps;
+void QCefWidgetImpl::setFPS(int fps) {
+  browserSetting_.fps = fps;
   CefRefPtr<CefBrowser> b = browser();
   if (b && b->GetHost()) {
-    b->GetHost()->SetWindowlessFrameRate(fps_);
+    b->GetHost()->SetWindowlessFrameRate(fps);
   }
 }
 
-int QCefWidgetImpl::fps() const { 
-  CefRefPtr<CefBrowser> b = browser();
-  if (b && b->GetHost()) {
-    return b->GetHost()->GetWindowlessFrameRate();
-  }
-  return fps_;
-}
+QCefBrowserSetting QCefWidgetImpl::browserSetting() const { return browserSetting_; }
 
-void QCefWidgetImpl::setBrowserBackgroundColor(const QColor &color) { background_color_ = color; }
-
-QColor QCefWidgetImpl::browserBackgroundColor() const { return background_color_; }
+void QCefWidgetImpl::setBrowserBackgroundColor(const QColor &color) { browserSetting_.backgroundColor = color; }
 
 void QCefWidgetImpl::updateCefWidget() {
   if (pWidget_) {

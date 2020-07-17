@@ -46,15 +46,10 @@ class QCefBrowserHandler : public CefClient,
                           public CefLifeSpanHandler,
                           public CefLoadHandler,
                           public CefRequestHandler,
-                          //public CefResourceRequestHandler,
+                          //public CefResourceHandler,
                           public CefRenderHandler {
 public:
-  enum {
-    MAIN_FRAME = (int64_t)0,
-    ALL_FRAMES = (int64_t)-1,
-  };
-
-  QCefBrowserHandler(QCefWidgetImpl *pCefViewImpl);
+  QCefBrowserHandler(QCefWidgetImpl *pImpl);
   ~QCefBrowserHandler();
 
 #pragma region CefClient
@@ -228,7 +223,7 @@ public:
 
   CefRefPtr<CefBrowser> browser() const;
 
-  bool triggerEvent(const int64_t frame_id, const CefRefPtr<CefProcessMessage> msg);
+  bool triggerEvent(const CefRefPtr<CefProcessMessage> msg);
 
   bool responseQuery(const int64_t query, bool success, const CefString &response, int error);
 
@@ -250,7 +245,7 @@ protected:
   CefRect getPopupRectInWebView(const CefRect &original_rect) const;
 
 private:
-  QCefWidgetImpl *pCefViewImpl_;
+  QCefWidgetImpl *pImpl_;
 
   int browserCount_;
 
