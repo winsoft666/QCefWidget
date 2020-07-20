@@ -7,7 +7,7 @@
 #include <QDebug>
 #include <QStyle>
 #include <QCloseEvent>
-#include <strsafe.h>
+#include "FramelessCEF.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -173,6 +173,9 @@ void TestWnd::setupUi() {
   pushButtonCloseDevTools_ = new QPushButton("Close DevTools");
   pushButtonOpenDevTools_->setCursor(QCursor(Qt::PointingHandCursor));
 
+  pushButtonShowFramelessCef_ = new QPushButton("Show Frameless CEF");
+  pushButtonShowFramelessCef_->setCursor(QCursor(Qt::PointingHandCursor));
+
   pushButtonExit_ = new QPushButton("Exit");
   pushButtonExit_->setCursor(QCursor(Qt::PointingHandCursor));
 
@@ -210,6 +213,7 @@ void TestWnd::setupUi() {
   hlFunction->addWidget(pushButtonTrigger100Event_);
   hlFunction->addWidget(pushButtonOpenDevTools_);
   hlFunction->addWidget(pushButtonCloseDevTools_);
+  hlFunction->addWidget(pushButtonShowFramelessCef_);
   hlFunction->addStretch();
   hlFunction->addWidget(pushButtonExit_);
 
@@ -402,6 +406,11 @@ void TestWnd::bindUiEvent() {
   });
 
   connect(pushButtonExit_, &QPushButton::clicked, this, [this]() { this->close(); });
+
+  connect(pushButtonShowFramelessCef_, &QPushButton::clicked, this, [this]() {
+    FramelessCEF* pFramelessCEF = new FramelessCEF();
+    pFramelessCEF->show();
+  });
 
   connect(cefWidget_, &QCefWidget::loadingStateChanged, this, [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {
     plainTextEditLog_->appendPlainText(QString("[QCefWidget] isLoadingBrowser: %1, canGoBack: %2, canGoForward: %3\r\n").arg(isLoadingBrowser).arg(canGoBack).arg(canGoForward));

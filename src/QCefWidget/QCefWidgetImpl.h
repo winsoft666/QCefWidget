@@ -13,7 +13,7 @@ enum WidgetType { WT_Widget = 0, WT_OpenGLWidget };
 
 class QCefWidgetImpl {
 public:
-  explicit QCefWidgetImpl(WidgetType vt, QWidget *pWidget);
+  explicit QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &url);
   ~QCefWidgetImpl();
 
 public:
@@ -74,6 +74,7 @@ private:
   WidgetType vt_;
   QWidget *pWidget_;
   QWidget *pTopWidget_;
+  QString initUrl_;
 
   WId widgetWId_;
 

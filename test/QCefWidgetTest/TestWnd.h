@@ -41,6 +41,7 @@ private:
   QPushButton* pushButtonTrigger100Event_;
   QPushButton* pushButtonOpenDevTools_;
   QPushButton* pushButtonCloseDevTools_;
+  QPushButton* pushButtonShowFramelessCef_;
   QPushButton* pushButtonExit_;
   QComboBox* comboBoxUrl_;
 

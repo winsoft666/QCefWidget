@@ -26,12 +26,12 @@ bool loadBinaryResource(int binaryId, const QString& resourceType, DWORD &dwSize
 // Provider of binary resources.
 class BinaryResourceProvider : public CefResourceManager::Provider {
 public:
-  BinaryResourceProvider(const std::string &url_path, const std::string &resource_path_prefix)
-      : url_path_(url_path)
-      , resource_path_prefix_(resource_path_prefix) {
-    DCHECK(!url_path.empty());
-    if (!resource_path_prefix_.empty() && resource_path_prefix_[resource_path_prefix_.length() - 1] != '/') {
-      resource_path_prefix_ += "/";
+  BinaryResourceProvider(const std::string &urlPath, const std::string &resourcePathPrefix)
+      : urlPath_(urlPath)
+      , resourcePathPrefix_(resourcePathPrefix) {
+    DCHECK(!urlPath.empty());
+    if (!resourcePathPrefix_.empty() && resourcePathPrefix_[resourcePathPrefix_.length() - 1] != '/') {
+      resourcePathPrefix_ += "/";
     }
   }
 
@@ -39,17 +39,17 @@ public:
     CEF_REQUIRE_IO_THREAD();
 
     const std::string &url = request->url();
-    if (url.find(url_path_) != 0L) {
+    if (url.find(urlPath_) != 0L) {
       // Not handled by this provider.
       return false;
     }
 
     CefRefPtr<CefResourceHandler> handler;
 
-    std::string relative_path = url.substr(url_path_.length());
+    std::string relative_path = url.substr(urlPath_.length());
     if (!relative_path.empty()) {
-      if (!resource_path_prefix_.empty())
-        relative_path = resource_path_prefix_ + relative_path;
+      if (!resourcePathPrefix_.empty())
+        relative_path = resourcePathPrefix_ + relative_path;
 
       CefRefPtr<CefStreamReader> stream = GetBinaryResourceReader(relative_path.data());
       if (stream.get()) {
@@ -62,8 +62,8 @@ public:
   }
 
 private:
-  std::string url_path_;
-  std::string resource_path_prefix_;
+  std::string urlPath_;
+  std::string resourcePathPrefix_;
 
   DISALLOW_COPY_AND_ASSIGN(BinaryResourceProvider);
 };
@@ -81,16 +81,16 @@ bool getResourceId(const QString &resourceName, QPair<int, QString>& rcInfo) {
 } // namespace
 
 
-bool loadBinaryResource(const char *resource_name, std::string &resource_data) {
+bool loadBinaryResource(const char *resourceName, std::string &resourceData) {
   QPair<int, QString> rcInfo;
-  if (!getResourceId(resource_name, rcInfo))
+  if (!getResourceId(resourceName, rcInfo))
     return false;
 
-  DWORD dwSize;
-  LPBYTE pBytes;
+  DWORD dwSize = 0;
+  LPBYTE pBytes = NULL;
 
   if (loadBinaryResource(rcInfo.first, rcInfo.second, dwSize, pBytes)) {
-    resource_data = std::string(reinterpret_cast<char *>(pBytes), dwSize);
+    resourceData = std::string(reinterpret_cast<char *>(pBytes), dwSize);
     return true;
   }
 
@@ -98,9 +98,9 @@ bool loadBinaryResource(const char *resource_name, std::string &resource_data) {
   return false;
 }
 
-CefRefPtr<CefStreamReader> GetBinaryResourceReader(const char *resource_name) {
+CefRefPtr<CefStreamReader> GetBinaryResourceReader(const char *resourceName) {
   QPair<int, QString> rcInfo;
-  if (!getResourceId(resource_name, rcInfo))
+  if (!getResourceId(resourceName, rcInfo))
     return NULL;
 
   DWORD dwSize;
@@ -114,6 +114,6 @@ CefRefPtr<CefStreamReader> GetBinaryResourceReader(const char *resource_name) {
   return NULL;
 }
 
-CefResourceManager::Provider *CreateBinaryResourceProvider(const std::string &url_path, const std::string &resource_path_prefix) {
-  return new BinaryResourceProvider(url_path, resource_path_prefix);
+CefResourceManager::Provider *CreateBinaryResourceProvider(const std::string &urlPath, const std::string &resourcePathPrefix) {
+  return new BinaryResourceProvider(urlPath, resourcePathPrefix);
 }

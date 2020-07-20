@@ -26,7 +26,7 @@ class QCefDevToolsWnd;
 class QCEFWIDGET_EXPORT QCefWidget : public QWidget {
   Q_OBJECT
 public:
-  QCefWidget(QWidget *parent = nullptr);
+  QCefWidget(const QString &url = "", QWidget *parent = nullptr);
   virtual ~QCefWidget();
 
   virtual void navigateToUrl(const QString &url);

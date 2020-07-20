@@ -12,9 +12,9 @@
 #include <include/cef_sandbox_win.h>
 #include "QCefManager.h"
 
-QCefOpenGLWidget::QCefOpenGLWidget(QWidget *parent /*= nullptr*/)
+QCefOpenGLWidget::QCefOpenGLWidget(const QString &url, QWidget *parent /*= nullptr*/)
     : QOpenGLWidget(parent) {
-  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_OpenGLWidget, this);
+  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_OpenGLWidget, this, url);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
 }

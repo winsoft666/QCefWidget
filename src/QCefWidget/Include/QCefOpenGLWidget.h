@@ -29,7 +29,7 @@ class QCefDevToolsWnd;
 class QCEFWIDGET_EXPORT QCefOpenGLWidget : public QOpenGLWidget {
   Q_OBJECT
 public:
-  QCefOpenGLWidget(QWidget *parent = nullptr);
+  QCefOpenGLWidget(const QString &url = "", QWidget *parent = nullptr);
   virtual ~QCefOpenGLWidget();
 
   virtual void navigateToUrl(const QString &url);

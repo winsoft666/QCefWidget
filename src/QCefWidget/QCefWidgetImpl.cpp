@@ -10,11 +10,12 @@
 #include "QCefGlobalSetting.h"
 #include "CefBrowserApp/QCefRequestContextHandler.h"
 
-QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
+QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &url)
     : pWidget_(pWidget)
     , pTopWidget_(nullptr)
     , vt_(vt)
     , widgetWId_(0)
+    , initUrl_(url)
     , browserCreated_(false)
     , browserClosing_(false)
     , pQCefViewHandler_(nullptr) {
@@ -313,6 +314,13 @@ bool QCefWidgetImpl::event(QEvent *event) {
   if (event->type() == QEvent::WinIdChange) {
     if (pWidget_)
       widgetWId_ = pWidget_->winId();
+  }
+  else if (event->type() == QEvent::Resize) {
+    if (initUrl_.length() > 0) {
+      QString url = initUrl_;
+      initUrl_.clear();
+      createBrowser(url);
+    }
   }
 
   return false;

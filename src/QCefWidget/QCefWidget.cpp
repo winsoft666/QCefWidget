@@ -11,9 +11,9 @@
 #include <include/cef_sandbox_win.h>
 #include "QCefManager.h"
 
-QCefWidget::QCefWidget(QWidget *parent)
+QCefWidget::QCefWidget(const QString &url, QWidget *parent)
     : QWidget(parent) {
-  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this);
+  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this, url);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
 }
