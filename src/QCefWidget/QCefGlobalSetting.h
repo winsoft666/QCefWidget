@@ -3,6 +3,7 @@
 #pragma once
 
 #include <include\cef_base.h>
+#include <QMap>
 
 class QCefGlobalSetting {
 public:
@@ -25,6 +26,7 @@ public:
   static int remote_debugging_port;
   static bool gpu_enabled;
   static bool osr_enabled;
+  static QMap<QString, QPair<int, QString>> resource_map;
 protected:
   QCefGlobalSetting();
   ~QCefGlobalSetting();

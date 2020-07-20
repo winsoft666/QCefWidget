@@ -60,9 +60,9 @@ public:
   virtual CefRefPtr<CefDialogHandler> GetDialogHandler() override { return nullptr; }
   virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() override { return this; }
   virtual CefRefPtr<CefDownloadHandler> GetDownloadHandler() override { return nullptr; }
-  // virtual CefRefPtr<CefDragHandler> GetDragHandler() override {
-  //    return this;
-  //}
+   virtual CefRefPtr<CefDragHandler> GetDragHandler() override {
+      return this;
+  }
   virtual CefRefPtr<CefJSDialogHandler> GetJSDialogHandler() override { return this; }
   virtual CefRefPtr<CefKeyboardHandler> GetKeyboardHandler() override { return this; }
   virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() override { return this; }
@@ -108,6 +108,8 @@ public:
   // CefDragHandler methods
   virtual bool OnDragEnter(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> dragData,
                            CefDragHandler::DragOperationsMask mask) override;
+
+  virtual void OnDraggableRegionsChanged(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions) override;
 
 #pragma endregion CefDragHandler
 

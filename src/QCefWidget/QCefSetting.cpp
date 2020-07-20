@@ -158,3 +158,13 @@ const QString QCefSetting::debugLogPath() {
   QCefGlobalSetting::initializeInstance();
   return QString::fromStdWString(QCefGlobalSetting::debug_log_path.ToWString());
 }
+
+void QCefSetting::setResourceMap(const QMap<QString, QPair<int, QString>> &resourceMap) {
+  QCefGlobalSetting::initializeInstance();
+  QCefGlobalSetting::resource_map = resourceMap;
+}
+
+const QMap<QString, QPair<int, QString>> QCefSetting::resourceMap() {
+  QCefGlobalSetting::initializeInstance();
+  return QCefGlobalSetting::resource_map;
+}

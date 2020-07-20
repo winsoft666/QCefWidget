@@ -68,10 +68,27 @@
     textarea{
     margin: 10px 0 10px 0;
     }
+    
+    .title-area {
+        -webkit-app-region: drag;
+        background-color: red;
+      }
+      .title-button {
+        -webkit-app-region: no-drag;
+      }
     </style>
  </head>  
  <body onload="onLoad()" id="main"> 
   <dl> 
+  <dt>
+    Drag
+  </dt>
+  <dd>
+    <div class='title-area'>
+        A draggable area. 
+        <div class='title-button'>clickable button</div>
+    </div>
+  </dd>
    <dt>
     Javascript and Qt interaction
    </dt> 

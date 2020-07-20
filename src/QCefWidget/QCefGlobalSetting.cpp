@@ -20,6 +20,7 @@ int QCefGlobalSetting::persist_user_preferences = 1;
 int QCefGlobalSetting::remote_debugging_port = 0;
 bool QCefGlobalSetting::gpu_enabled = true;
 bool QCefGlobalSetting::osr_enabled = true;
+QMap<QString, QPair<int, QString>> QCefGlobalSetting::resource_map;
 
 void QCefGlobalSetting::initializeInstance() { static QCefGlobalSetting s_instance; }
 

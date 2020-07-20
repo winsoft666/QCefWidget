@@ -14,6 +14,7 @@
 #include "QCefManager.h"
 #include "Include/QCefWidget.h"
 #include "Include/QCefOpenGLWidget.h"
+#include "QCefResourceUtil.h"
 
 QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl *pImpl)
     : isClosing_(false)
@@ -24,7 +25,10 @@ QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl *pImpl)
     , viewWidth_(0)
     , viewHeight_(0)
     , isPaintingPopup_(false)
-    , pImpl_(pImpl) {}
+  , pImpl_(pImpl) {
+  const std::string& internalOrigin = "http://qcefwidget/";
+  pResourceManager_->AddProvider(CreateBinaryResourceProvider(internalOrigin, std::string()), 100, std::string());
+}
 
 QCefBrowserHandler::~QCefBrowserHandler() {}
 
@@ -120,8 +124,12 @@ void QCefBrowserHandler::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, b
 
 bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> dragData, CefDragHandler::DragOperationsMask mask) {
   CEF_REQUIRE_UI_THREAD();
+  
+  return false;
+}
 
-  return true;
+void QCefBrowserHandler::OnDraggableRegionsChanged(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions) {
+  CEF_REQUIRE_UI_THREAD();
 }
 
 bool QCefBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> browser, const CefString &origin_url, JSDialogType dialog_type, const CefString &message_text,

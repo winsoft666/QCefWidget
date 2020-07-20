@@ -4,6 +4,7 @@
 
 #include <QtCore/qglobal.h>
 #include <QString>
+#include <QMap>
 #include <QMetaType>
 
 #ifndef QCEFWIDGET_EXPORT
@@ -170,6 +171,16 @@ void QCEFWIDGET_EXPORT setDebugLogPath(const QString &path);
 ///
 /// </summary>
 const QCEFWIDGET_EXPORT QString debugLogPath();
+
+/// <summary>
+///
+/// </summary>
+void QCEFWIDGET_EXPORT setResourceMap(const QMap<QString, QPair<int, QString>> & resourceMap);
+
+/// <summary>
+///
+/// </summary>
+const QCEFWIDGET_EXPORT QMap<QString, QPair<int, QString>> resourceMap();
 
 }; // namespace QCefSetting
 

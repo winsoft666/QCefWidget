@@ -1,4 +1,5 @@
 #include "TestWnd.h"
+#include "resource.h"
 #include "QCefSetting.h"
 #include "QCefWidget.h"
 #include "QCefOpenGLWidget.h"
@@ -6,6 +7,7 @@
 #include <QDebug>
 #include <QStyle>
 #include <QCloseEvent>
+#include <strsafe.h>
 
 #pragma execution_character_set("utf-8")
 
@@ -22,6 +24,8 @@ TestWnd::TestWnd(QWidget *parent)
   QCefSetting::setFlashPlugin("TestResource\\pepperflash\\26.0.0.126\\pepflashplayer.dll", "26.0.0.126");
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer32.dll", "32.0.0.387");
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.192/pepflashplayer.dll", "32.0.0.192");
+
+  QCefSetting::setResourceMap({ {"TestPage.html", {IDR_TEST_PAGE, "PAGE" } } });
 
   setupUi();
 
@@ -178,7 +182,9 @@ void TestWnd::setupUi() {
   comboBoxUrl_->setEditable(true);
   comboBoxUrl_->addItems(QStringList() << ""
                                        << "about:blank"
-                                       << "chrome://version" << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
+                                       << "chrome://version" 
+                                       << "http://qcefwidget/TestPage.html"
+                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/FlashPlayerTest.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/PDF.html")
