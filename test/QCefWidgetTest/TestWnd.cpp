@@ -29,7 +29,7 @@ TestWnd::TestWnd(QWidget *parent)
 
   setupUi();
 
-  transWidgetCefWnd_ = new TransparentCefWnd(false, nullptr);
+  //transWidgetCefWnd_ = new TransparentCefWnd(false, nullptr);
   if (transWidgetCefWnd_) {
     connect(transWidgetCefWnd_, &QWidget::destroyed, transWidgetCefWnd_, [this]() {
       qInfo() << "transWidgetCefWnd_::destroyed";
@@ -39,7 +39,7 @@ TestWnd::TestWnd(QWidget *parent)
     transWidgetCefWnd_->show();
   }
 
-  transOpenGLWidgetCefWnd_ = new TransparentCefWnd(true, nullptr);
+  //transOpenGLWidgetCefWnd_ = new TransparentCefWnd(true, nullptr);
   if (transOpenGLWidgetCefWnd_) {
     connect(transOpenGLWidgetCefWnd_, &QWidget::destroyed, transOpenGLWidgetCefWnd_, [this]() {
       qInfo() << "transOpenGLWidgetCefWnd_::destroyed";
@@ -66,7 +66,7 @@ TestWnd::TestWnd(QWidget *parent)
   QString url;
   if (comboBoxUrl_->count() > 0)
     url = comboBoxUrl_->itemText(0);
-
+  cefWidget_->navigateToUrl("https://www.baidu.com");
   if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_) {
     if (url.length() > 0)
       cefWidget_->navigateToUrl(url);

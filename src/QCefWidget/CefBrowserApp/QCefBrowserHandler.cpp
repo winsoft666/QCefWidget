@@ -130,6 +130,9 @@ bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
 
 void QCefBrowserHandler::OnDraggableRegionsChanged(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions) {
   CEF_REQUIRE_UI_THREAD();
+  if (pImpl_) {
+    pImpl_->draggableRegionsChangedNotify(browser, regions);
+  }
 }
 
 bool QCefBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> browser, const CefString &origin_url, JSDialogType dialog_type, const CefString &message_text,
@@ -589,7 +592,7 @@ void QCefBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursor
 
 void QCefBrowserHandler::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds) {
   if (pImpl_)
-    pImpl_->OnImeCompositionRangeChanged(browser, selection_range, character_bounds);
+    pImpl_->imeCompositionRangeChangedNotify(browser, selection_range, character_bounds);
 }
 
 CefRefPtr<CefBrowser> QCefBrowserHandler::browser() const {

@@ -53,7 +53,6 @@ private:
   bool initialized_;
 
 
-
   typedef struct _CefInfo {
     QWidget* cefWidget;
 

@@ -37,8 +37,8 @@ public:
   void browserClosingNotify(CefRefPtr<CefBrowser> browser);
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);
   void browserDestoryedNotify(CefRefPtr<CefBrowser> browser);
-
-  void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds);
+  void draggableRegionsChangedNotify(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions);
+  void imeCompositionRangeChangedNotify(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds);
 
   QWidget *getWidget();
   WidgetType getWidgetType();
@@ -70,6 +70,11 @@ protected:
   bool sendEventNotifyMessage(const QString &name, const QCefEvent &event);
   CefRefPtr<CefBrowserHost> getCefBrowserHost();
 
+  static LRESULT CALLBACK SubclassedWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  static void subclassWindow(HWND hWnd, HRGN hRegion, HWND hTopLevelWnd);
+  static void unSubclassWindow(HWND hWnd);
+  static BOOL CALLBACK SubclassWindowsProc(HWND hwnd, LPARAM lParam);
+  static BOOL CALLBACK UnSubclassWindowsProc(HWND hwnd, LPARAM lParam);
 private:
   WidgetType vt_;
   QWidget *pWidget_;
@@ -85,5 +90,7 @@ private:
   bool browserCreated_;
 
   QCefBrowserSetting browserSetting_;
+
+  HRGN draggableRegion_;
 };
 #endif

@@ -10,21 +10,30 @@
 #include "QCefGlobalSetting.h"
 #include "CefBrowserApp/QCefRequestContextHandler.h"
 
+namespace {
+LPCWSTR kPreWndProc = L"CefPreWndProc";
+LPCWSTR kDraggableRegion = L"CefDraggableRegion";
+LPCWSTR kTopLevelHwnd = L"CefTopLevelHwnd";
+} // namespace
+
 QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &url)
     : pWidget_(pWidget)
     , pTopWidget_(nullptr)
+    , draggableRegion_(nullptr)
     , vt_(vt)
     , widgetWId_(0)
     , initUrl_(url)
     , browserCreated_(false)
     , browserClosing_(false)
     , pQCefViewHandler_(nullptr) {
+  draggableRegion_ = ::CreateRectRgn(0, 0, 0, 0);
   QCefManager::getInstance().initializeCef();
 }
 
 QCefWidgetImpl::~QCefWidgetImpl() {
   qInfo() << "QCefWidgetImpl::~QCefWidgetImpl, this: " << this;
   QCefManager::getInstance().uninitializeCef();
+  ::DeleteObject(draggableRegion_);
 }
 
 bool QCefWidgetImpl::createBrowser(const QString &url) {
@@ -33,6 +42,8 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   Q_ASSERT(pWidget_);
   CefWindowHandle hwnd = nullptr;
   if (pWidget_) {
+    if (widgetWId_ == 0)
+      widgetWId_ = pWidget_->winId();
     Q_ASSERT(widgetWId_);
     hwnd = (CefWindowHandle)widgetWId_;
   }
@@ -50,6 +61,7 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   if (browserSetting_.osrEnabled) {
     window_info.SetAsWindowless(hwnd);
 
+    // winsoft666:
     // Enable all plugins here.
     // If not set enabled, PDF will cannot be render correctly, even if add command lines in OnBeforeCommandLineProcessing function.
     browserSettings.plugins = STATE_ENABLED;
@@ -73,6 +85,7 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
       window_info.ex_style |= WS_EX_NOACTIVATE;
     }
 
+    // winsoft666:
     // Enable all plugins here.
     // If not set enabled, PDF will cannot be render correctly, even if add command lines in OnBeforeCommandLineProcessing function.
     browserSettings.plugins = STATE_ENABLED;
@@ -90,7 +103,6 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   }
 
   browserCreated_ = true;
-
   return true;
 }
 
@@ -145,6 +157,18 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 #endif
 
   pTopWidget_ = QCefManager::getInstance().addBrowser(pWidget_, browser, browserSetting_.osrEnabled);
+
+  if (!browserSetting_.osrEnabled) {
+    CefWindowHandle cefhwnd = NULL;
+    CefRefPtr<CefBrowser> browser = this->browser();
+    if (browser)
+      cefhwnd = browser->GetHost()->GetWindowHandle();
+    if (cefhwnd) {
+      QRect rc = pWidget_->rect();
+      float scale = pWidget_->devicePixelRatioF();
+      SetWindowPos(cefhwnd, NULL, rc.left() * scale, rc.top() * scale, rc.width() * scale, rc.height() * scale, SWP_NOZORDER);
+    }
+  }
 }
 
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
@@ -170,7 +194,90 @@ void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
   }
 }
 
-void QCefWidgetImpl::OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds) {
+LRESULT CALLBACK QCefWidgetImpl::SubclassedWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+  WNDPROC hPreWndProc = reinterpret_cast<WNDPROC>(::GetPropW(hWnd, kPreWndProc));
+  HRGN hRegion = reinterpret_cast<HRGN>(::GetPropW(hWnd, kDraggableRegion));
+  HWND hTopLevelWnd = reinterpret_cast<HWND>(::GetPropW(hWnd, kTopLevelHwnd));
+
+  if (message == WM_LBUTTONDOWN) {
+    POINT point = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+    if (::PtInRegion(hRegion, point.x, point.y)) {
+      ::ClientToScreen(hWnd, &point);
+      ::PostMessage(hTopLevelWnd, WM_NCLBUTTONDOWN, HTCAPTION, MAKELPARAM(point.x, point.y));
+      return 0;
+    }
+  }
+
+  return CallWindowProc(hPreWndProc, hWnd, message, wParam, lParam);
+}
+
+void QCefWidgetImpl::subclassWindow(HWND hWnd, HRGN hRegion, HWND hTopLevelWnd) {
+  HANDLE hParentWndProc = ::GetPropW(hWnd, kPreWndProc);
+  if (hParentWndProc) {
+    ::SetPropW(hWnd, kDraggableRegion, reinterpret_cast<HANDLE>(hRegion));
+    return;
+  }
+
+  SetLastError(0);
+  LONG_PTR hOldWndProc = SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(SubclassedWindowProc));
+  if (hOldWndProc == 0 && GetLastError() != ERROR_SUCCESS) {
+    return;
+  }
+
+  ::SetPropW(hWnd, kPreWndProc, reinterpret_cast<HANDLE>(hOldWndProc));
+  ::SetPropW(hWnd, kDraggableRegion, reinterpret_cast<HANDLE>(hRegion));
+  ::SetPropW(hWnd, kTopLevelHwnd, reinterpret_cast<HANDLE>(hTopLevelWnd));
+}
+
+void QCefWidgetImpl::unSubclassWindow(HWND hWnd) {
+  LONG_PTR hParentWndProc = reinterpret_cast<LONG_PTR>(::GetPropW(hWnd, kPreWndProc));
+  if (hParentWndProc) {
+    LONG_PTR hPreviousWndProc = SetWindowLongPtr(hWnd, GWLP_WNDPROC, hParentWndProc);
+    ALLOW_UNUSED_LOCAL(hPreviousWndProc);
+    DCHECK_EQ(hPreviousWndProc, reinterpret_cast<LONG_PTR>(SubclassedWindowProc));
+  }
+
+  ::RemovePropW(hWnd, kPreWndProc);
+  ::RemovePropW(hWnd, kDraggableRegion);
+  ::RemovePropW(hWnd, kTopLevelHwnd);
+}
+
+BOOL CALLBACK QCefWidgetImpl::SubclassWindowsProc(HWND hwnd, LPARAM lParam) {
+  QCefWidgetImpl *pImpl = (QCefWidgetImpl *)lParam;
+  subclassWindow(hwnd, reinterpret_cast<HRGN>(pImpl->draggableRegion_), (HWND)pImpl->pTopWidget_->winId());
+  return TRUE;
+}
+
+BOOL CALLBACK QCefWidgetImpl::UnSubclassWindowsProc(HWND hwnd, LPARAM lParam) {
+  unSubclassWindow(hwnd);
+  return TRUE;
+}
+
+void QCefWidgetImpl::draggableRegionsChangedNotify(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions) {
+  ::SetRectRgn(draggableRegion_, 0, 0, 0, 0);
+
+  float dpiScale = deviceScaleFactor();
+
+  std::vector<CefDraggableRegion>::const_iterator it = regions.begin();
+  for (; it != regions.end(); ++it) {
+    HRGN region = ::CreateRectRgn(it->bounds.x * dpiScale, it->bounds.y * dpiScale, it->bounds.x * dpiScale + it->bounds.width * dpiScale,
+                                  it->bounds.y * dpiScale + it->bounds.height * dpiScale);
+    ::CombineRgn(draggableRegion_, draggableRegion_, region, it->draggable ? RGN_OR : RGN_DIFF);
+    ::DeleteObject(region);
+  }
+
+  Q_ASSERT(browser && browser->GetHost());
+  if (browser && browser->GetHost()) {
+    HWND hwnd = browser->GetHost()->GetWindowHandle();
+    Q_ASSERT(hwnd);
+    if (hwnd) {
+      WNDENUMPROC proc = !regions.empty() ? SubclassWindowsProc : UnSubclassWindowsProc;
+      ::EnumChildWindows(hwnd, proc, reinterpret_cast<LPARAM>(this));
+    }
+  }
+}
+
+void QCefWidgetImpl::imeCompositionRangeChangedNotify(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds) {
   if (pCefUIEventWin_) {
     pCefUIEventWin_->OnImeCompositionRangeChanged(browser, selection_range, character_bounds);
   }
@@ -312,8 +419,7 @@ QRect QCefWidgetImpl::rect() {
 
 bool QCefWidgetImpl::event(QEvent *event) {
   if (event->type() == QEvent::WinIdChange) {
-    if (pWidget_)
-      widgetWId_ = pWidget_->winId();
+    widgetWId_ = pWidget_ ?  pWidget_->winId() : 0;
   }
   else if (event->type() == QEvent::Resize) {
     if (initUrl_.length() > 0) {
