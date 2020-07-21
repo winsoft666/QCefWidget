@@ -93,5 +93,7 @@ private:
   QCefBrowserSetting browserSetting_;
 
   HRGN draggableRegion_;
+
+  float deviceScaleFactor_;
 };
 #endif

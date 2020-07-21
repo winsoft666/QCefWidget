@@ -410,6 +410,9 @@ void TestWnd::bindUiEvent() {
   connect(pushButtonShowFramelessCef_, &QPushButton::clicked, this, [this]() {
     FramelessCEF* pFramelessCEF = new FramelessCEF();
     pFramelessCEF->show();
+    Q_ASSERT(QGuiApplication::primaryScreen());
+    QRect screenAvaliableRect = QGuiApplication::primaryScreen()->availableGeometry();
+    pFramelessCEF->move((screenAvaliableRect.width() - pFramelessCEF->width()) / 2 + screenAvaliableRect.x(), (screenAvaliableRect.height() - pFramelessCEF->height()) / 2 + screenAvaliableRect.y());
   });
 
   connect(cefWidget_, &QCefWidget::loadingStateChanged, this, [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {

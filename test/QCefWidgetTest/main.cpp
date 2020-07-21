@@ -9,6 +9,7 @@ int main(int argc, char *argv[]) {
   QGuiApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 #endif
   QApplication a(argc, argv);
+
   TestWnd w;
   w.show();
   int iret = a.exec();

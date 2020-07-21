@@ -23,6 +23,7 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &u
     , draggableRegion_(nullptr)
     , vt_(vt)
     , widgetWId_(0)
+    , deviceScaleFactor_(1.f)
     , initUrl_(url)
     , browserCreated_(false)
     , browserClosing_(false)
@@ -53,6 +54,8 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
     return false;
   }
 
+  deviceScaleFactor_ = pWidget_->devicePixelRatioF();
+  
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
 #endif
@@ -75,13 +78,12 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
                                                        browserSetting_.backgroundColor.blue());
   }
   else {
-    float scale = pWidget_->devicePixelRatioF();
     QRect viewRect = pWidget_->rect();
     RECT rc;
     rc.left = 0;
     rc.top = 0;
-    rc.right = rc.left + viewRect.width() * scale;
-    rc.bottom = rc.top + viewRect.height() * scale;
+    rc.right = rc.left + viewRect.width() * deviceScaleFactor_;
+    rc.bottom = rc.top + viewRect.height() * deviceScaleFactor_;
 
     window_info.SetAsChild(hwnd, rc);
 
@@ -433,6 +435,7 @@ bool QCefWidgetImpl::event(QEvent *event) {
   }
   else if (event->type() == QEvent::Resize) {
     if (initUrl_.length() > 0) {
+      qDebug() << "QEvent::Resize";
       QString url = initUrl_;
       initUrl_.clear();
       createBrowser(url);
@@ -648,9 +651,7 @@ void QCefWidgetImpl::setAutoShowDevToolsContextMenu(bool b) { browserSetting_.au
 void QCefWidgetImpl::setAllowExecuteUnknownProtocolViaOS(bool b) { browserSetting_.executeUnknownProtocolViaOS = b; }
 
 float QCefWidgetImpl::deviceScaleFactor() {
-  Q_ASSERT(pWidget_);
-  // Qt bug: https://stackoverflow.com/questions/55588776/qt-why-dpi-decrease-on-increasing-scaling-from-os
-  return (float)pWidget_->logicalDpiX() / 100.f;
+  return deviceScaleFactor_;
 }
 
 void QCefWidgetImpl::setFPS(int fps) {
