@@ -55,6 +55,7 @@ public:
   void setBrowserBackgroundColor(const QColor &color);
   bool setOsrEnabled(bool b);
   void setContextMenuEnabled(bool b);
+  void setAutoShowDevToolsContextMenu(bool b);
   void setAllowExecuteUnknownProtocolViaOS(bool b);
   float deviceScaleFactor();
   void setFPS(int fps);

@@ -19,6 +19,8 @@ void FramelessCEF::setupUi() {
   pCefWidget_ = new QCefWidget("file:///D:/sourcecode/private-project/QCefWidget/out/QCefWidgetTest/Debug/TestResource/draggable.html");
   pCefWidget_->setObjectName("cefWidget");
   pCefWidget_->setOsrEnabled(false);
+  pCefWidget_->setContextMenuEnabled(false);
+  pCefWidget_->setAutoShowDevToolsContextMenu(true);
 
   QHBoxLayout *hlMain = new QHBoxLayout();
   hlMain->setContentsMargins(0, 0, 0, 0);
@@ -28,4 +30,13 @@ void FramelessCEF::setupUi() {
   this->setLayout(hlMain);
 
   this->resize(800, 600);
+}
+
+void FramelessCEF::keyPressEvent(QKeyEvent *event) {
+  if (event->key() == Qt::Key_F12) {
+    if (pCefWidget_)
+      pCefWidget_->showDevTools();
+  }
+
+  QWidget::keyPressEvent(event);
 }

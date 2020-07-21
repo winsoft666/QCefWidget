@@ -12,6 +12,8 @@ public:
   bool osrEnabled;
   bool contextMenuEnabled;
   bool executeUnknownProtocolViaOS;
+  bool autoShowDevToolsContextMenu;
+  bool devToolsResourceExist;
 
   int fps;
   QColor backgroundColor;

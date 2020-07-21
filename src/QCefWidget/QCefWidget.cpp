@@ -95,6 +95,16 @@ bool QCefWidget::contextMenuEnabled() {
   return pImpl_->browserSetting().contextMenuEnabled;
 }
 
+void QCefWidget::setAutoShowDevToolsContextMenu(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setAutoShowDevToolsContextMenu(b);
+}
+
+bool QCefWidget::autoShowDevToolsContextMenu() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().autoShowDevToolsContextMenu;
+}
+
 void QCefWidget::setAllowExecuteUnknownProtocolViaOS(bool b) {
   Q_ASSERT(pImpl_);
   pImpl_->setAllowExecuteUnknownProtocolViaOS(b);

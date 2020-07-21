@@ -11,5 +11,6 @@ public:
 protected:
   void setupUi();
 
+  void keyPressEvent(QKeyEvent *event) override;
   QCefWidget* pCefWidget_;
 };

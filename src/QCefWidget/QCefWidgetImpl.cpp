@@ -3,6 +3,7 @@
 #include "QCefProtocol.h"
 #include <QApplication>
 #include <QDebug>
+#include <QDir>
 #include <QPainter>
 #include <include/base/cef_logging.h>
 #include "Include/QCefWidget.h"
@@ -56,6 +57,10 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   RegisterTouchWindow(hwnd, 0);
 #endif
 
+  QCefGlobalSetting::initializeInstance();
+  QDir resourceDir = QString::fromStdWString(QCefGlobalSetting::resource_directory_path.ToWString());
+  browserSetting_.devToolsResourceExist = QFile::exists(resourceDir.filePath("devtools_resources.pak"));
+  
   CefWindowInfo window_info;
   CefBrowserSettings browserSettings;
   if (browserSetting_.osrEnabled) {
@@ -208,6 +213,7 @@ LRESULT CALLBACK QCefWidgetImpl::SubclassedWindowProc(HWND hWnd, UINT message, W
     }
   }
 
+  Q_ASSERT(hPreWndProc);
   return CallWindowProc(hPreWndProc, hWnd, message, wParam, lParam);
 }
 
@@ -220,7 +226,7 @@ void QCefWidgetImpl::subclassWindow(HWND hWnd, HRGN hRegion, HWND hTopLevelWnd) 
 
   SetLastError(0);
   LONG_PTR hOldWndProc = SetWindowLongPtr(hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(SubclassedWindowProc));
-  if (hOldWndProc == 0 && GetLastError() != ERROR_SUCCESS) {
+  if (hOldWndProc == NULL && GetLastError() != ERROR_SUCCESS) {
     return;
   }
 
@@ -632,6 +638,8 @@ bool QCefWidgetImpl::setOsrEnabled(bool b) {
 }
 
 void QCefWidgetImpl::setContextMenuEnabled(bool b) { browserSetting_.contextMenuEnabled = b; }
+
+void QCefWidgetImpl::setAutoShowDevToolsContextMenu(bool b) { browserSetting_.autoShowDevToolsContextMenu = b; }
 
 void QCefWidgetImpl::setAllowExecuteUnknownProtocolViaOS(bool b) { browserSetting_.executeUnknownProtocolViaOS = b; }
 

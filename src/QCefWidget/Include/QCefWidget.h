@@ -59,6 +59,9 @@ public:
   virtual void setContextMenuEnabled(bool b);
   virtual bool contextMenuEnabled();
 
+  virtual void setAutoShowDevToolsContextMenu(bool b);
+  virtual bool autoShowDevToolsContextMenu();
+
   virtual void setAllowExecuteUnknownProtocolViaOS(bool b);
   virtual bool allowExecuteUnknownProtocolViaOS();
 

@@ -99,6 +99,16 @@ bool QCefOpenGLWidget::contextMenuEnabled() {
   return pImpl_->browserSetting().contextMenuEnabled;
 }
 
+void QCefOpenGLWidget::setAutoShowDevToolsContextMenu(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setAutoShowDevToolsContextMenu(b);
+}
+
+bool QCefOpenGLWidget::autoShowDevToolsContextMenu() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().autoShowDevToolsContextMenu;
+}
+
 void QCefOpenGLWidget::setAllowExecuteUnknownProtocolViaOS(bool b) {
   Q_ASSERT(pImpl_);
   pImpl_->setAllowExecuteUnknownProtocolViaOS(b);

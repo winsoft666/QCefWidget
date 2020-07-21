@@ -16,6 +16,13 @@
 #include "Include/QCefOpenGLWidget.h"
 #include "QCefResourceUtil.h"
 
+namespace {
+enum InternalMenuId {
+  CLIENT_ID_SHOW_DEVTOOLS = MENU_ID_USER_FIRST,
+  CLIENT_ID_CLOSE_DEVTOOLS,
+};
+}
+
 QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl *pImpl)
     : isClosing_(false)
     , pCefqueryHandler_(new QCefQueryHandler(pImpl))
@@ -25,8 +32,8 @@ QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl *pImpl)
     , viewWidth_(0)
     , viewHeight_(0)
     , isPaintingPopup_(false)
-  , pImpl_(pImpl) {
-  const std::string& internalOrigin = "http://qcefwidget/";
+    , pImpl_(pImpl) {
+  const std::string &internalOrigin = "http://qcefwidget/";
   pResourceManager_->AddProvider(CreateBinaryResourceProvider(internalOrigin, std::string()), 100, std::string());
 }
 
@@ -47,8 +54,20 @@ void QCefBrowserHandler::OnBeforeContextMenu(CefRefPtr<CefBrowser> browser, CefR
   CEF_REQUIRE_UI_THREAD();
 
   if (pImpl_) {
-    if(!pImpl_->browserSetting().contextMenuEnabled)
+    if (!pImpl_->browserSetting().contextMenuEnabled)
       model->Clear();
+
+    if (pImpl_->browserSetting().autoShowDevToolsContextMenu && pImpl_->browserSetting().devToolsResourceExist) {
+      if ((params->GetTypeFlags() & (CM_TYPEFLAG_PAGE | CM_TYPEFLAG_FRAME)) != 0) {
+        // Add a separator if the menu already has items.
+        if (model->GetCount() > 0)
+          model->AddSeparator();
+
+        // Add DevTools items to all context menus.
+        model->AddItem(CLIENT_ID_SHOW_DEVTOOLS, "Show DevTools");
+        model->AddItem(CLIENT_ID_CLOSE_DEVTOOLS, "Close DevTools");
+      }
+    }
   }
 }
 
@@ -56,8 +75,16 @@ bool QCefBrowserHandler::OnContextMenuCommand(CefRefPtr<CefBrowser> browser, Cef
                                               EventFlags event_flags) {
   CEF_REQUIRE_UI_THREAD();
 
-  // Allow default handling to proceed.
-  return false;
+  switch (command_id) {
+  case CLIENT_ID_SHOW_DEVTOOLS:
+    QCefManager::getInstance().showDevTools(pImpl_->getWidget());
+    return true;
+  case CLIENT_ID_CLOSE_DEVTOOLS:
+    QCefManager::getInstance().closeDevTools(pImpl_->getWidget());
+    return true;
+  default:
+    return false;
+  }
 }
 
 void QCefBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString &url) {
@@ -124,7 +151,7 @@ void QCefBrowserHandler::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, b
 
 bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> dragData, CefDragHandler::DragOperationsMask mask) {
   CEF_REQUIRE_UI_THREAD();
-  
+
   return false;
 }
 
@@ -405,7 +432,7 @@ void QCefBrowserHandler::OnRenderProcessTerminated(CefRefPtr<CefBrowser> browser
 }
 
 CefRequestHandler::ReturnValue QCefBrowserHandler::OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefRequest> request,
-                                                     CefRefPtr<CefRequestCallback> callback) {
+                                                                        CefRefPtr<CefRequestCallback> callback) {
   return pResourceManager_->OnBeforeResourceLoad(browser, frame, request, callback);
 }
 
@@ -434,8 +461,7 @@ bool QCefBrowserHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX
 
   float fScale = pImpl_->deviceScaleFactor();
 
-  QPoint p = { static_cast<int>(std::floor(static_cast<float>(viewX) * fScale)), 
-    static_cast<int>(std::floor(static_cast<float>(viewY) * fScale)) };
+  QPoint p = {static_cast<int>(std::floor(static_cast<float>(viewX) * fScale)), static_cast<int>(std::floor(static_cast<float>(viewY) * fScale))};
   QPoint globalPos = pWidget->mapToGlobal(p);
 
   screenX = globalPos.x();
@@ -714,13 +740,9 @@ bool QCefBrowserHandler::isOverPopupWidget(int x, int y) const {
   return (x >= rc.x) && (x < popup_right) && (y >= rc.y) && (y < popup_bottom);
 }
 
-int QCefBrowserHandler::getPopupXOffset() const {
-  return originalPopupRect_.x - popupRect_.x;
-}
+int QCefBrowserHandler::getPopupXOffset() const { return originalPopupRect_.x - popupRect_.x; }
 
-int QCefBrowserHandler::getPopupYOffset() const {
-  return originalPopupRect_.y - popupRect_.y;
-}
+int QCefBrowserHandler::getPopupYOffset() const { return originalPopupRect_.y - popupRect_.y; }
 
 CefRect QCefBrowserHandler::getPopupRectInWebView(const CefRect &original_rect) const {
   CefRect rc(original_rect);
