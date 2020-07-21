@@ -266,8 +266,12 @@ void QCefWidgetImpl::draggableRegionsChangedNotify(CefRefPtr<CefBrowser> browser
 
   std::vector<CefDraggableRegion>::const_iterator it = regions.begin();
   for (; it != regions.end(); ++it) {
-    HRGN region = ::CreateRectRgn(it->bounds.x * dpiScale, it->bounds.y * dpiScale, it->bounds.x * dpiScale + it->bounds.width * dpiScale,
-                                  it->bounds.y * dpiScale + it->bounds.height * dpiScale);
+    cef_rect_t rc = it->bounds;
+    rc.x = (float)rc.x * dpiScale;
+    rc.y = (float)rc.y * dpiScale;
+    rc.width = (float)rc.width * dpiScale;
+    rc.height = (float)rc.height * dpiScale;
+    HRGN region = ::CreateRectRgn(rc.x, rc.y, rc.x + rc.width, rc.y + rc.height);
     ::CombineRgn(draggableRegion_, draggableRegion_, region, it->draggable ? RGN_OR : RGN_DIFF);
     ::DeleteObject(region);
   }
@@ -645,7 +649,8 @@ void QCefWidgetImpl::setAllowExecuteUnknownProtocolViaOS(bool b) { browserSettin
 
 float QCefWidgetImpl::deviceScaleFactor() {
   Q_ASSERT(pWidget_);
-  return pWidget_->devicePixelRatioF();
+  // Qt bug: https://stackoverflow.com/questions/55588776/qt-why-dpi-decrease-on-increasing-scaling-from-os
+  return (float)pWidget_->logicalDpiX() / 100.f;
 }
 
 void QCefWidgetImpl::setFPS(int fps) {
