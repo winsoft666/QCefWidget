@@ -17,5 +17,8 @@ public:
 
   int fps;
   QColor backgroundColor;
+
+  float presetDeviceScaleFactor;
+  float usingDeviceScaleFactor;
 };
 #endif // !QCEF_BROWSER_SETTING_H_

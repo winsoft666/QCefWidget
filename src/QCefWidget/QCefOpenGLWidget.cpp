@@ -20,7 +20,7 @@ QCefOpenGLWidget::QCefOpenGLWidget(const QString &url, QWidget *parent /*= nullp
 }
 
 QCefOpenGLWidget::~QCefOpenGLWidget() {
-  qInfo() << "QCefOpenGLWidget::~QCefOpenGLWidget, this: " << this;
+  qDebug() << "QCefOpenGLWidget::~QCefOpenGLWidget";
   QCefManager::getInstance().uninitializeCef();
 }
 
@@ -77,6 +77,16 @@ bool QCefOpenGLWidget::responseCefQuery(const QCefQuery &query) {
 void QCefOpenGLWidget::executeJavascript(const QString &javascript) {
   Q_ASSERT(pImpl_);
   pImpl_->executeJavascript(javascript);
+}
+
+void QCefOpenGLWidget::setDeviceScaleFactor(float scaleFactor) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setDeviceScaleFactor(scaleFactor);
+}
+
+float QCefOpenGLWidget::deviceScaleFactor() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().usingDeviceScaleFactor;
 }
 
 bool QCefOpenGLWidget::setOsrEnabled(bool b) {

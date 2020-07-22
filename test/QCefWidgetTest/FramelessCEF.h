@@ -11,6 +11,5 @@ public:
 protected:
   void setupUi();
   QSize sizeHint() const override;
-  void keyPressEvent(QKeyEvent *event) override;
   QCefWidget* pCefWidget_;
 };

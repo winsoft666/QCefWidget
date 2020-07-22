@@ -48,6 +48,13 @@ public:
 
   virtual void executeJavascript(const QString &javascript);
 
+  // Set device scale factor that will be used by CEF/QCefWidget/QCefWidgetOpenGL
+  // If scaleFactor <= 0, QCefWidget will automatically fetch the scale factor of the screen where current widget is located.
+  // If scaleFactor > 0, QCefWidget will use the fixed scale factor.
+  //
+  virtual void setDeviceScaleFactor(float scaleFactor);
+  virtual float deviceScaleFactor();
+
   // Must be set before browser created, otherwise return false.
   // OSR is enabled by default.
   //

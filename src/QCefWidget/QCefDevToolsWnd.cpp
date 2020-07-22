@@ -19,7 +19,7 @@ QCefDevToolsWnd::QCefDevToolsWnd(CefRefPtr<CefBrowser> targetBrowser, QWidget *p
   }
 }
 
-QCefDevToolsWnd::~QCefDevToolsWnd() { qInfo() << "QCefDevToolsWnd::~QCefDevToolsWnd, this: " << this; }
+QCefDevToolsWnd::~QCefDevToolsWnd() { qDebug() << "QCefDevToolsWnd::~QCefDevToolsWnd"; }
 
 void QCefDevToolsWnd::closeEvent(QCloseEvent *event) {
   QCefManager::getInstance().devToolsClosedNotify(this);
@@ -33,6 +33,9 @@ void QCefDevToolsWnd::setupUi() {
   if (cefWidget_) {
     cefWidget_->setObjectName("cefWidget");
     cefWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    cefWidget_->setOsrEnabled(false); // FORCE NON-OSR
+    cefWidget_->setAutoShowDevToolsContextMenu(false);
+    cefWidget_->setDeviceScaleFactor(0.f);
   }
 
   this->setCentralWidget(cefWidget_);

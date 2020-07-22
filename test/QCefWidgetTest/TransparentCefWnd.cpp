@@ -17,7 +17,7 @@ TransparentCefWnd::TransparentCefWnd(bool bCefOpenGLWidget, QWidget *parent)
 }
 
 TransparentCefWnd::~TransparentCefWnd() {
-  qInfo() << "TransparentCefWnd::~TransparentCefWnd, this: " << this;
+  qDebug() << "TransparentCefWnd::~TransparentCefWnd";
 }
 
 void TransparentCefWnd::setOsrEnabled(bool b) {

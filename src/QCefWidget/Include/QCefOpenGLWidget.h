@@ -49,6 +49,9 @@ public:
 
   virtual void executeJavascript(const QString &javascript);
 
+  virtual void setDeviceScaleFactor(float scaleFactor);
+  virtual float deviceScaleFactor();
+
   // Must be set before browser created, otherwise return false.
   // OSR is enabled by default.
   //

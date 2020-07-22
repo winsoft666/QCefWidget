@@ -32,7 +32,7 @@ TestWnd::TestWnd(QWidget *parent)
   //transWidgetCefWnd_ = new TransparentCefWnd(false, nullptr);
   if (transWidgetCefWnd_) {
     connect(transWidgetCefWnd_, &QWidget::destroyed, transWidgetCefWnd_, [this]() {
-      qInfo() << "transWidgetCefWnd_::destroyed";
+      qDebug() << "transWidgetCefWnd_::destroyed";
       transWidgetCefWnd_ = nullptr;
     });
     transWidgetCefWnd_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
@@ -42,7 +42,7 @@ TestWnd::TestWnd(QWidget *parent)
   //transOpenGLWidgetCefWnd_ = new TransparentCefWnd(true, nullptr);
   if (transOpenGLWidgetCefWnd_) {
     connect(transOpenGLWidgetCefWnd_, &QWidget::destroyed, transOpenGLWidgetCefWnd_, [this]() {
-      qInfo() << "transOpenGLWidgetCefWnd_::destroyed";
+      qDebug() << "transOpenGLWidgetCefWnd_::destroyed";
       transOpenGLWidgetCefWnd_ = nullptr;
     });
     transOpenGLWidgetCefWnd_->setOsrEnabled(checkboxOsrEnabled_->isChecked());
@@ -66,7 +66,7 @@ TestWnd::TestWnd(QWidget *parent)
   QString url;
   if (comboBoxUrl_->count() > 0)
     url = comboBoxUrl_->itemText(0);
-  cefWidget_->navigateToUrl("https://www.baidu.com");
+
   if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_) {
     if (url.length() > 0)
       cefWidget_->navigateToUrl(url);
@@ -88,10 +88,10 @@ TestWnd::TestWnd(QWidget *parent)
   }
 }
 
-TestWnd::~TestWnd() { qInfo() << "TestWnd::~TestWnd, this: " << this; }
+TestWnd::~TestWnd() { qDebug() << "TestWnd::~TestWnd"; }
 
 void TestWnd::closeEvent(QCloseEvent *event) {
-  qInfo() << "TestWnd::closeEvent";
+  qDebug() << "TestWnd::closeEvent";
 
   if (transWidgetCefWnd_) {
     transWidgetCefWnd_->close();
@@ -232,6 +232,7 @@ void TestWnd::setupUi() {
   if (cefWidget_) {
     cefWidget_->setObjectName("cefWidget");
     cefWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    //cefWidget_->setDeviceScaleFactor(1.f);
   }
 
   cefOpenGLWidget_ = new QCefOpenGLWidget();
@@ -278,7 +279,6 @@ void TestWnd::setupUi() {
 }
 
 void TestWnd::bindUiEvent() {
-
   connect(comboBoxUrl_->lineEdit(), &QLineEdit::returnPressed, [this]() {
     QString url = comboBoxUrl_->lineEdit()->text();
     if (checkBoxOpacityCefWidget_->isChecked() && cefWidget_)

@@ -18,7 +18,7 @@ QCefWidget::QCefWidget(const QString &url, QWidget *parent)
   setAttribute(Qt::WA_InputMethodEnabled, true);
 }
 
-QCefWidget::~QCefWidget() { qInfo() << "QCefWidget::~QCefWidget, this: " << this; }
+QCefWidget::~QCefWidget() { qDebug() << "QCefWidget::~QCefWidget"; }
 
 void QCefWidget::navigateToUrl(const QString &url) {
   Q_ASSERT(pImpl_);
@@ -73,6 +73,16 @@ bool QCefWidget::responseCefQuery(const QCefQuery &query) {
 void QCefWidget::executeJavascript(const QString &javascript) {
   Q_ASSERT(pImpl_);
   pImpl_->executeJavascript(javascript);
+}
+
+void QCefWidget::setDeviceScaleFactor(float scaleFactor) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setDeviceScaleFactor(scaleFactor);
+}
+
+float QCefWidget::deviceScaleFactor() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().usingDeviceScaleFactor;
 }
 
 bool QCefWidget::setOsrEnabled(bool b) {

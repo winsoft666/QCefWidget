@@ -37,12 +37,3 @@ void FramelessCEF::setupUi() {
 QSize FramelessCEF::sizeHint() const {
   return QSize(1024,716);
 }
-
-void FramelessCEF::keyPressEvent(QKeyEvent *event) {
-  if (event->key() == Qt::Key_F12) {
-    if (pCefWidget_)
-      pCefWidget_->showDevTools();
-  }
-
-  QWidget::keyPressEvent(event);
-}

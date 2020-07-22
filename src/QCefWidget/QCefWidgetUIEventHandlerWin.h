@@ -13,14 +13,14 @@ public:
   QCefWidgetUIEventHandlerWin(HWND h, CefRefPtr<CefBrowser> pCefBrowser, CefRefPtr<QCefBrowserHandler> pBrowserHandler);
   ~QCefWidgetUIEventHandlerWin();
 
-  void OnSize(UINT message, WPARAM wParam, LPARAM lParam);
-  void OnKeyboardEvent(UINT message, WPARAM wParam, LPARAM lParam);
+  void OnSize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  void OnKeyboardEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-  void OnMouseEvent(UINT message, WPARAM wParam, LPARAM lParam);
-  void OnTouchEvent(UINT message, WPARAM wParam, LPARAM lParam);
-  void OnFocusEvent(UINT message, WPARAM wParam, LPARAM lParam);
-  void OnIMEEvent(UINT message, WPARAM wParam, LPARAM lParam);
-  void OnCaptureLostEvent(UINT message, WPARAM wParam, LPARAM lParam);
+  void OnMouseEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  void OnTouchEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  void OnFocusEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  void OnIMEEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  void OnCaptureLostEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range,
                                     const CefRenderHandler::RectList &character_bounds);
@@ -30,12 +30,11 @@ public:
   int GetPopupXOffset() const;
   int GetPopupYOffset() const;
   void ApplyPopupOffset(int &x, int &y) const;
-
 private:
   bool IsKeyDown(WPARAM wParam);
   int GetCefMouseModifiers(WPARAM wParam);
   int GetCefKeyboardModifiers(WPARAM wParam, LPARAM lParam);
-  void OnIMEComposition(UINT message, WPARAM wParam, LPARAM lParam);
+  void OnIMEComposition(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
   void OnIMECancelCompositionEvent();
 
   CefRefPtr<CefBrowserHost> browserHost();

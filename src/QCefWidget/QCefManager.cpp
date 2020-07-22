@@ -24,7 +24,6 @@ void QCefManager::initializeCef() {
   CefEnableHighDPISupport();
   QCefGlobalSetting::initializeInstance();
 
-
   CefString(&cefSettings_.browser_subprocess_path) = QCefGlobalSetting::browser_sub_process_path;
   CefString(&cefSettings_.resources_dir_path) = QCefGlobalSetting::resource_directory_path;
   CefString(&cefSettings_.locales_dir_path) = QCefGlobalSetting::locales_directory_path;
@@ -337,18 +336,18 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     return 0;
 
   if (uMsg == WM_CLOSE) {
-    qInfo() << "QCefManager::newWndProc WM_CLOSE, hwnd: " << (int)hWnd;
+    qDebug() << "QCefManager::newWndProc WM_CLOSE, HWND: " << hWnd;
     pThis->tryCloseAllBrowsers(hWnd);
 
     if (pThis->aliveBrowserCount(hWnd) == 0) {
       ::SetWindowLongPtr(hWnd, GWLP_USERDATA, 0L);
       SetWindowLongPtr(hWnd, GWL_WNDPROC, (LONG_PTR)preWndProc);
       // allow close
-      qInfo() << "Accept WM_CLOSE";
+      qDebug() << "Accept WM_CLOSE";
       return ::CallWindowProc(preWndProc, hWnd, uMsg, wParam, lParam);
     }
     else {
-      qInfo() << "Ignore WM_CLOSE";
+      qDebug() << "Ignore WM_CLOSE";
       // deny close
       return 0;
     }
@@ -359,21 +358,21 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
 
 bool QCefManager::eventFilter(QObject *obj, QEvent *event) {
   if (event->type() == QEvent::Close) {
-    qInfo() << "QCefManager::eventFilter Close event, obj: " << obj;
+    qDebug() << "QCefManager::eventFilter QEvent::Close, obj: " << obj;
     std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
     for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
       if (it->cefWidgetTopWidget == obj) {
         this->tryCloseAllBrowsers(it->cefWidgetTopWidget);
 
         if (this->aliveBrowserCount(it->cefWidgetTopWidget) == 0) {
-          qInfo() << "Accept close event";
+          qDebug() << "Accept close event";
           event->accept();
           return false;
         }
         else {
           it->cefWidgetTopWidget->removeEventFilter(this);
           event->ignore();
-          qInfo() << "Ignore close event";
+          qDebug() << "Ignore close event";
           return true;
         }
       }
