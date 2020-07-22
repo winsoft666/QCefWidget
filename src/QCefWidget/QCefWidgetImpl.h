@@ -57,7 +57,6 @@ public:
   void setContextMenuEnabled(bool b);
   void setAutoShowDevToolsContextMenu(bool b);
   void setAllowExecuteUnknownProtocolViaOS(bool b);
-  void setDeviceScaleFactor(float scaleFactor);
   void setFPS(int fps);
   const QCefBrowserSetting& browserSetting() const;
 
@@ -66,6 +65,8 @@ public:
   void setBrowserClosing(bool b);
 
   CefRefPtr<CefBrowser> browser() const;
+
+  float deviceScaleFactor();
 
 protected:
   bool sendEventNotifyMessage(const QString &name, const QCefEvent &event);
@@ -93,5 +94,7 @@ private:
   QCefBrowserSetting browserSetting_;
 
   HRGN draggableRegion_;
+
+  float deviceScaleFactor_;
 };
 #endif

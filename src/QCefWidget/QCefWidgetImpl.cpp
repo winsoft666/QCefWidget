@@ -24,11 +24,13 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &u
     , vt_(vt)
     , widgetWId_(0)
     , initUrl_(url)
+    , deviceScaleFactor_(1.f)
     , browserCreated_(false)
     , browserClosing_(false)
     , pQCefViewHandler_(nullptr) {
   draggableRegion_ = ::CreateRectRgn(0, 0, 0, 0);
   QCefManager::getInstance().initializeCef();
+  deviceScaleFactor_ = pWidget_->devicePixelRatioF();
 }
 
 QCefWidgetImpl::~QCefWidgetImpl() {
@@ -53,11 +55,7 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   if (!hwnd)
     return false;
 
-  if (browserSetting_.presetDeviceScaleFactor <= 0.f)
-    browserSetting_.usingDeviceScaleFactor = pWidget_->devicePixelRatioF();
-  else
-    browserSetting_.usingDeviceScaleFactor = browserSetting_.presetDeviceScaleFactor;
-  qDebug() << "deviceScaleFactor: " << browserSetting_.usingDeviceScaleFactor;
+  qDebug() << "deviceScaleFactor: " << deviceScaleFactor_;
   
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
@@ -81,13 +79,12 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
                                                        browserSetting_.backgroundColor.blue());
   }
   else {
-    float scaleFactor = browserSetting_.usingDeviceScaleFactor;
     QRect viewRect = pWidget_->rect();
     RECT rc;
     rc.left = 0;
     rc.top = 0;
-    rc.right = rc.left + viewRect.width() * scaleFactor;
-    rc.bottom = rc.top + viewRect.height() * scaleFactor;
+    rc.right = rc.left + viewRect.width() * deviceScaleFactor_;
+    rc.bottom = rc.top + viewRect.height() * deviceScaleFactor_;
 
     window_info.SetAsChild(hwnd, rc);
 
@@ -129,11 +126,7 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   if (!hwnd)
     return false;
 
-  if (browserSetting_.presetDeviceScaleFactor <= 0.f)
-    browserSetting_.usingDeviceScaleFactor = pWidget_->devicePixelRatioF();
-  else
-    browserSetting_.usingDeviceScaleFactor = browserSetting_.presetDeviceScaleFactor;
-  qDebug() << "deviceScaleFactor: " << browserSetting_.usingDeviceScaleFactor;
+  qDebug() << "deviceScaleFactor: " << deviceScaleFactor_;
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
@@ -174,7 +167,7 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
   pCefUIEventWin_ = std::make_shared<QCefWidgetUIEventHandlerWin>((HWND)widgetWId_, browser, pQCefViewHandler_);
   Q_ASSERT(pCefUIEventWin_);
   if (pCefUIEventWin_) {
-    pCefUIEventWin_->setDeviceScaleFactor(browserSetting_.usingDeviceScaleFactor);
+    pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
   }
 #else
 #error("No implement")
@@ -269,7 +262,7 @@ BOOL CALLBACK QCefWidgetImpl::UnSubclassWindowsProc(HWND hwnd, LPARAM lParam) {
 void QCefWidgetImpl::draggableRegionsChangedNotify(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions) {
   ::SetRectRgn(draggableRegion_, 0, 0, 0, 0);
 
-  float dpiScale = browserSetting_.usingDeviceScaleFactor;
+  float dpiScale = deviceScaleFactor_;
 
   std::vector<CefDraggableRegion>::const_iterator it = regions.begin();
   for (; it != regions.end(); ++it) {
@@ -575,7 +568,7 @@ bool QCefWidgetImpl::paintEventHandle(QPaintEvent *event) {
     return false;
 
   Q_ASSERT(vt_ == WT_Widget);
-  float scale = browserSetting_.usingDeviceScaleFactor;
+  float scale = deviceScaleFactor_;
   QPainter paint(pWidget_);
 
   CefRenderBuffer *pRenderBuffer = pQCefViewHandler_->lockViewBuffer();
@@ -613,7 +606,7 @@ bool QCefWidgetImpl::openGLPaintEventHandle(QPaintEvent *event) {
   if (!pCefWidget)
     return false;
 
-  float scale = browserSetting_.usingDeviceScaleFactor;
+  float scale = deviceScaleFactor_;
   QPainter paint(pCefWidget);
 
   CefRenderBuffer *pDrawImageParam = pQCefViewHandler_->lockViewBuffer();
@@ -669,25 +662,6 @@ void QCefWidgetImpl::setAutoShowDevToolsContextMenu(bool b) { browserSetting_.au
 
 void QCefWidgetImpl::setAllowExecuteUnknownProtocolViaOS(bool b) { browserSetting_.executeUnknownProtocolViaOS = b; }
 
-void QCefWidgetImpl::setDeviceScaleFactor(float scaleFactor) { 
-  browserSetting_.presetDeviceScaleFactor = scaleFactor; 
-
-  CefRefPtr<CefBrowser> b = browser();
-  if (b && b->GetHost()) { // browser has created
-    if (browserSetting_.presetDeviceScaleFactor <= 0.f)
-      browserSetting_.usingDeviceScaleFactor = pWidget_->devicePixelRatioF();
-    else
-      browserSetting_.usingDeviceScaleFactor = scaleFactor;
-
-    Q_ASSERT(pCefUIEventWin_);
-    if (pCefUIEventWin_) {
-      pCefUIEventWin_->setDeviceScaleFactor(browserSetting_.usingDeviceScaleFactor);
-    }
-    b->GetHost()->NotifyScreenInfoChanged();
-    b->GetHost()->WasResized();
-  }
-}
-
 void QCefWidgetImpl::setFPS(int fps) {
   browserSetting_.fps = fps;
   CefRefPtr<CefBrowser> b = browser();
@@ -713,4 +687,8 @@ CefRefPtr<CefBrowser> QCefWidgetImpl::browser() const {
     return nullptr;
   }
   return pQCefViewHandler_->browser();
+}
+
+float QCefWidgetImpl::deviceScaleFactor() {
+  return deviceScaleFactor_;
 }

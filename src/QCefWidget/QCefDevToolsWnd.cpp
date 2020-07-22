@@ -35,7 +35,6 @@ void QCefDevToolsWnd::setupUi() {
     cefWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     cefWidget_->setOsrEnabled(false); // FORCE NON-OSR
     cefWidget_->setAutoShowDevToolsContextMenu(false);
-    cefWidget_->setDeviceScaleFactor(0.f);
   }
 
   this->setCentralWidget(cefWidget_);

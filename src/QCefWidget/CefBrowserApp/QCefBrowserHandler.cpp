@@ -459,7 +459,7 @@ bool QCefBrowserHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser, int viewX
   if (!pWidget)
     return false;
 
-  float fScale = pImpl_->browserSetting().usingDeviceScaleFactor;
+  float fScale = pImpl_->deviceScaleFactor();
 
   QPoint p = {viewX, viewY};
   QPoint globalPos = pWidget->mapToGlobal(p);
@@ -500,7 +500,7 @@ bool QCefBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenI
   CefRect view_rect;
   GetViewRect(browser, view_rect);
 
-  screen_info.device_scale_factor = pImpl_->browserSetting().usingDeviceScaleFactor;
+  screen_info.device_scale_factor = pImpl_->deviceScaleFactor();
   screen_info.rect = view_rect;
   screen_info.available_rect = view_rect;
   return true;

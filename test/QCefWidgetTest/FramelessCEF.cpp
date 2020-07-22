@@ -25,7 +25,7 @@ void FramelessCEF::setupUi() {
   pCefWidget_->setAutoShowDevToolsContextMenu(true);
 
   QHBoxLayout *hlMain = new QHBoxLayout();
-  hlMain->setContentsMargins(1, 1, 1, 1);
+  hlMain->setContentsMargins(0, 0, 0, 0);
   hlMain->setSpacing(0);
   hlMain->addWidget(pCefWidget_);
 
@@ -35,5 +35,5 @@ void FramelessCEF::setupUi() {
 }
 
 QSize FramelessCEF::sizeHint() const {
-  return QSize(1024,716);
+  return QSize(1000,700);
 }

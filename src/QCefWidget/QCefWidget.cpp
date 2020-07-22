@@ -75,16 +75,6 @@ void QCefWidget::executeJavascript(const QString &javascript) {
   pImpl_->executeJavascript(javascript);
 }
 
-void QCefWidget::setDeviceScaleFactor(float scaleFactor) {
-  Q_ASSERT(pImpl_);
-  pImpl_->setDeviceScaleFactor(scaleFactor);
-}
-
-float QCefWidget::deviceScaleFactor() {
-  Q_ASSERT(pImpl_);
-  return pImpl_->browserSetting().usingDeviceScaleFactor;
-}
-
 bool QCefWidget::setOsrEnabled(bool b) {
   Q_ASSERT(pImpl_);
   return pImpl_->setOsrEnabled(b);
@@ -182,3 +172,5 @@ void QCefWidget::setVisible(bool visible) {
   if (pImpl_)
     pImpl_->setVisible(visible);
 }
+
+void QCefWidget::onDevicePixelRatioChanged(float pixelRatio) {}

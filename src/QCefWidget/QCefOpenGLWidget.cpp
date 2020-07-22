@@ -79,16 +79,6 @@ void QCefOpenGLWidget::executeJavascript(const QString &javascript) {
   pImpl_->executeJavascript(javascript);
 }
 
-void QCefOpenGLWidget::setDeviceScaleFactor(float scaleFactor) {
-  Q_ASSERT(pImpl_);
-  pImpl_->setDeviceScaleFactor(scaleFactor);
-}
-
-float QCefOpenGLWidget::deviceScaleFactor() {
-  Q_ASSERT(pImpl_);
-  return pImpl_->browserSetting().usingDeviceScaleFactor;
-}
-
 bool QCefOpenGLWidget::setOsrEnabled(bool b) {
   Q_ASSERT(pImpl_);
   return pImpl_->setOsrEnabled(b);

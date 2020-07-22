@@ -12,7 +12,7 @@
 #pragma execution_character_set("utf-8")
 
 namespace {
-QSize kWindowDefaultSize = QSize(1080, 600);
+QSize kWindowDefaultSize = QSize(1000, 600);
 }
 
 TestWnd::TestWnd(QWidget *parent)
@@ -25,7 +25,7 @@ TestWnd::TestWnd(QWidget *parent)
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer32.dll", "32.0.0.387");
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.192/pepflashplayer.dll", "32.0.0.192");
 
-  QCefSetting::setResourceMap({ {"TestPage.html", {IDR_TEST_PAGE, "PAGE" } } });
+  QCefSetting::setResourceMap({{"TestPage.html", {IDR_TEST_PAGE, "PAGE"}}});
 
   setupUi();
 
@@ -185,9 +185,8 @@ void TestWnd::setupUi() {
   comboBoxUrl_->setEditable(true);
   comboBoxUrl_->addItems(QStringList() << ""
                                        << "about:blank"
-                                       << "chrome://version" 
-                                       << "http://qcefwidget/TestPage.html"
-                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
+                                       << "chrome://version"
+                                       << "http://qcefwidget/TestPage.html" << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/FlashPlayerTest.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
                                        << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/PDF.html")
@@ -408,11 +407,24 @@ void TestWnd::bindUiEvent() {
   connect(pushButtonExit_, &QPushButton::clicked, this, [this]() { this->close(); });
 
   connect(pushButtonShowFramelessCef_, &QPushButton::clicked, this, [this]() {
-    FramelessCEF* pFramelessCEF = new FramelessCEF();
+    //float f = this->devicePixelRatioF();
+    //qInfo() << f;
+    //QString strDpi = QString("devicePixelRatioF: %1, logicalDpiX:%2, physicalDpiX: %3, Size: (%4, %5), devicePixelRatio: %6,window()->devicePixelRatio: %7  \r\n")
+    //  .arg(f)
+    //  .arg(this->logicalDpiX())
+    //  .arg(this->physicalDpiX())
+    //  .arg(this->size().width())
+    //  .arg(this->size().height())
+    //  .arg(this->devicePixelRatio())
+    //  .arg(this->window()->devicePixelRatio());
+    //plainTextEditLog_->appendPlainText(strDpi);
+    //return;
+    FramelessCEF *pFramelessCEF = new FramelessCEF();
     pFramelessCEF->show();
     Q_ASSERT(QGuiApplication::primaryScreen());
     QRect screenAvaliableRect = QGuiApplication::primaryScreen()->availableGeometry();
-    pFramelessCEF->move((screenAvaliableRect.width() - pFramelessCEF->width()) / 2 + screenAvaliableRect.x(), (screenAvaliableRect.height() - pFramelessCEF->height()) / 2 + screenAvaliableRect.y());
+    pFramelessCEF->move((screenAvaliableRect.width() - pFramelessCEF->width()) / 2 + screenAvaliableRect.x(),
+                        (screenAvaliableRect.height() - pFramelessCEF->height()) / 2 + screenAvaliableRect.y());
   });
 
   connect(cefWidget_, &QCefWidget::loadingStateChanged, this, [this](bool isLoadingBrowser, bool canGoBack, bool canGoForward) {
