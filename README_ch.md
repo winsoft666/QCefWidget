@@ -20,6 +20,8 @@
 
 ✅ 支持Adobe Flash, 没有任何警告，如"Control-click to run Adobe Flash Player".
 
+✅ 只需要设置CSS属性，就可以实现像Electron一样拖拽无边框窗体.
+
 ---
 
 

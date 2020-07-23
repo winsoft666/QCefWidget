@@ -20,6 +20,8 @@ Support:
 
 ✅ Support Adobe Flash without any warnning, eg "Control-click to run Adobe Flash Player".
 
+✅ Drag/Drop frameless window like Electron throught setting CSS property.
+
 ---
 
 
