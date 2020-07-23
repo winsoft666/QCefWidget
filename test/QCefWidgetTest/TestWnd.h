@@ -15,6 +15,7 @@ protected:
 private slots:
   void onPushButtonNewBrowserClicked();
   void onPushButtonGetSourceCodeClicked();
+  void onCefWndDestroyed(QObject *obj);
 private:
   bool stringToColor(QString s, QColor& c);
 private:
@@ -28,6 +29,10 @@ private:
   QCheckBox* checkboxOsrEnabled_;
   QCheckBox* checkboxContextMenuEnabled_;
   QCheckBox* checkboxAutoShowDevToolsContextMenu_;
+
+  QButtonGroup* cefWidgetGroup_;
+  QRadioButton* radioButtonCefWidget_;
+  QRadioButton* radioButtonCefOpenGLWidget_;
 
   QPushButton* pushButtonNewBrowser_;
 

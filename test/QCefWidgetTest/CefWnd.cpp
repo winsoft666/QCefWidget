@@ -15,7 +15,9 @@ CefWnd::CefWnd(QWidget *parent /*= nullptr*/)
     , windowBkColor_(255, 255, 255, 255)
     , browserBkColor_(255, 255, 255, 255)
     , pCefWidget_(nullptr)
-    , pCefGLWidget_(nullptr) {}
+    , pCefGLWidget_(nullptr) {
+  setAttribute(Qt::WA_DeleteOnClose, true);
+}
 
 CefWnd::~CefWnd() {}
 
@@ -30,7 +32,8 @@ void CefWnd::setupUi() {
   }
 
   this->setObjectName("CefWnd");
-  this->setWindowIcon(QIcon(":/QCefWidgetTest/images/logo.png"));
+  this->setWindowTitle(QString("%1").arg(initUrl_.isEmpty() ? "Not Created" : initUrl_));
+  this->setWindowIcon(QIcon(":/QCefWidgetTest/images/logo.svg"));
 
   QString windowQss = QString("background-color: rgba(%1,%2,%3,%4);")
     .arg(windowBkColor_.red()).arg(windowBkColor_.green()).arg(windowBkColor_.blue()).arg(windowBkColor_.alpha());
@@ -45,6 +48,7 @@ void CefWnd::setupUi() {
     pCefGLWidget_->setBrowserBackgroundColor(browserBkColor_);
 
     connect(pCefGLWidget_, &QCefOpenGLWidget::invokeMethodNotify, this, &CefWnd::onInvokeMethodNotify);
+    connect(pCefGLWidget_, &QCefOpenGLWidget::cefQueryRequest, this, &CefWnd::onCefQueryRequest);
   }
   else {
     pCefWidget_ = new QCefWidget(initUrl_);
@@ -55,6 +59,7 @@ void CefWnd::setupUi() {
     pCefWidget_->setBrowserBackgroundColor(browserBkColor_);
 
     connect(pCefWidget_, &QCefWidget::invokeMethodNotify, this, &CefWnd::onInvokeMethodNotify);
+    connect(pCefWidget_, &QCefWidget::cefQueryRequest, this, &CefWnd::onCefQueryRequest);
   }
 
   QHBoxLayout *hlMain = new QHBoxLayout();
@@ -125,6 +130,8 @@ void CefWnd::onNavigateToUrl(QString url) {
     if (pCefWidget_)
       pCefWidget_->navigateToUrl(url);
   }
+
+  this->setWindowTitle(QString("%1").arg(url));
 }
 
 void CefWnd::onReload() {
@@ -168,4 +175,37 @@ void CefWnd::onInvokeMethodNotify(int browserId, int frameId, const QString &met
   }
   str += strArgs;
   qDebug() << str;
+}
+
+void CefWnd::onTriggerEvent() {
+  unsigned int random_index = time(nullptr);
+  QCefEvent event(QString("TestEvent%1").arg(random_index));
+  event.setStringProperty("StrProp1", QString("String_%1").arg(random_index));
+  event.setStringProperty("StrProp2", QString("String_%1").arg(random_index));
+  event.setIntProperty("IntProp1", 1000 + random_index);
+  event.setIntProperty("IntProp2", 1000 + random_index);
+  event.setDoubleProperty("DoubleProp1", 3.1415926f + (double)random_index);
+  event.setDoubleProperty("DoubleProp2", 3.1415926f + (double)random_index);
+  event.setBoolProperty("BoolProp1", random_index % 2 == 0);
+  event.setBoolProperty("BoolProp2", random_index % 2 == 0);
+
+  if (usingGLWidget_) {
+    pCefGLWidget_->triggerEvent("eventTest", event);
+  }
+  else {
+    pCefWidget_->triggerEvent("eventTest", event);
+  }
+}
+
+void CefWnd::onCefQueryRequest(const QCefQuery &query) {
+    QString str = QString("[CefQueryRequest] id: %1, reqeust: %2\r\n").arg(query.id()).arg(query.reqeust());
+    qDebug() << str;
+
+    QCefQuery rsp = query;
+    rsp.setResponseResult(true, "This is a query response message from C++.", 123);
+
+    if (usingGLWidget_)
+      pCefGLWidget_->responseCefQuery(rsp);
+    else
+      pCefWidget_->responseCefQuery(rsp);
 }

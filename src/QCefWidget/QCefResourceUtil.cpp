@@ -4,6 +4,7 @@
 #include "include/wrapper/cef_byte_read_handler.h"
 #include "include/wrapper/cef_stream_resource_handler.h"
 #include "QCefGlobalSetting.h"
+#include <QDebug>
 
 namespace {
 bool loadBinaryResource(int binaryId, const QString& resourceType, DWORD &dwSize, LPBYTE &pBytes) {
@@ -20,6 +21,7 @@ bool loadBinaryResource(int binaryId, const QString& resourceType, DWORD &dwSize
   }
 
   DWORD dwGLE = GetLastError();
+  qWarning() << "Load resource failed:" << binaryId << "," << resourceType;
   return false;
 }
 

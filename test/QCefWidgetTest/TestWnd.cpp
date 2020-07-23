@@ -2,17 +2,19 @@
 #include "QCefSetting.h"
 #include "QCefWidget.h"
 #include "QCefOpenGLWidget.h"
-#include "TransparentCefWnd.h"
 #include <QDebug>
 #include <QStyle>
 #include <QCloseEvent>
 #include "CefWnd.h"
 #include "SourceCodeWidget.h"
+#include "BrowserListItem.h"
+#include "BuiltInUrl.h"
+#include "resource.h"
 
 #pragma execution_character_set("utf-8")
 
 namespace {
-QSize kWindowDefaultSize = QSize(800, 460);
+QSize kWindowDefaultSize = QSize(900, 600);
 }
 
 TestWnd::TestWnd(QWidget *parent)
@@ -21,21 +23,43 @@ TestWnd::TestWnd(QWidget *parent)
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer32.dll", "32.0.0.387");
   //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.192/pepflashplayer.dll", "32.0.0.192");
 
-  //QCefSetting::setResourceMap({{"TestPage.html", {IDR_TEST_PAGE, "PAGE"}}});
+  QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}}});
 
   setupUi();
 }
 
 TestWnd::~TestWnd() { qDebug() << "TestWnd::~TestWnd"; }
 
-void TestWnd::closeEvent(QCloseEvent *event) { qDebug() << "TestWnd::closeEvent"; }
+void TestWnd::closeEvent(QCloseEvent *event) { 
+  qDebug() << "TestWnd::closeEvent";
+
+  for (int i = 0; i < listBrowser_->count(); i++) {
+    BrowserListItem* blt = (BrowserListItem*)listBrowser_->itemWidget(listBrowser_->item(i));
+    Q_ASSERT(blt && blt->cefWnd());
+    if (blt && blt->cefWnd()) {
+      blt->cefWnd()->close();
+    }
+  }
+}
 
 QSize TestWnd::sizeHint() const { return kWindowDefaultSize; }
 
 void TestWnd::setupUi() {
-  this->setWindowTitle("Control Panel");
+  this->setWindowTitle("QCefWidget Tester");
   this->setObjectName("QControlPanel");
-  this->setWindowIcon(QIcon(":/QCefWidgetTest/images/logo.png"));
+  this->setWindowIcon(QIcon(":/QCefWidgetTest/images/logo.svg"));
+
+  cefWidgetGroup_ = new QButtonGroup(this);
+  radioButtonCefWidget_ = new QRadioButton("QCefWidget");
+  radioButtonCefOpenGLWidget_ = new QRadioButton("QCefOpenGLWidget");
+  cefWidgetGroup_->addButton(radioButtonCefWidget_);
+  cefWidgetGroup_->addButton(radioButtonCefOpenGLWidget_);
+  radioButtonCefWidget_->setChecked(true);
+
+  QHBoxLayout* hlCefWidget = new QHBoxLayout();
+  hlCefWidget->addWidget(radioButtonCefWidget_);
+  hlCefWidget->addWidget(radioButtonCefOpenGLWidget_);
+  hlCefWidget->addStretch();
 
   checkboxFramelessWindow_ = new QCheckBox("Frameless Window");
   checkboxFramelessWindow_->setChecked(false);
@@ -43,32 +67,31 @@ void TestWnd::setupUi() {
   checkboxTranslucentWindowBackground_ = new QCheckBox("Translucent Window Background");
   checkboxTranslucentWindowBackground_->setChecked(false);
 
-  QHBoxLayout* hlWindow = new QHBoxLayout();
-  hlWindow->addWidget(checkboxFramelessWindow_);
-  hlWindow->addWidget(checkboxTranslucentWindowBackground_);
-  hlWindow->addStretch();
 
   QRegExp rxColor("((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]).){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])");
   QRegExpValidator *regValidatorColor = new QRegExpValidator(rxColor);
 
-  QHBoxLayout* hlBkColor = new QHBoxLayout();
-  hlBkColor->addWidget(new QLabel("Window Background-Color(ARGB): "));
+  QHBoxLayout* hlWindowBkColor = new QHBoxLayout();
+  hlWindowBkColor->addWidget(new QLabel("Window Background-Color(ARGB): "));
   lineEditWindowBkColor_ = new QLineEdit("255,255,255,255");
+  lineEditWindowBkColor_->setMaximumWidth(110);
   lineEditWindowBkColor_->setValidator(regValidatorColor);
-  hlBkColor->addWidget(lineEditWindowBkColor_);
-  hlBkColor->addSpacing(20);
+  hlWindowBkColor->addWidget(lineEditWindowBkColor_);
+  hlWindowBkColor->addStretch();
 
-  hlBkColor->addWidget(new QLabel("Browser Background-Color(ARGB): "));
+  QHBoxLayout* hlBrowserBkColor = new QHBoxLayout();
+  hlBrowserBkColor->addWidget(new QLabel("Browser Background-Color(ARGB): "));
   lineEditBrowserBkColor_ = new QLineEdit("255,255,255,255");
+  lineEditBrowserBkColor_->setMaximumWidth(110);
   lineEditBrowserBkColor_->setValidator(regValidatorColor);
-  hlBkColor->addWidget(lineEditBrowserBkColor_);
-  hlBkColor->addStretch();
+  hlBrowserBkColor->addWidget(lineEditBrowserBkColor_);
+  hlBrowserBkColor->addStretch();
 
   checkboxOsrEnabled_ = new QCheckBox("OSR(Off-screen Render)");
   checkboxOsrEnabled_->setChecked(true);
 
   QHBoxLayout *hlFPS = new QHBoxLayout();
-  hlFPS->addWidget(new QLabel("Maximum FPS: "));
+  hlFPS->addWidget(new QLabel("Browser Maximum FPS(1~60): "));
   lineEditFPS_ = new QLineEdit("25");
   lineEditFPS_->setMaximumWidth(32);
   QIntValidator *intValidator = new QIntValidator(1, 60);
@@ -77,59 +100,53 @@ void TestWnd::setupUi() {
   hlFPS->addStretch();
 
   QHBoxLayout *hlInitSize = new QHBoxLayout();
-  hlInitSize->addWidget(new QLabel("Initialize Size: "));
+  hlInitSize->addWidget(new QLabel("Window Size: "));
   lineEditInitSize_ = new QLineEdit("800*600");
-  lineEditInitSize_->setMaximumWidth(100);
+  lineEditInitSize_->setMaximumWidth(80);
   QRegExp rx("[0-9]+\\*[0-9]+");
   QRegExpValidator *regValidator = new QRegExpValidator(rx);
   lineEditInitSize_->setValidator(regValidator);
   hlInitSize->addWidget(lineEditInitSize_);
   hlInitSize->addStretch();
 
-  checkboxContextMenuEnabled_ = new QCheckBox("Context Menu");
+  checkboxContextMenuEnabled_ = new QCheckBox("Browser with Context Menu");
   checkboxContextMenuEnabled_->setChecked(true);
 
-  checkboxAutoShowDevToolsContextMenu_ = new QCheckBox("DevTools Context Menu");
+  checkboxAutoShowDevToolsContextMenu_ = new QCheckBox("Browser with DevTools Context Menu");
   checkboxAutoShowDevToolsContextMenu_->setChecked(true);
 
-  QHBoxLayout *hlContextMenu = new QHBoxLayout();
-  hlContextMenu->addWidget(checkboxContextMenuEnabled_);
-  hlContextMenu->addWidget(checkboxAutoShowDevToolsContextMenu_);
-  hlContextMenu->addStretch();
-
+  QHBoxLayout* hlInitUrl = new QHBoxLayout();
+  hlInitUrl->addWidget(new QLabel("URL: "));
   comboBoxUrl_ = new QComboBox();
   comboBoxUrl_->setObjectName("comboBoxUrl");
   comboBoxUrl_->setFixedHeight(22);
   comboBoxUrl_->setEditable(true);
-  comboBoxUrl_->addItems(QStringList() << "about:blank"
-                                       << "chrome://version"
-                                       << "http://qcefwidget/TestPage.html" << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/TestPage.html")
-                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/FlashPlayerTest.html")
-                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Tree.html")
-                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/PDF.html")
-                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/OsrTest.html")
-                                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/Clock.html") << "https://html5test.com/"
-                                       << "https://www.bing.com"
-                                       << "https://www.google.com"
-                                       << "https://map.baidu.com/"
-                                       << "https://ant.design/components/overview/");
+  comboBoxUrl_->addItems(getBuiltInUrl());
+  hlInitUrl->addWidget(comboBoxUrl_);
+  hlInitUrl->addStretch();
 
   pushButtonNewBrowser_ = new QPushButton("New Browser");
+  pushButtonNewBrowser_->setObjectName("pushButtonNewBrowser");
+  pushButtonNewBrowser_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
   connect(pushButtonNewBrowser_, &QPushButton::clicked, this, &TestWnd::onPushButtonNewBrowserClicked);
 
   QVBoxLayout *vlOption = new QVBoxLayout();
-  vlOption->addLayout(hlWindow);
-  vlOption->addLayout(hlBkColor);
+  vlOption->addLayout(hlCefWidget);
+  vlOption->addWidget(checkboxFramelessWindow_);
+  vlOption->addWidget(checkboxTranslucentWindowBackground_);
   vlOption->addWidget(checkboxOsrEnabled_);
-  vlOption->addLayout(hlContextMenu);
+  vlOption->addWidget(checkboxContextMenuEnabled_);
+  vlOption->addWidget(checkboxAutoShowDevToolsContextMenu_);
   vlOption->addLayout(hlFPS);
   vlOption->addLayout(hlInitSize);
-  vlOption->addWidget(comboBoxUrl_);
-  vlOption->addStretch();
+  vlOption->addLayout(hlWindowBkColor);
+  vlOption->addLayout(hlBrowserBkColor);
+  vlOption->addLayout(hlInitUrl);
+  //vlOption->addStretch();
 
   QVBoxLayout *vlButton = new QVBoxLayout();
+  //vlButton->addStretch();
   vlButton->addWidget(pushButtonNewBrowser_);
-  vlButton->addStretch();
 
   QHBoxLayout *hlTop = new QHBoxLayout();
   hlTop->addLayout(vlOption);
@@ -144,6 +161,7 @@ void TestWnd::setupUi() {
   hlBottom->addStretch();
 
   listBrowser_ = new QListWidget();
+  listBrowser_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   QVBoxLayout *vlMain = new QVBoxLayout();
   vlMain->addLayout(hlTop);
@@ -166,6 +184,8 @@ void TestWnd::setupUi() {
 
 void TestWnd::onPushButtonNewBrowserClicked() {
   CefWnd *pCefWnd = new CefWnd();
+  connect(pCefWnd, &QWidget::destroyed, this, &TestWnd::onCefWndDestroyed);
+  pCefWnd->setUsingGLWidget(radioButtonCefOpenGLWidget_->isChecked());
   pCefWnd->setFramelessWindow(checkboxFramelessWindow_->isChecked());
   pCefWnd->setTranslucentWindowBackground(checkboxTranslucentWindowBackground_->isChecked());
   pCefWnd->setOsrEnabled(checkboxOsrEnabled_->isChecked());
@@ -189,6 +209,12 @@ void TestWnd::onPushButtonNewBrowserClicked() {
 
   pCefWnd->setInitUrl(comboBoxUrl_->currentText());
 
+  BrowserListItem *blt = new BrowserListItem(pCefWnd);
+  QListWidgetItem *item = new QListWidgetItem();
+  item->setSizeHint(QSize(1, 32));
+  listBrowser_->addItem(item);
+  listBrowser_->setItemWidget(item, blt);
+
   pCefWnd->setupUi();
   pCefWnd->show();
 }
@@ -196,6 +222,16 @@ void TestWnd::onPushButtonNewBrowserClicked() {
 void TestWnd::onPushButtonGetSourceCodeClicked() {
   SourceCodeWidget* pWeiXin = new SourceCodeWidget(this);
   pWeiXin->show();
+}
+
+void TestWnd::onCefWndDestroyed(QObject *obj) {
+  for (int i = 0; i < listBrowser_->count(); i++) {
+    BrowserListItem *blt = (BrowserListItem *)listBrowser_->itemWidget(listBrowser_->item(i));
+    Q_ASSERT(blt && blt->cefWnd());
+    if (blt && blt->cefWnd() == obj) {
+      delete listBrowser_->takeItem(i);
+    }
+  }
 }
 
 bool TestWnd::stringToColor(QString s, QColor& c) {

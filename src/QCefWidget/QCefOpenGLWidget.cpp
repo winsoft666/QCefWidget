@@ -21,7 +21,6 @@ QCefOpenGLWidget::QCefOpenGLWidget(const QString &url, QWidget *parent /*= nullp
 
 QCefOpenGLWidget::~QCefOpenGLWidget() {
   qDebug() << "QCefOpenGLWidget::~QCefOpenGLWidget";
-  QCefManager::getInstance().uninitializeCef();
 }
 
 void QCefOpenGLWidget::navigateToUrl(const QString &url) {

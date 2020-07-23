@@ -1,0 +1,119 @@
+<html>
+ <head> 
+  <meta name="description" content="Test Page" /> 
+  <script>
+        function onEventTest(event) {
+          var kvlist = [];
+          for (var key in event) {
+              kvlist.push(key + ":" + event[key])
+          }
+          var msg = kvlist.join('\r\n');
+          document.getElementById("eventMessage").value += msg;
+
+          document.getElementById("eventMessage").value += "\r\n\r\n";
+        }
+
+        function onLoad() {
+          if (typeof(QCefWidget) == 'undefined') {
+            document.getElementById("eventMessage").value += "Warning: typeof(QCefWidget) != 'undefined'";
+            return;
+          }
+
+          QCefWidget.addEventListener("eventTest", onEventTest)
+        }
+
+        function onInvokeMethodClicked() {
+          QCefWidget.invoke("TestMethod", 1, false, "arg3");
+        }
+
+        function onQCefQueryClicked() {
+          var query = {
+            request: document.getElementById("message").value,
+            onSuccess: function(response) {
+                alert("onSuccess: " + response);
+            },
+            onFailure: function(error_code, error_message) {
+                alert("onFailure: " + error_code + ", " + error_message);
+            }
+          }
+          window.QCefWidgetQuery(query);
+        }
+    </script> 
+  <style>  
+    .title {
+        -webkit-app-region: drag;
+        background-color: rgb(5,39,175);
+        width: 100%;
+        height: 40px;
+        color: white;
+        
+        padding-left: 10px;
+        line-height: 40px;
+        display: flex;
+        align-items: center;
+      }
+      
+      .title-area {
+        width:calc((100% - 35px)/2);
+        text-align:left;
+      }
+      
+      .title-button {
+        -webkit-app-region: no-drag;
+        background-color: red;
+        width: 100px;
+        height: 20px;
+        font-size: 8px;
+        text-align: center;
+        line-height: 20px;
+      }
+      
+      
+      #btnInvoke {
+        margin-top: 20px;
+        margin-bottom: 20px;
+        width: 160px;
+        height: 30px;
+      }
+      
+      #btnQuery {
+        width: 100px;
+        height: 30px;
+      }
+      
+      textarea {
+        width: 80%;
+        height: 100px;
+        margin: 10px 0 10px 0;
+      }
+      
+      .tt {
+        font-family: Arial;
+        font-size: 14px;
+        font-weight: 600;
+      }
+      
+    </style>
+ </head>  
+ <body onload="onLoad()" id="main"> 
+
+    <div class='title'>
+        <div class="title-area">Draggable Area</div> 
+        <div class="title-button">
+          CAN'T DRAG
+        </div>
+    </div>
+  
+    <input id='btnInvoke' type="button" value="Invoke to C++" onclick="onInvokeMethodClicked()" /> 
+   
+    <div class='tt'>Recevie from Qt:</div> 
+    <textarea id="eventMessage"></textarea> 
+ 
+    <div class='tt'>QCefQuery Test:</div> 
+    <textarea id="message">This is a query request message from JavaScript.</textarea> 
+    
+    <div>
+      <input id='btnQuery' type="button" value="Query" onclick="onQCefQueryClicked()" /> 
+    </div>
+ </body>
+</html>

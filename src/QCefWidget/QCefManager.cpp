@@ -3,14 +3,14 @@
 #include "QCefGlobalSetting.h"
 #include <QWidget>
 #include <QDebug>
-#include <QCoreApplication>
+#include <QApplication>
 #include "QCefDevToolsWnd.h"
 
 QCefManager::QCefManager()
-    : initialized_(false)
-    , nCefRefCount_(0L) {}
+    : initialized_(false), appWillExit_(false) {}
 
-QCefManager::~QCefManager() {}
+QCefManager::~QCefManager() {
+}
 
 QCefManager &QCefManager::getInstance() {
   static QCefManager s_instance;
@@ -18,7 +18,7 @@ QCefManager &QCefManager::getInstance() {
 }
 
 void QCefManager::initializeCef() {
-  if (++nCefRefCount_ > 1)
+  if (initialized_)
     return;
 
   CefEnableHighDPISupport();
@@ -63,15 +63,19 @@ void QCefManager::initializeCef() {
   if (!CefInitialize(main_args, cefSettings_, app_, sandboxInfo))
     assert(0);
   initialized_ = true;
+  connect(qApp, &QApplication::aboutToQuit, this, &QCefManager::uninitializeCef);
 }
 
 void QCefManager::uninitializeCef() {
-  if (!initialized_ || --nCefRefCount_ > 0)
+  if (!initialized_ )
     return;
-
-  CefShutdown();
+  static bool hasCalled = false;
+  Q_ASSERT(!hasCalled);
+  hasCalled = true;
 
   app_ = nullptr;
+
+  CefShutdown();
 
   initialized_ = false;
 }

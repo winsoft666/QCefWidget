@@ -3,6 +3,7 @@
 #include <QString>
 #include <QSize>
 #include <QDebug>
+#include "QCefQuery.h"
 
 class QCefWidget;
 class QCefOpenGLWidget;
@@ -50,13 +51,14 @@ public:
 
 protected:
   QSize sizeHint() const override;
-protected slots:
+public slots :
   virtual void onNavigateToUrl(QString url);
   virtual void onReload();
   virtual void onShowDevTools();
   virtual void onCloseDevTools();
   virtual void onInvokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
-
+  virtual void onTriggerEvent();
+  virtual void onCefQueryRequest(const QCefQuery &query);
 protected:
   bool usingGLWidget_;
   bool framelessWindow_;

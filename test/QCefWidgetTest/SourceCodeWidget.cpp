@@ -18,7 +18,7 @@ SourceCodeWidget::SourceCodeWidget(QWidget *parent)
   weiXinQRCodeWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   QHBoxLayout* hlEmail = new QHBoxLayout();
-  hlEmail->addWidget(new QLabel("Email: "));
+  hlEmail->addWidget(new QLabel("Email:  "));
   lineEditEmail_ = new QLineEdit("winsoft666@outlook.com");
   lineEditEmail_->setReadOnly(true);
   lineEditEmail_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -34,7 +34,7 @@ SourceCodeWidget::SourceCodeWidget(QWidget *parent)
   hlGithub->addWidget(lineEditGithub_);
 
   QHBoxLayout *hlGitee = new QHBoxLayout();
-  hlGitee->addWidget(new QLabel("Gitee: "));
+  hlGitee->addWidget(new QLabel("Gitee:  "));
   lineEditGitee_ = new QLineEdit("https://gitee.com/china_jeffery");
   lineEditGitee_->setReadOnly(true);
   lineEditGitee_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -43,9 +43,10 @@ SourceCodeWidget::SourceCodeWidget(QWidget *parent)
 
   QVBoxLayout* vlMain = new QVBoxLayout();
   vlMain->addWidget(weiXinQRCodeWidget_);
+  vlMain->addLayout(hlEmail);
   vlMain->addLayout(hlGitee);
   vlMain->addLayout(hlGithub);
-  vlMain->addLayout(hlEmail);
+
 
   this->setLayout(vlMain);
 
@@ -65,13 +66,13 @@ SourceCodeWidget::SourceCodeWidget(QWidget *parent)
       if (f.isOpen()) {
         f.write(reply->readAll());
         f.close();
-        weiXinQRCodeWidget_->setStyleSheet(QString("QWidget{background-image: url(%1);}").arg(weiXinImgSrc));
+        weiXinQRCodeWidget_->setStyleSheet(QString("QWidget{image: url(%1);}").arg(weiXinImgSrc));
       }
     }
   });
   
   if (QFile::exists(weiXinImgSrc)) {
-    weiXinQRCodeWidget_->setStyleSheet(QString("QWidget{background-image: url(%1);}").arg(weiXinImgSrc));
+    weiXinQRCodeWidget_->setStyleSheet(QString("QWidget{image: url(%1);}").arg(weiXinImgSrc));
   }
   else {
     reply_ = manager_->get(QNetworkRequest(QString("https://gitee.com/china_jeffery/myprofile/raw/master/weixin.jpg")));

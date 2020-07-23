@@ -35,9 +35,12 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &u
 
 QCefWidgetImpl::~QCefWidgetImpl() {
   qDebug() << "QCefWidgetImpl::~QCefWidgetImpl";
-  QCefManager::getInstance().uninitializeCef();
   ::DeleteObject(draggableRegion_);
   draggableRegion_ = nullptr;
+
+  widgetWId_ = 0;
+  pQCefViewHandler_ = nullptr;
+  pCefUIEventWin_.reset();
 }
 
 bool QCefWidgetImpl::createBrowser(const QString &url) {

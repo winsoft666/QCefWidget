@@ -13,3 +13,22 @@ QPushButton#pushButtonGetSourceCode:hover {
 	text-decoration: underline;
   min-width: 120px;
 }
+
+
+QPushButton#pushButtonNewBrowser {
+  border: 1px solid green;
+  border-radius: 2px;
+  font: bold italic 14px Arial;
+  color: green;
+  min-width: 120px;
+  min-height: 40px;
+}
+
+QPushButton#pushButtonNewBrowser:hover {
+  border: 1px solid red;
+  border-radius: 2px;
+  font: bold italic 14px Arial;
+  color: red;
+  min-width: 120px;
+  min-height: 40px;
+}
