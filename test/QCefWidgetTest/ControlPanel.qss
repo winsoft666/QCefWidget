@@ -1,0 +1,15 @@
+QPushButton#pushButtonGetSourceCode {
+	border: none;
+	color: rgba(0,0,255,1);
+	font: normal italic 14px Arial;
+	text-decoration: underline;
+  min-width: 120px;
+}
+
+QPushButton#pushButtonGetSourceCode:hover {
+	border: none;
+	color: rgba(255,0,0,0.6);
+	font: bold italic 14px Arial;
+	text-decoration: underline;
+  min-width: 120px;
+}

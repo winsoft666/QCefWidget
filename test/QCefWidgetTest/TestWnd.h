@@ -1,61 +1,39 @@
 #ifndef TEST_WND_H__
 #define TEST_WND_H__
 
-#include <QtWidgets/QMainWindow>
 #include <QtWidgets/QtWidgets>
 
-class QCefWidget;
-class QCefOpenGLWidget;
-class TransparentCefWnd;
-class TestWnd : public QMainWindow {
+class TestWnd : public QWidget {
   Q_OBJECT
-
 public:
   TestWnd(QWidget *parent = 0);
   ~TestWnd();
-
-  void closeEvent(QCloseEvent *event) override;
-  QSize sizeHint() const override;
-  void resizeEvent(QResizeEvent *event) override;
 protected:
   void setupUi();
-  void bindUiEvent();
+  void closeEvent(QCloseEvent *event) override;
+  QSize sizeHint() const override;
 private slots:
-  void onInvokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
-
+  void onPushButtonNewBrowserClicked();
+  void onPushButtonGetSourceCodeClicked();
 private:
-  QWidget *widgetTop_;
-
+  bool stringToColor(QString s, QColor& c);
+private:
+  QLineEdit* lineEditInitSize_;
+  QLineEdit* lineEditFPS_;
+  QLineEdit* lineEditWindowBkColor_;
+  QLineEdit* lineEditBrowserBkColor_;
+  QComboBox* comboBoxUrl_;
+  QCheckBox* checkboxFramelessWindow_;
+  QCheckBox* checkboxTranslucentWindowBackground_;
   QCheckBox* checkboxOsrEnabled_;
   QCheckBox* checkboxContextMenuEnabled_;
+  QCheckBox* checkboxAutoShowDevToolsContextMenu_;
 
-  QCheckBox *checkBoxOpacityCefWidget_;
-  QCheckBox *checkBoxOpacityCefOpenGLWidget_;
-  QCheckBox *checkBoxTransparentCefWidget_;
-  QCheckBox *checkBoxTransparentCefOpenGLWidget_;
+  QPushButton* pushButtonNewBrowser_;
 
-  QPushButton* pushButtonBack_;
-  QPushButton* pushButtonForward_;
-  QPushButton* pushButtonReload_;
-  QPushButton* pushButtonTriggerAnEvent_;
-  QPushButton* pushButtonTrigger100Event_;
-  QPushButton* pushButtonOpenDevTools_;
-  QPushButton* pushButtonCloseDevTools_;
-  QPushButton* pushButtonShowFramelessCef_;
-  QPushButton* pushButtonExit_;
-  QComboBox* comboBoxUrl_;
+  QListWidget* listBrowser_;
 
-
-  QPlainTextEdit* plainTextEditLog_;
-
-  QCefWidget* cefWidget_;
-  QCefOpenGLWidget* cefOpenGLWidget_;
-  QSplitter* splitterCef_;
-
-  QSplitter* splitterMain_;
-
-  TransparentCefWnd *transWidgetCefWnd_;
-  TransparentCefWnd *transOpenGLWidgetCefWnd_;
+  QPushButton* pushButtonGetSourceCode_;
 };
 
 #endif // TEST_WND_H__

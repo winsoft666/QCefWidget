@@ -172,5 +172,3 @@ void QCefWidget::setVisible(bool visible) {
   if (pImpl_)
     pImpl_->setVisible(visible);
 }
-
-void QCefWidget::onDevicePixelRatioChanged(float pixelRatio) {}

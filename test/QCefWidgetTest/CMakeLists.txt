@@ -7,7 +7,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-find_package(Qt5 COMPONENTS Core GUI Svg Widgets REQUIRED)
+find_package(Qt5 COMPONENTS Core GUI Svg Widgets Network REQUIRED)
 
 include_directories(
   ${CMAKE_SOURCE_DIR}/out/${QCEF_WIDGET_DLL}/Include
@@ -53,6 +53,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
 	Qt5::Gui 
   Qt5::Widgets
   Qt5::Svg
+  Qt5::Network
   ${QCEF_WIDGET_DLL}
 )
 
@@ -72,6 +73,7 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:${PROJECT_NAME}>
   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Svg> $<TARGET_FILE_DIR:${PROJECT_NAME}>
   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:${PROJECT_NAME}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Network> $<TARGET_FILE_DIR:${PROJECT_NAME}>
   COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms/
   COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::QWindowsIntegrationPlugin> $<TARGET_FILE_DIR:${PROJECT_NAME}>/platforms/
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/../TestResource $<TARGET_FILE_DIR:${PROJECT_NAME}>/TestResource/
