@@ -141,17 +141,36 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   browserSetting_.devToolsResourceExist = QFile::exists(resourceDir.filePath("devtools_resources.pak"));
 
   CefWindowInfo windowInfo;
-  windowInfo.SetAsWindowless(hwnd);
-  if (GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_NOACTIVATE) {
-    // Don't activate the browser window on creation.
-    windowInfo.ex_style |= WS_EX_NOACTIVATE;
-  }
-
   CefBrowserSettings browserSettings;
-  browserSettings.windowless_frame_rate = browserSetting_.fps;
-  browserSettings.plugins = STATE_ENABLED;
-  browserSettings.background_color = CefColorSetARGB(browserSetting_.backgroundColor.alpha(), browserSetting_.backgroundColor.red(), browserSetting_.backgroundColor.green(),
-                                                     browserSetting_.backgroundColor.blue());
+  if (browserSetting_.osrEnabled) {
+    windowInfo.SetAsWindowless(hwnd);
+
+    // winsoft666:
+    // Enable all plugins here.
+    // If not set enabled, PDF will cannot be render correctly, even if add command lines in OnBeforeCommandLineProcessing function.
+    browserSettings.plugins = STATE_ENABLED;
+    browserSettings.windowless_frame_rate = browserSetting_.fps;
+    browserSettings.background_color = CefColorSetARGB(browserSetting_.backgroundColor.alpha(), browserSetting_.backgroundColor.red(), browserSetting_.backgroundColor.green(),
+                                                       browserSetting_.backgroundColor.blue());
+  }
+  else {
+    QRect viewRect = pWidget_->rect();
+    RECT rc;
+    rc.left = 0;
+    rc.top = 0;
+    rc.right = rc.left + viewRect.width() * deviceScaleFactor_;
+    rc.bottom = rc.top + viewRect.height() * deviceScaleFactor_;
+
+    windowInfo.SetAsChild(hwnd, rc);
+    if (GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_NOACTIVATE) {
+      // Don't activate the browser window on creation.
+      windowInfo.ex_style |= WS_EX_NOACTIVATE;
+    }
+
+    browserSettings.plugins = STATE_ENABLED;
+    browserSettings.background_color = CefColorSetARGB(browserSetting_.backgroundColor.alpha(), browserSetting_.backgroundColor.red(), browserSetting_.backgroundColor.green(),
+                                                       browserSetting_.backgroundColor.blue());
+  }
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
 
@@ -159,6 +178,7 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
     targetBrowser->GetHost()->ShowDevTools(windowInfo, pQCefViewHandler_, browserSettings, CefPoint());
   }
 
+  browserCreated_ = true;
   return true;
 }
 
@@ -517,8 +537,8 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
           cefhwnd = browser->GetHost()->GetWindowHandle();
         if (cefhwnd) {
           QRect rc = pWidget_->rect();
-          float scale = pWidget_->devicePixelRatioF();
-          SetWindowPos(cefhwnd, NULL, rc.left() * scale, rc.top() * scale, rc.width() * scale, rc.height() * scale, SWP_NOZORDER);
+          float scale = deviceScaleFactor();
+          ::SetWindowPos(cefhwnd, NULL, rc.left() * scale, rc.top() * scale, rc.width() * scale, rc.height() * scale, SWP_NOZORDER);
         }
       }
     }

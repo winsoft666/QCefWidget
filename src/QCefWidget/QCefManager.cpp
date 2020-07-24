@@ -24,6 +24,8 @@ void QCefManager::initializeCef() {
   CefEnableHighDPISupport();
   QCefGlobalSetting::initializeInstance();
 
+  Q_ASSERT((!QCefGlobalSetting::persist_session_cookies) || (QCefGlobalSetting::persist_session_cookies && QCefGlobalSetting::cache_path.length() > 0));
+
   CefString(&cefSettings_.browser_subprocess_path) = QCefGlobalSetting::browser_sub_process_path;
   CefString(&cefSettings_.resources_dir_path) = QCefGlobalSetting::resource_directory_path;
   CefString(&cefSettings_.locales_dir_path) = QCefGlobalSetting::locales_directory_path;

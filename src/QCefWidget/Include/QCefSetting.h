@@ -80,7 +80,9 @@ void QCEFWIDGET_EXPORT setUserDataPath(const QString &path);
 const QCEFWIDGET_EXPORT QString userDataPath();
 
 /// <summary>
-///
+/// To persist session cookies (cookies without an expiry date or validity interval) by default when using the global cookie manager set this value to true. 
+/// Session cookies are generally intended to be transient and most Web browsers do not persist them.
+/// A cachePath value must also be specified to enable this feature.
 /// </summary>
 void QCEFWIDGET_EXPORT setPersistSessionCookies(bool enabled);
 

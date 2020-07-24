@@ -17,3 +17,7 @@ bool RequestContextHandler::OnBeforePluginLoad(const CefString &mime_type, const
 
   return false;
 }
+
+CefRefPtr<CefCookieManager> RequestContextHandler::GetCookieManager() {
+  return nullptr;
+}

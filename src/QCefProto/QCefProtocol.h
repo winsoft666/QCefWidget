@@ -51,6 +51,10 @@
 
 #define LOCALES_DIRECTORY_NAME "locales"
 
+#define WEB_CACHE_DIRECTORY_NAME "WebCache"
+
+#define DEBUG_LOG_NAME "QCefWidget.log"
+
 #define QCEF_USER_AGENT "QCefWidget/1.1 (Windows; en-us)"
 
 #endif // !QCEFPROTOCOL_H_
