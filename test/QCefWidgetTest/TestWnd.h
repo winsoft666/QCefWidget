@@ -15,6 +15,8 @@ protected:
 private slots:
   void onPushButtonNewBrowserClicked();
   void onPushButtonGetSourceCodeClicked();
+  void onPushButtonQuickSettingForIrregularWndClicked();
+  void onPushButtonQuickSettingForElectronClicked();
   void onCefWndDestroyed(QObject *obj);
 private:
   bool stringToColor(QString s, QColor& c);
@@ -35,6 +37,9 @@ private:
   QRadioButton* radioButtonCefOpenGLWidget_;
 
   QPushButton* pushButtonNewBrowser_;
+  QPushButton* pushButtonQuickSettingForIrregularWnd_;
+  QPushButton *pushButtonQuickSettingForElectron_;
+
 
   QListWidget* listBrowser_;
 

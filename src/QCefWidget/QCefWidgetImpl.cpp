@@ -44,6 +44,7 @@ QCefWidgetImpl::~QCefWidgetImpl() {
 }
 
 bool QCefWidgetImpl::createBrowser(const QString &url) {
+  qDebug() << "QCefWidgetImpl::createBrowser: " << url;
   if (browserCreated_)
     return true;
   Q_ASSERT(pWidget_);
@@ -151,7 +152,6 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   browserSettings.plugins = STATE_ENABLED;
   browserSettings.background_color = CefColorSetARGB(browserSetting_.backgroundColor.alpha(), browserSetting_.backgroundColor.red(), browserSetting_.backgroundColor.green(),
                                                      browserSetting_.backgroundColor.blue());
-
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
 
@@ -672,6 +672,8 @@ void QCefWidgetImpl::setFPS(int fps) {
     b->GetHost()->SetWindowlessFrameRate(fps);
   }
 }
+
+void QCefWidgetImpl::setConsoleLogPath(const QString &path) { browserSetting_.consoleLogPath = path; }
 
 const QCefBrowserSetting& QCefWidgetImpl::browserSetting() const { return browserSetting_; }
 

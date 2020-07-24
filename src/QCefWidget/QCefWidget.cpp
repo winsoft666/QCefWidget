@@ -80,7 +80,7 @@ bool QCefWidget::setOsrEnabled(bool b) {
   return pImpl_->setOsrEnabled(b);
 }
 
-bool QCefWidget::osrEnabled() {
+bool QCefWidget::osrEnabled() const {
   Q_ASSERT(pImpl_);
   return pImpl_->browserSetting().osrEnabled;
 }
@@ -90,7 +90,7 @@ void QCefWidget::setContextMenuEnabled(bool b) {
   pImpl_->setContextMenuEnabled(b);
 }
 
-bool QCefWidget::contextMenuEnabled() {
+bool QCefWidget::contextMenuEnabled() const {
   Q_ASSERT(pImpl_);
   return pImpl_->browserSetting().contextMenuEnabled;
 }
@@ -100,7 +100,7 @@ void QCefWidget::setAutoShowDevToolsContextMenu(bool b) {
   pImpl_->setAutoShowDevToolsContextMenu(b);
 }
 
-bool QCefWidget::autoShowDevToolsContextMenu() {
+bool QCefWidget::autoShowDevToolsContextMenu() const {
   Q_ASSERT(pImpl_);
   return pImpl_->browserSetting().autoShowDevToolsContextMenu;
 }
@@ -110,7 +110,7 @@ void QCefWidget::setAllowExecuteUnknownProtocolViaOS(bool b) {
   pImpl_->setAllowExecuteUnknownProtocolViaOS(b);
 }
 
-bool QCefWidget::allowExecuteUnknownProtocolViaOS() {
+bool QCefWidget::allowExecuteUnknownProtocolViaOS() const {
   Q_ASSERT(pImpl_);
   return pImpl_->browserSetting().executeUnknownProtocolViaOS;
 }

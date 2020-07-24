@@ -42,7 +42,7 @@ QCefGlobalSetting::QCefGlobalSetting() {
   accept_language_list.FromWString(L"zh-CN,en-US,en,en-GB");
   locale.FromWString(L"zh-CN");
 
-  QString debugLogPath = exeDir.filePath("CEF.log");
+  QString debugLogPath = exeDir.filePath("QCefWidget.log");
   debug_log_path.FromString(QDir::toNativeSeparators(debugLogPath).toStdString());
 }
 

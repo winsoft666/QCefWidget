@@ -20,10 +20,8 @@ QSize kWindowDefaultSize = QSize(900, 600);
 TestWnd::TestWnd(QWidget *parent)
     : QWidget(parent) {
   QCefSetting::setFlashPlugin("TestResource\\pepperflash\\26.0.0.126\\pepflashplayer.dll", "26.0.0.126");
-  //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.387/pepflashplayer32.dll", "32.0.0.387");
-  //QCefSetting::setFlashPlugin("TestResource/pepperflash/32.0.0.192/pepflashplayer.dll", "32.0.0.192");
 
-  QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}}});
+  QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}}, {"tree.html", {IDR_TREE_PAGE, "PAGE"}} });
 
   setupUi();
 }
@@ -88,7 +86,7 @@ void TestWnd::setupUi() {
   hlBrowserBkColor->addStretch();
 
   checkboxOsrEnabled_ = new QCheckBox("OSR(Off-screen Render)");
-  checkboxOsrEnabled_->setChecked(true);
+  checkboxOsrEnabled_->setChecked(false);
 
   QHBoxLayout *hlFPS = new QHBoxLayout();
   hlFPS->addWidget(new QLabel("Browser Maximum FPS(1~60): "));
@@ -120,15 +118,29 @@ void TestWnd::setupUi() {
   comboBoxUrl_ = new QComboBox();
   comboBoxUrl_->setObjectName("comboBoxUrl");
   comboBoxUrl_->setFixedHeight(22);
+  comboBoxUrl_->setMaximumWidth(300);
   comboBoxUrl_->setEditable(true);
   comboBoxUrl_->addItems(getBuiltInUrl());
   hlInitUrl->addWidget(comboBoxUrl_);
   hlInitUrl->addStretch();
 
-  pushButtonNewBrowser_ = new QPushButton("New Browser");
+  pushButtonNewBrowser_ = new QPushButton("New Browser with Options");
   pushButtonNewBrowser_->setObjectName("pushButtonNewBrowser");
   pushButtonNewBrowser_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
   connect(pushButtonNewBrowser_, &QPushButton::clicked, this, &TestWnd::onPushButtonNewBrowserClicked);
+
+  QHBoxLayout* hlQuickSetting = new QHBoxLayout();
+  hlQuickSetting->addWidget(new QLabel("Quick Setting: "));
+  pushButtonQuickSettingForIrregularWnd_ = new QPushButton("Irregular Window");
+  pushButtonQuickSettingForIrregularWnd_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+  connect(pushButtonQuickSettingForIrregularWnd_, &QPushButton::clicked, this, &TestWnd::onPushButtonQuickSettingForIrregularWndClicked);
+  hlQuickSetting->addWidget(pushButtonQuickSettingForIrregularWnd_);
+
+  pushButtonQuickSettingForElectron_ = new QPushButton("Simulate Electron");
+  pushButtonQuickSettingForElectron_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+  connect(pushButtonQuickSettingForElectron_, &QPushButton::clicked, this, &TestWnd::onPushButtonQuickSettingForElectronClicked);
+  hlQuickSetting->addWidget(pushButtonQuickSettingForElectron_);
+  hlQuickSetting->addStretch();
 
   QVBoxLayout *vlOption = new QVBoxLayout();
   vlOption->addLayout(hlCefWidget);
@@ -142,6 +154,7 @@ void TestWnd::setupUi() {
   vlOption->addLayout(hlWindowBkColor);
   vlOption->addLayout(hlBrowserBkColor);
   vlOption->addLayout(hlInitUrl);
+  vlOption->addLayout(hlQuickSetting);
   //vlOption->addStretch();
 
   QVBoxLayout *vlButton = new QVBoxLayout();
@@ -222,6 +235,33 @@ void TestWnd::onPushButtonNewBrowserClicked() {
 void TestWnd::onPushButtonGetSourceCodeClicked() {
   SourceCodeWidget* pWeiXin = new SourceCodeWidget(this);
   pWeiXin->show();
+}
+
+void TestWnd::onPushButtonQuickSettingForIrregularWndClicked() {
+  checkboxOsrEnabled_->setChecked(true);
+  checkboxFramelessWindow_->setChecked(true);
+  checkboxTranslucentWindowBackground_->setChecked(true);
+  radioButtonCefWidget_->setChecked(true);
+  QString old = lineEditWindowBkColor_->text();
+  QString newSetting = "0.255.255.255";
+  if (old.indexOf(",") != -1) {
+    newSetting = "0" + old.mid(old.indexOf(","));
+  }
+  lineEditWindowBkColor_->setText(newSetting);
+
+  old = lineEditBrowserBkColor_->text();
+  newSetting = "0.255.255.255";
+  if (old.indexOf(",") != -1) {
+    newSetting = "0" + old.mid(old.indexOf(","));
+  }
+  lineEditBrowserBkColor_->setText(newSetting);
+
+  comboBoxUrl_->lineEdit()->setText("http://qcefwidget/tree.html");
+}
+
+void TestWnd::onPushButtonQuickSettingForElectronClicked() {
+  checkboxFramelessWindow_->setChecked(true);
+  comboBoxUrl_->lineEdit()->setText("http://qcefwidget/test.html");
 }
 
 void TestWnd::onCefWndDestroyed(QObject *obj) {

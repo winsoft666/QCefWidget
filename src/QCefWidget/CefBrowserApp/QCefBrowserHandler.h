@@ -5,6 +5,7 @@
 #include "Include/QCefQuery.h"
 #include <QEvent>
 #include <QPaintEvent>
+#include <QTextStream>
 #include <include/cef_client.h>
 #include <include/wrapper/cef_message_router.h>
 #include <include/wrapper/cef_resource_manager.h>
@@ -270,6 +271,8 @@ private:
   int viewWidth_;
   int viewHeight_;
   bool isPaintingPopup_;
+  QFile consoleLog_;
+  QTextStream consoleLogSteam_;
 
   // Include the default reference counting implementation.
   IMPLEMENT_REFCOUNTING(QCefBrowserHandler);

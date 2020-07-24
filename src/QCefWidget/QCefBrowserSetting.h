@@ -17,5 +17,6 @@ public:
 
   int fps;
   QColor backgroundColor;
+  QString consoleLogPath;
 };
 #endif // !QCEF_BROWSER_SETTING_H_

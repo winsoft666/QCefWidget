@@ -1,4 +1,6 @@
 #include "QCefBrowserSetting.h"
+#include <QCoreApplication>
+#include <QDir>
 
 QCefBrowserSetting::QCefBrowserSetting()
     : osrEnabled(true)
@@ -7,6 +9,7 @@ QCefBrowserSetting::QCefBrowserSetting()
     , executeUnknownProtocolViaOS(true)
     , devToolsResourceExist(false)
     , fps(25)
-    , backgroundColor(255, 255, 255, 255) {}
+    , backgroundColor(255, 255, 255, 255) {
+}
 
 QCefBrowserSetting::~QCefBrowserSetting() {}

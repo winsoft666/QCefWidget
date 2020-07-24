@@ -58,6 +58,7 @@ public:
   void setAutoShowDevToolsContextMenu(bool b);
   void setAllowExecuteUnknownProtocolViaOS(bool b);
   void setFPS(int fps);
+  void setConsoleLogPath(const QString &path);
   const QCefBrowserSetting& browserSetting() const;
 
   void updateCefWidget();

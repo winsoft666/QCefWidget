@@ -52,18 +52,18 @@ public:
   // OSR is enabled by default.
   //
   virtual bool setOsrEnabled(bool b);
-  virtual bool osrEnabled();
+  virtual bool osrEnabled() const;
 
   // Context menu is enabled by default.
   //
   virtual void setContextMenuEnabled(bool b);
-  virtual bool contextMenuEnabled();
+  virtual bool contextMenuEnabled() const;
 
   virtual void setAutoShowDevToolsContextMenu(bool b);
-  virtual bool autoShowDevToolsContextMenu();
+  virtual bool autoShowDevToolsContextMenu() const;
 
   virtual void setAllowExecuteUnknownProtocolViaOS(bool b);
-  virtual bool allowExecuteUnknownProtocolViaOS();
+  virtual bool allowExecuteUnknownProtocolViaOS() const;
 
   virtual void setFPS(int fps);
   virtual int fps() const;

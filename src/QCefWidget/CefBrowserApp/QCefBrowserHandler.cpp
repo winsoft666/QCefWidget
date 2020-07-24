@@ -33,11 +33,26 @@ QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl *pImpl)
     , viewHeight_(0)
     , isPaintingPopup_(false)
     , pImpl_(pImpl) {
+  QString consoleLogPath = pImpl_->browserSetting().consoleLogPath;
+  if (!consoleLogPath.isEmpty()) {
+    consoleLog_.setFileName(consoleLogPath);
+    consoleLog_.open(QFile::Append);
+
+    if (consoleLog_.isOpen()) {
+      consoleLogSteam_.setDevice(&consoleLog_);
+      consoleLogSteam_.setCodec("UTF-8");
+    }
+  }
   const std::string &internalOrigin = "http://qcefwidget/";
   pResourceManager_->AddProvider(CreateBinaryResourceProvider(internalOrigin, std::string()), 100, std::string());
 }
 
-QCefBrowserHandler::~QCefBrowserHandler() {}
+QCefBrowserHandler::~QCefBrowserHandler() {
+  consoleLogSteam_.flush();
+  consoleLogSteam_.setDevice(nullptr);
+  if (consoleLog_.isOpen())
+    consoleLog_.close();
+}
 
 bool QCefBrowserHandler::OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) {
   CEF_REQUIRE_UI_THREAD();
@@ -126,12 +141,16 @@ bool QCefBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser, cef_log
   if (source.empty() || message.empty())
     return false;
 
-  std::string src = source.ToString();
-  std::size_t found = src.find_last_of("/\\");
-  if (found != std::string::npos && found < src.length() - 1)
-    src = src.substr(found + 1);
+  QString result = QString("[%1] [%2] %3\r\n").arg(source.ToWString()).arg(line).arg(message.ToWString());
+  if (consoleLog_.isOpen()) {
+    consoleLogSteam_ << result;
+  }
+  else {
+#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
+    OutputDebugStringW(result.toStdWString().c_str());
+#endif
+  }
 
-  __noop(src, message.ToString());
   return false;
 }
 

@@ -180,14 +180,10 @@ void CefWnd::onInvokeMethodNotify(int browserId, int frameId, const QString &met
 void CefWnd::onTriggerEvent() {
   unsigned int random_index = time(nullptr);
   QCefEvent event(QString("TestEvent%1").arg(random_index));
-  event.setStringProperty("StrProp1", QString("String_%1").arg(random_index));
-  event.setStringProperty("StrProp2", QString("String_%1").arg(random_index));
-  event.setIntProperty("IntProp1", 1000 + random_index);
-  event.setIntProperty("IntProp2", 1000 + random_index);
-  event.setDoubleProperty("DoubleProp1", 3.1415926f + (double)random_index);
-  event.setDoubleProperty("DoubleProp2", 3.1415926f + (double)random_index);
-  event.setBoolProperty("BoolProp1", random_index % 2 == 0);
-  event.setBoolProperty("BoolProp2", random_index % 2 == 0);
+  event.setStringProperty("StrProp", QString("String_%1").arg(random_index));
+  event.setIntProperty("IntProp", 1000 + random_index);
+  event.setDoubleProperty("DoubleProp", 3.1415926f + (double)random_index);
+  event.setBoolProperty("BoolProp", random_index % 2 == 0);
 
   if (usingGLWidget_) {
     pCefGLWidget_->triggerEvent("eventTest", event);
