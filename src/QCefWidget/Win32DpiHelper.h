@@ -2,9 +2,11 @@
 #define WIN32_DPI_HELPER_H_
 #pragma once
 
+#include <windows.h>
+
 namespace Win32DpiHelper {
 
-float GetDeviceScaleFactor();
+float GetWindowScaleFactor(HWND hwnd);
 
 bool IsProcessPerMonitorDpiAware();
 

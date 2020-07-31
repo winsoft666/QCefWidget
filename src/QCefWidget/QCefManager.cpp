@@ -82,7 +82,7 @@ void QCefManager::uninitializeCef() {
   initialized_ = false;
 }
 
-QWidget *QCefManager::addBrowser(QWidget *pCefWidget, CefRefPtr<CefBrowser> browser, bool osrMode) {
+QWidget *QCefManager::addBrowser(QWidget *pCefWidget, QCefWidgetImpl* cefWidgetImpl, CefRefPtr<CefBrowser> browser, bool osrMode) {
   std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
   Q_ASSERT(pCefWidget && browser);
   if (!pCefWidget || !browser)
@@ -97,6 +97,7 @@ QWidget *QCefManager::addBrowser(QWidget *pCefWidget, CefRefPtr<CefBrowser> brow
   CefInfo cefInfo;
   cefInfo.browser = browser;
   cefInfo.cefWidget = pCefWidget;
+  cefInfo.cefWidgetImpl = cefWidgetImpl;
   cefInfo.cefWidgetTopWidget = pTopWidget;
   cefInfo.cefWidgetTopWidgetHwnd = (HWND)pTopWidget->window()->winId();
   cefInfo.osrMode = osrMode;
@@ -327,11 +328,13 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     return 0;
 
   WNDPROC preWndProc = nullptr;
+  QCefWidgetImpl* pCefWidgetImpl = nullptr;
   do {
     std::lock_guard<std::recursive_mutex> lg(pThis->cefsMutex_);
     for (std::list<CefInfo>::iterator it = pThis->cefs_.begin(); it != pThis->cefs_.end(); it++) {
       if (it->cefWidgetTopWidgetHwnd == hWnd) {
         preWndProc = it->cefWidgetTopWidgetPrevWndProc;
+        pCefWidgetImpl = it->cefWidgetImpl;
         break;
       }
     }
@@ -357,6 +360,11 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
       // deny close
       return 0;
     }
+  }
+  else if (uMsg == WM_DPICHANGED) {
+    qDebug() << "WM_DPICHANGED";
+    if (pCefWidgetImpl)
+      pCefWidgetImpl->dpiChangedNotify();
   }
 
   return ::CallWindowProc(preWndProc, hWnd, uMsg, wParam, lParam);

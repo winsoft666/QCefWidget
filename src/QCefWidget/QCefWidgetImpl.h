@@ -7,6 +7,7 @@
 #include "QCefWidgetUIEventHandlerWin.h"
 #include <QString>
 #include <QWidget>
+#include <QScreen>
 #include "QCefBrowserSetting.h"
 
 enum WidgetType { WT_Widget = 0, WT_OpenGLWidget };
@@ -33,6 +34,8 @@ public:
 
   bool createBrowser(const QString &url);
   bool createDevTools(CefRefPtr<CefBrowser> targetBrowser);
+
+  void dpiChangedNotify();
 
   void browserClosingNotify(CefRefPtr<CefBrowser> browser);
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);

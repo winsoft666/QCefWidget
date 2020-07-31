@@ -10,6 +10,7 @@
 #include <QObject>
 
 class QWidget;
+class QCefWidgetImpl;
 class QCefDevToolsWnd;
 class QCefManager : public QObject {
   Q_OBJECT
@@ -19,7 +20,7 @@ public:
   void initializeCef();
   void uninitializeCef();
 
-  QWidget* addBrowser(QWidget* pCefWidget, CefRefPtr<CefBrowser> browser, bool osrMode); // return top-level widget
+  QWidget* addBrowser(QWidget* pCefWidget, QCefWidgetImpl* impl, CefRefPtr<CefBrowser> browser, bool osrMode); // return top-level widget
 
   void removeCefWidget(QWidget *pCefWidget);
 
@@ -62,12 +63,14 @@ private:
     QCefDevToolsWnd* devToolsWnd;
     bool osrMode;
     BrowserStatus browserStatus;
+    QCefWidgetImpl *cefWidgetImpl;
 
     _CefInfo() {
       cefWidget = nullptr;
       cefWidgetTopWidget = nullptr;
       cefWidgetTopWidgetHwnd = nullptr;
       cefWidgetTopWidgetPrevWndProc = nullptr;
+      cefWidgetImpl = nullptr;
       browser = nullptr;
       devToolsWnd = nullptr;
       osrMode = false;
