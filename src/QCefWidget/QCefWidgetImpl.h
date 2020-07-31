@@ -12,7 +12,8 @@
 
 enum WidgetType { WT_Widget = 0, WT_OpenGLWidget };
 
-class QCefWidgetImpl {
+class QCefWidgetImpl : public QObject {
+  Q_OBJECT
 public:
   explicit QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &url);
   ~QCefWidgetImpl();
@@ -75,12 +76,16 @@ public:
 protected:
   bool sendEventNotifyMessage(const QString &name, const QCefEvent &event);
   CefRefPtr<CefBrowserHost> getCefBrowserHost();
+  void simulateResizeEvent();
 
   static LRESULT CALLBACK SubclassedWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
   static void subclassWindow(HWND hWnd, HRGN hRegion, HWND hTopLevelWnd);
   static void unSubclassWindow(HWND hWnd);
   static BOOL CALLBACK SubclassWindowsProc(HWND hwnd, LPARAM lParam);
   static BOOL CALLBACK UnSubclassWindowsProc(HWND hwnd, LPARAM lParam);
+
+private slots:
+  void onScreenChanged(QScreen *screen);
 private:
   WidgetType vt_;
   QWidget *pWidget_;

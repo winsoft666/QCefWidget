@@ -32,7 +32,11 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &u
     , pQCefViewHandler_(nullptr) {
   draggableRegion_ = ::CreateRectRgn(0, 0, 0, 0);
   QCefManager::getInstance().initializeCef();
+
+  widgetWId_ = pWidget_->winId();
   deviceScaleFactor_ = pWidget_->devicePixelRatioF();
+
+  connect(pWidget_->window()->windowHandle(), &QWindow::screenChanged, this, &QCefWidgetImpl::onScreenChanged);
 }
 
 QCefWidgetImpl::~QCefWidgetImpl() {
@@ -286,6 +290,12 @@ BOOL CALLBACK QCefWidgetImpl::UnSubclassWindowsProc(HWND hwnd, LPARAM lParam) {
   return TRUE;
 }
 
+void QCefWidgetImpl::onScreenChanged(QScreen *screen) {
+  qDebug() << "onScreenChanged";
+
+  simulateResizeEvent();
+}
+
 void QCefWidgetImpl::draggableRegionsChangedNotify(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions) {
   ::SetRectRgn(draggableRegion_, 0, 0, 0, 0);
 
@@ -414,20 +424,7 @@ void QCefWidgetImpl::executeJavascript(const QString &javascript) {
 }
 
 void QCefWidgetImpl::dpiChangedNotify() {
-  deviceScaleFactor_ = Win32DpiHelper::GetWindowScaleFactor((HWND)widgetWId_);
-  qDebug() << "deviceScaleFactor to:" << deviceScaleFactor_;
-
-  if (browserSetting_.osrEnabled) {
-    Q_ASSERT(pCefUIEventWin_);
-    if (pCefUIEventWin_)
-      pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
-
-    CefRefPtr<CefBrowser> browser = this->browser();
-    if (browser) {
-      browser->GetHost()->NotifyScreenInfoChanged();
-      browser->GetHost()->WasResized();
-    }
-  }
+  simulateResizeEvent();
 }
 
 bool QCefWidgetImpl::sendEventNotifyMessage(const QString &name, const QCefEvent &event) {
@@ -485,12 +482,12 @@ QRect QCefWidgetImpl::rect() {
 
 bool QCefWidgetImpl::event(QEvent *event) {
   if (event->type() == QEvent::WinIdChange) {
-    qDebug() << "QEvent::WinIdChange";
     widgetWId_ = pWidget_ ? pWidget_->winId() : 0;
+    qDebug() << "QEvent::WinIdChange to:" << widgetWId_;
   }
   else if (event->type() == QEvent::Resize) {
+    qDebug() << "QEvent::Resize";
     if (initUrl_.length() > 0) {
-      qDebug() << "QEvent::Resize";
       QString url = initUrl_;
       initUrl_.clear();
       QMetaObject::invokeMethod(pWidget_, [this, url]() {
@@ -549,14 +546,24 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
     }
     else if (pMsg->message == WM_SIZE) {
       qDebug() << "WM_SIZE";
+      float scale = pWidget_->devicePixelRatioF();
+      bool dpiChanged = false;
+      if (scale != deviceScaleFactor_) {
+        dpiChanged = true;
+        deviceScaleFactor_ = scale;
+      }
+
       if (browserSetting_.osrEnabled) {
         // winsoft666:
         // Old cef version maybe has some bugs about resize with dpi scale.
         // https://bitbucket.org/chromiumembedded/cef/issues/2823/osr-on-a-monitor-at-125x-scale-onpaint
         // https://bitbucket.org/chromiumembedded/cef/issues/2733/viz-osr-might-be-causing-some-graphic
         // https://bitbucket.org/chromiumembedded/cef/issues/2833/osr-gpu-consume-cpu-and-may-not-draw
-        if (pCefUIEventWin_)
+        if (pCefUIEventWin_) {
+          if (dpiChanged)
+            pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
           pCefUIEventWin_->OnSize(pMsg->hwnd, pMsg->message, pMsg->wParam, pMsg->lParam);
+        }
       }
       else {
         CefWindowHandle cefhwnd = NULL;
@@ -565,9 +572,16 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray &eventType, void *message, lon
           cefhwnd = browser->GetHost()->GetWindowHandle();
         if (cefhwnd) {
           QRect rc = pWidget_->rect();
-          float scale = deviceScaleFactor();
+          float scale = deviceScaleFactor_;
+          qDebug() << "Rect:" << rc << ", DpiScale:" << scale;
           ::SetWindowPos(cefhwnd, NULL, rc.left() * scale, rc.top() * scale, rc.width() * scale, rc.height() * scale, SWP_NOZORDER);
         }
+      }
+
+      if (dpiChanged) {
+        CefRefPtr<CefBrowser> browser = this->browser();
+        if (browser && browser->GetHost())
+          browser->GetHost()->NotifyScreenInfoChanged();
       }
     }
     else if (pMsg->message == WM_TOUCH) {
@@ -616,6 +630,18 @@ CefRefPtr<CefBrowserHost> QCefWidgetImpl::getCefBrowserHost() {
     return nullptr;
 
   return browser->GetHost();
+}
+
+void QCefWidgetImpl::simulateResizeEvent() {
+  // Simulate a resize event
+  //
+  QSize curSize = pWidget_->size();
+  QSize s = curSize;
+  s.setWidth(s.width() - 2);
+  s.setHeight(s.height() - 2);
+
+  pWidget_->resize(s);
+  pWidget_->resize(curSize);
 }
 
 bool QCefWidgetImpl::paintEventHandle(QPaintEvent *event) {
