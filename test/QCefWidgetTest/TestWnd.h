@@ -2,7 +2,11 @@
 #define TEST_WND_H__
 
 #include <QtWidgets/QtWidgets>
+#include <Pdh.h>
+#include <PdhMsg.h>
+#pragma comment(lib, "pdh.lib")
 
+class QDashboardWidget;
 class TestWnd : public QWidget {
   Q_OBJECT
 public:
@@ -20,6 +24,7 @@ private slots:
   void onCefWndDestroyed(QObject *obj);
 private:
   bool stringToColor(QString s, QColor& c);
+  void systemPerformanceMonitor();
 private:
   QLineEdit* lineEditInitSize_;
   QLineEdit* lineEditFPS_;
@@ -44,6 +49,19 @@ private:
   QListWidget* listBrowser_;
 
   QPushButton* pushButtonGetSourceCode_;
+
+  QDashboardWidget* dashboardWidgetMainProcCPU_;
+  QDashboardWidget* dashboardWidgetMainProcMemory_;
+  QDashboardWidget *dashboardWidgetRenderProcCPU_;
+  QDashboardWidget *dashboardWidgetRenderProcMemory_;
+  QTimer cpuUsageTimer_;
+
+  HQUERY query_;
+  HCOUNTER mainProcessCpuCounter_;
+  HCOUNTER mainProcessMemCounter_;
+  HCOUNTER renderProcessCpuCounter_;
+  HCOUNTER renderProcessMemCounter_;
+  int cpuProcessorCount_;
 };
 
 #endif // TEST_WND_H__

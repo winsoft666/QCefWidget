@@ -8,6 +8,7 @@
 #include "CefWnd.h"
 #include "SourceCodeWidget.h"
 #include "BrowserListItem.h"
+#include "DashboardWidget.h"
 #include "BuiltInUrl.h"
 #include "resource.h"
 
@@ -17,22 +18,37 @@ namespace {
 QSize kWindowDefaultSize = QSize(900, 600);
 }
 
+namespace {} // namespace
+
 TestWnd::TestWnd(QWidget *parent)
-    : QWidget(parent) {
+    : QWidget(parent)
+    , query_(nullptr)
+    , mainProcessCpuCounter_(nullptr)
+    , mainProcessMemCounter_(nullptr)
+    , renderProcessCpuCounter_(nullptr)
+    , renderProcessMemCounter_(nullptr) {
   QCefSetting::setFlashPlugin("TestResource\\pepperflash\\26.0.0.126\\pepflashplayer.dll", "26.0.0.126");
 
-  QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}}, {"tree.html", {IDR_TREE_PAGE, "PAGE"}} });
+  QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}}, {"tree.html", {IDR_TREE_PAGE, "PAGE"}}});
 
   setupUi();
+  systemPerformanceMonitor();
+
+  qDebug() << "devicePixelRatioF:" << this->devicePixelRatioF();
+  QScreen *pScreen = QGuiApplication::screenAt(this->mapToGlobal({this->width() / 2, 0}));
+  qDebug() << "devicePixelRatio:" << pScreen->devicePixelRatio();
 }
 
-TestWnd::~TestWnd() { qDebug() << "TestWnd::~TestWnd"; }
+TestWnd::~TestWnd() {
+  PdhCloseQuery(query_);
+  qDebug() << "TestWnd::~TestWnd";
+}
 
-void TestWnd::closeEvent(QCloseEvent *event) { 
+void TestWnd::closeEvent(QCloseEvent *event) {
   qDebug() << "TestWnd::closeEvent";
 
   for (int i = 0; i < listBrowser_->count(); i++) {
-    BrowserListItem* blt = (BrowserListItem*)listBrowser_->itemWidget(listBrowser_->item(i));
+    BrowserListItem *blt = (BrowserListItem *)listBrowser_->itemWidget(listBrowser_->item(i));
     Q_ASSERT(blt && blt->cefWnd());
     if (blt && blt->cefWnd()) {
       blt->cefWnd()->close();
@@ -54,7 +70,7 @@ void TestWnd::setupUi() {
   cefWidgetGroup_->addButton(radioButtonCefOpenGLWidget_);
   radioButtonCefWidget_->setChecked(true);
 
-  QHBoxLayout* hlCefWidget = new QHBoxLayout();
+  QHBoxLayout *hlCefWidget = new QHBoxLayout();
   hlCefWidget->addWidget(radioButtonCefWidget_);
   hlCefWidget->addWidget(radioButtonCefOpenGLWidget_);
   hlCefWidget->addStretch();
@@ -65,11 +81,10 @@ void TestWnd::setupUi() {
   checkboxTranslucentWindowBackground_ = new QCheckBox("Translucent Window Background");
   checkboxTranslucentWindowBackground_->setChecked(false);
 
-
   QRegExp rxColor("((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]).){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])");
   QRegExpValidator *regValidatorColor = new QRegExpValidator(rxColor);
 
-  QHBoxLayout* hlWindowBkColor = new QHBoxLayout();
+  QHBoxLayout *hlWindowBkColor = new QHBoxLayout();
   hlWindowBkColor->addWidget(new QLabel("Window Background-Color(ARGB): "));
   lineEditWindowBkColor_ = new QLineEdit("255,255,255,255");
   lineEditWindowBkColor_->setMaximumWidth(110);
@@ -77,7 +92,7 @@ void TestWnd::setupUi() {
   hlWindowBkColor->addWidget(lineEditWindowBkColor_);
   hlWindowBkColor->addStretch();
 
-  QHBoxLayout* hlBrowserBkColor = new QHBoxLayout();
+  QHBoxLayout *hlBrowserBkColor = new QHBoxLayout();
   hlBrowserBkColor->addWidget(new QLabel("Browser Background-Color(ARGB): "));
   lineEditBrowserBkColor_ = new QLineEdit("255,255,255,255");
   lineEditBrowserBkColor_->setMaximumWidth(110);
@@ -113,7 +128,7 @@ void TestWnd::setupUi() {
   checkboxAutoShowDevToolsContextMenu_ = new QCheckBox("Browser with DevTools Context Menu");
   checkboxAutoShowDevToolsContextMenu_->setChecked(true);
 
-  QHBoxLayout* hlInitUrl = new QHBoxLayout();
+  QHBoxLayout *hlInitUrl = new QHBoxLayout();
   hlInitUrl->addWidget(new QLabel("URL: "));
   comboBoxUrl_ = new QComboBox();
   comboBoxUrl_->setObjectName("comboBoxUrl");
@@ -129,7 +144,7 @@ void TestWnd::setupUi() {
   pushButtonNewBrowser_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
   connect(pushButtonNewBrowser_, &QPushButton::clicked, this, &TestWnd::onPushButtonNewBrowserClicked);
 
-  QHBoxLayout* hlQuickSetting = new QHBoxLayout();
+  QHBoxLayout *hlQuickSetting = new QHBoxLayout();
   hlQuickSetting->addWidget(new QLabel("Quick Setting: "));
   pushButtonQuickSettingForIrregularWnd_ = new QPushButton("Irregular Window");
   pushButtonQuickSettingForIrregularWnd_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
@@ -157,15 +172,70 @@ void TestWnd::setupUi() {
   vlOption->addLayout(hlQuickSetting);
   //vlOption->addStretch();
 
+  QHBoxLayout *hlMainProcDashboard = new QHBoxLayout();
+  QLabel* labelMainProcDashboard = new QLabel(QString("Main Process").split(" ", QString::SkipEmptyParts).join("\n"));
+  labelMainProcDashboard->setFixedSize(60, 120);
+  labelMainProcDashboard->setWordWrap(true);
+  labelMainProcDashboard->setAlignment(Qt::AlignCenter);
+  labelMainProcDashboard->setFont(QFont("Arial", 10, -1, true));
+  hlMainProcDashboard->addWidget(labelMainProcDashboard);
+  dashboardWidgetMainProcCPU_ = new QDashboardWidget();
+  dashboardWidgetMainProcCPU_->setFixedSize(160, 160);
+  dashboardWidgetMainProcCPU_->setFont(QFont("Arial", 6));
+  dashboardWidgetMainProcCPU_->setDividingAngleOffset(120, 60);
+  dashboardWidgetMainProcCPU_->setValuePrefix("CPU: ");
+  dashboardWidgetMainProcCPU_->setValueSuffix("%");
+  hlMainProcDashboard->addWidget(dashboardWidgetMainProcCPU_);
+  dashboardWidgetMainProcMemory_ = new QDashboardWidget();
+  dashboardWidgetMainProcMemory_->setFixedSize(160, 160);
+  dashboardWidgetMainProcMemory_->setFont(QFont("Arial", 6));
+  dashboardWidgetMainProcMemory_->setDividingAngleOffset(120, 60);
+  dashboardWidgetMainProcMemory_->setValuePrefix("Mem: ");
+  dashboardWidgetMainProcMemory_->setValueSuffix("MB");
+  dashboardWidgetMainProcMemory_->setMinValue(0);
+  dashboardWidgetMainProcMemory_->setMaxValue(200);
+  dashboardWidgetMainProcMemory_->setDividingStep(2);
+  dashboardWidgetMainProcMemory_->setBiggerDividingMulriple(5);
+  dashboardWidgetMainProcMemory_->setBiggestDividingMulriple(10);
+  hlMainProcDashboard->addWidget(dashboardWidgetMainProcMemory_);
+
+  QHBoxLayout *hlRenderProcDashboard = new QHBoxLayout();
+  QLabel *labelRenderProcDashboard = new QLabel(QString("Render Process").split(" ", QString::SkipEmptyParts).join("\n"));
+  labelRenderProcDashboard->setFixedSize(60, 120);
+  labelRenderProcDashboard->setWordWrap(true);
+  labelRenderProcDashboard->setAlignment(Qt::AlignCenter);
+  labelRenderProcDashboard->setFont(QFont("Arial", 10, -1, true));
+  hlRenderProcDashboard->addWidget(labelRenderProcDashboard);
+  dashboardWidgetRenderProcCPU_ = new QDashboardWidget();
+  dashboardWidgetRenderProcCPU_->setFixedSize(160, 160);
+  dashboardWidgetRenderProcCPU_->setFont(QFont("Arial", 6));
+  dashboardWidgetRenderProcCPU_->setDividingAngleOffset(120, 60);
+  dashboardWidgetRenderProcCPU_->setValuePrefix("CPU: ");
+  dashboardWidgetRenderProcCPU_->setValueSuffix("%");
+  hlRenderProcDashboard->addWidget(dashboardWidgetRenderProcCPU_);
+  dashboardWidgetRenderProcMemory_ = new QDashboardWidget();
+  dashboardWidgetRenderProcMemory_->setDividingAngleOffset(120, 60);
+  dashboardWidgetRenderProcMemory_->setFixedSize(160, 160);
+  dashboardWidgetRenderProcMemory_->setFont(QFont("Arial", 6));
+  dashboardWidgetRenderProcMemory_->setValuePrefix("Mem: ");
+  dashboardWidgetRenderProcMemory_->setValueSuffix("MB");
+  dashboardWidgetRenderProcMemory_->setMinValue(0);
+  dashboardWidgetRenderProcMemory_->setMaxValue(200);
+  dashboardWidgetRenderProcMemory_->setDividingStep(2);
+  dashboardWidgetRenderProcMemory_->setBiggerDividingMulriple(5);
+  dashboardWidgetRenderProcMemory_->setBiggestDividingMulriple(10);
+  hlRenderProcDashboard->addWidget(dashboardWidgetRenderProcMemory_);
+
   QVBoxLayout *vlButton = new QVBoxLayout();
-  //vlButton->addStretch();
+  vlButton->addLayout(hlMainProcDashboard);
+  vlButton->addLayout(hlRenderProcDashboard);
   vlButton->addWidget(pushButtonNewBrowser_);
 
   QHBoxLayout *hlTop = new QHBoxLayout();
   hlTop->addLayout(vlOption);
   hlTop->addLayout(vlButton);
 
-  QHBoxLayout* hlBottom = new QHBoxLayout();
+  QHBoxLayout *hlBottom = new QHBoxLayout();
   pushButtonGetSourceCode_ = new QPushButton("Get source code");
   pushButtonGetSourceCode_->setObjectName("pushButtonGetSourceCode");
   pushButtonGetSourceCode_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
@@ -233,7 +303,7 @@ void TestWnd::onPushButtonNewBrowserClicked() {
 }
 
 void TestWnd::onPushButtonGetSourceCodeClicked() {
-  SourceCodeWidget* pWeiXin = new SourceCodeWidget(this);
+  SourceCodeWidget *pWeiXin = new SourceCodeWidget(this);
   pWeiXin->show();
 }
 
@@ -274,7 +344,7 @@ void TestWnd::onCefWndDestroyed(QObject *obj) {
   }
 }
 
-bool TestWnd::stringToColor(QString s, QColor& c) {
+bool TestWnd::stringToColor(QString s, QColor &c) {
   int lastPos = 0;
   for (int i = 0; i < 3; i++) {
     int pos = s.indexOf(",", lastPos);
@@ -283,7 +353,7 @@ bool TestWnd::stringToColor(QString s, QColor& c) {
     QString v = s.mid(lastPos, pos - lastPos);
     if (i == 0)
       c.setAlpha(v.toInt());
-    else if(i == 1)
+    else if (i == 1)
       c.setRed(v.toInt());
     else if (i == 2) {
       c.setGreen(v.toInt());
@@ -294,4 +364,51 @@ bool TestWnd::stringToColor(QString s, QColor& c) {
     lastPos = pos + 1;
   }
   return true;
+}
+
+void TestWnd::systemPerformanceMonitor() {
+  SYSTEM_INFO si;
+  GetSystemInfo(&si);
+  cpuProcessorCount_ = si.dwNumberOfProcessors;
+
+  PDH_STATUS status = PdhOpenQuery(NULL, NULL, &query_);
+  if (status == ERROR_SUCCESS) {
+    status = PdhAddCounter(query_, TEXT("\\Process(QCefWidgetTest)\\% Processor Time"), NULL, &mainProcessCpuCounter_);
+    status = PdhAddCounter(query_, TEXT("\\Process(QCefWidgetTest)\\Working Set"), NULL, &mainProcessMemCounter_);
+
+    status = PdhAddCounter(query_, TEXT("\\Process(QCefWing)\\% Processor Time"), NULL, &renderProcessCpuCounter_);
+    status = PdhAddCounter(query_, TEXT("\\Process(QCefWing)\\Working Set"), NULL, &renderProcessMemCounter_);
+  }
+
+  cpuUsageTimer_.setInterval(500);
+  connect(&cpuUsageTimer_, &QTimer::timeout, [this]() {
+    PdhCollectQueryData(query_);
+    PDH_FMT_COUNTERVALUE pdhValue;
+    DWORD dwValue = 0;
+
+    PDH_STATUS status = PdhGetFormattedCounterValue(mainProcessCpuCounter_, PDH_FMT_DOUBLE, &dwValue, &pdhValue);
+    if (status == ERROR_SUCCESS) {
+      if (dashboardWidgetMainProcCPU_)
+        dashboardWidgetMainProcCPU_->setValue(floor(pdhValue.doubleValue / cpuProcessorCount_));
+    }
+
+    status = PdhGetFormattedCounterValue(mainProcessMemCounter_, PDH_FMT_DOUBLE, &dwValue, &pdhValue);
+    if (status == ERROR_SUCCESS) {
+      if (dashboardWidgetMainProcMemory_)
+        dashboardWidgetMainProcMemory_->setValue(pdhValue.doubleValue / 1024.f / 1024.f);
+    }
+
+    status = PdhGetFormattedCounterValue(renderProcessCpuCounter_, PDH_FMT_DOUBLE, &dwValue, &pdhValue);
+    if (status == ERROR_SUCCESS) {
+      if (dashboardWidgetRenderProcCPU_)
+        dashboardWidgetRenderProcCPU_->setValue(floor(pdhValue.doubleValue / cpuProcessorCount_));
+    }
+
+    status = PdhGetFormattedCounterValue(renderProcessMemCounter_, PDH_FMT_DOUBLE, &dwValue, &pdhValue);
+    if (status == ERROR_SUCCESS) {
+      if (dashboardWidgetRenderProcMemory_)
+        dashboardWidgetRenderProcMemory_->setValue(pdhValue.doubleValue / 1024.f / 1024.f);
+    }
+  });
+  cpuUsageTimer_.start();
 }
