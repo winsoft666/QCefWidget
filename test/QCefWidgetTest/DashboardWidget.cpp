@@ -1,6 +1,12 @@
 #include "DashboardWidget.h"
 #include <QPainter>
 
+namespace {
+int kBiggestDividingWidth = 13;
+int kBiggerDividingWidth = 10;
+int kDividingWidth = 5;
+} // namespace
+
 QDashboardWidget::QDashboardWidget(QWidget *parent)
     : QWidget(parent)
     , maxValue_(100)
@@ -9,6 +15,7 @@ QDashboardWidget::QDashboardWidget(QWidget *parent)
     , startAngle_(150)
     , endAngle_(30)
     , dividingStep_(1)
+    , frameWidth_(10)
     , biggerDividingMulriple_(5)
     , biggestDividingMulriple_(10) {}
 
@@ -31,6 +38,8 @@ void QDashboardWidget::setValueSuffix(const QString &suffix) {
 QString QDashboardWidget::valueSuffix() const { return valueSuffix_; }
 
 void QDashboardWidget::setMaxValue(int maxValue) {
+  if (maxValue <= minValue_)
+    return;
   maxValue_ = maxValue;
 
   update();
@@ -39,6 +48,8 @@ void QDashboardWidget::setMaxValue(int maxValue) {
 int QDashboardWidget::maxValue() const { return maxValue_; }
 
 void QDashboardWidget::setMinValue(int minValue) {
+  if (minValue >= maxValue_)
+    return;
   minValue_ = minValue;
 
   update();
@@ -47,21 +58,38 @@ void QDashboardWidget::setMinValue(int minValue) {
 int QDashboardWidget::minValue() const { return minValue_; }
 
 void QDashboardWidget::setValue(int value) {
-  curValue_ = value;
-  update();
+  if (curValue_ != value) {
+    curValue_ = value;
+    update();
+  }
 }
 
 int QDashboardWidget::value() const { return curValue_; }
 
-void QDashboardWidget::setDividingStep(int step) { dividingStep_ = step; }
+void QDashboardWidget::setDividingStep(int step) {
+  if (dividingStep_ != step && step > 0) {
+    dividingStep_ = step;
+    update();
+  }
+}
 
 int QDashboardWidget::dividingStep() const { return dividingStep_; }
 
-void QDashboardWidget::setBiggerDividingMulriple(int mulriple) { biggerDividingMulriple_ = mulriple; }
+void QDashboardWidget::setBiggerDividingMulriple(int mulriple) {
+  if (biggerDividingMulriple_ != mulriple) {
+    biggerDividingMulriple_ = mulriple;
+    update();
+  }
+}
 
 int QDashboardWidget::biggerDividingMulriple() const { return biggerDividingMulriple_; }
 
-void QDashboardWidget::setBiggestDividingMulriple(int mulriple) { biggestDividingMulriple_ = mulriple; }
+void QDashboardWidget::setBiggestDividingMulriple(int mulriple) {
+  if (biggestDividingMulriple_ != mulriple) {
+    biggestDividingMulriple_ = mulriple;
+    update();
+  }
+}
 
 int QDashboardWidget::biggestDividingMulriple() const { return biggestDividingMulriple_; }
 
@@ -75,6 +103,32 @@ void QDashboardWidget::setDividingAngleOffset(int startAngle, int endAngle) {
 int QDashboardWidget::dividingStartAngleOffset() const { return startAngle_; }
 
 int QDashboardWidget::dividingEndAngleOffset() const { return endAngle_; }
+
+void QDashboardWidget::setFrameWidth(int w) {
+  if (frameWidth_ != w && w >= 0) {
+    frameWidth_ = w;
+
+    update();
+  }
+}
+
+int QDashboardWidget::frameWidth() const { return frameWidth_; }
+
+void QDashboardWidget::setFrameBackground(QBrush &brush) {
+  frameBackground_ = brush;
+
+  update();
+}
+
+QBrush QDashboardWidget::frameBackground() const { return frameBackground_; }
+
+void QDashboardWidget::setPlateBackground(QBrush &brush) {
+  plateBackground_ = brush;
+}
+
+QBrush QDashboardWidget::plateBackground() const {
+  return plateBackground_;
+}
 
 void QDashboardWidget::paintEvent(QPaintEvent *event) {
   QPainter painter(this);
@@ -93,18 +147,33 @@ void QDashboardWidget::paintEvent(QPaintEvent *event) {
 }
 
 void QDashboardWidget::drawFrame(QPainter &painter, int radius, int refSize) {
-  painter.save();
-  painter.setPen(Qt::NoPen);
-  QLinearGradient lg1(-radius, -radius, radius, radius);
-  lg1.setColorAt(0.1, Qt::white);
-  lg1.setColorAt(1, Qt::black);
-  painter.setBrush(lg1);
-  painter.drawEllipse(QPoint(0, 0), radius, radius);
+  Q_ASSERT(frameWidth_ < radius);
 
-  painter.setBrush(Qt::black);
-  painter.drawEllipse(QPoint(0, 0), radius - 10, radius - 10);
+  if (frameWidth_ > 0) {
+    painter.save();
+    painter.setPen(Qt::NoPen);
 
-  painter.restore();
+    if (frameBackground_.style() == Qt::NoBrush) {
+      QLinearGradient lg1(-radius, -radius, radius, radius);
+      lg1.setColorAt(0.1, Qt::white);
+      lg1.setColorAt(1, Qt::black);
+      painter.setBrush(lg1);
+    }
+    else {
+      painter.setBrush(frameBackground_);
+    }
+    painter.drawEllipse(QPoint(0, 0), radius, radius);
+
+    if (plateBackground_.style() == Qt::NoBrush) {
+      painter.setBrush(Qt::black);
+    }
+    else {
+      painter.setBrush(plateBackground_);
+    }
+    painter.drawEllipse(QPoint(0, 0), radius - frameWidth_, radius - frameWidth_);
+
+    painter.restore();
+  }
 }
 
 void QDashboardWidget::drawDividing(QPainter &painter, int radius, int refSize) {
@@ -113,9 +182,13 @@ void QDashboardWidget::drawDividing(QPainter &painter, int radius, int refSize) 
 
   QPen pen(Qt::white);
   painter.setPen(pen);
-#if 1
+
+  Q_ASSERT((maxValue_ - minValue_) % dividingStep_ == 0);
+
   int step = (maxValue_ - minValue_) / dividingStep_;
   double angleStep = (360.0 - (startAngle_ - endAngle_)) / step;
+
+  int newRadius = radius - frameWidth_ - 2;
 
   for (int i = minValue_; i <= maxValue_; i += dividingStep_) {
     if (i >= maxValue_ * 0.8) {
@@ -126,21 +199,21 @@ void QDashboardWidget::drawDividing(QPainter &painter, int radius, int refSize) 
     if (biggestDividingMulriple_ != 0 && (i % (biggestDividingMulriple_ * dividingStep_) == 0)) {
       pen.setWidth(2);
       painter.setPen(pen);
-      painter.drawLine(radius - 12, 0, radius - 12 - 13, 0);
+      painter.drawLine(newRadius, 0, newRadius - kBiggestDividingWidth, 0);
     }
-    else if (biggerDividingMulriple_ != 0 &&  (i % (biggerDividingMulriple_ * dividingStep_) == 0)) {
+    else if (biggerDividingMulriple_ != 0 && (i % (biggerDividingMulriple_ * dividingStep_) == 0)) {
       pen.setWidth(1);
       painter.setPen(pen);
-      painter.drawLine(radius - 12, 0, radius - 12 - 10, 0);
+      painter.drawLine(newRadius, 0, newRadius - kBiggerDividingWidth, 0);
     }
     else if (i % dividingStep_ == 0) {
       pen.setWidth(0);
       painter.setPen(pen);
-      painter.drawLine(radius - 14, 0, radius - 14 - 5, 0);
+      painter.drawLine(newRadius - 2, 0, newRadius - 2 - kDividingWidth, 0);
     }
     painter.rotate(angleStep);
   }
-#endif
+
   painter.restore();
 }
 
@@ -155,22 +228,38 @@ void QDashboardWidget::drawDividingNumber(QPainter &painter, int radius, int ref
   QFontMetricsF fm(this->font());
 
   double anglePerVel = (360.f - (startAngle_ - endAngle_)) / (maxValue_ - minValue_);
-  double indicatorRadius = radius - 12 - 13 - 12;
+  double indicatorRadius = radius - frameWidth_ - 2 - kBiggestDividingWidth - 12;
 
-  for (int i = minValue_; i <= maxValue_; i += 20) //每隔20Km设置一个数字
-  {
-    if (i % 20 == 0) {
-      angle = 360.f - (startAngle_ + (i - minValue_) * anglePerVel); //角度
-      angleArc = angle * 3.14f / 180.f;                              //转换为弧度
+  for (int i = minValue_; i <= maxValue_; i += dividingStep_) {
+    if (biggestDividingMulriple_ != 0) {
+      if (i % (biggestDividingMulriple_ * dividingStep_) == 0) {
+        angle = 360.f - (startAngle_ + (i - minValue_) * anglePerVel); //角度
+        angleArc = angle * 3.14f / 180.f;                              //转换为弧度
 
-      x = indicatorRadius * cos(angleArc);
-      y = -indicatorRadius * sin(angleArc); // 取负是因为Qt坐标系Y轴和数学坐标系Y轴方向相反
+        x = indicatorRadius * cos(angleArc);
+        y = -indicatorRadius * sin(angleArc); // 取负是因为Qt坐标系Y轴和数学坐标系Y轴方向相反
 
-      QString speed = QString::number(i);
+        QString speed = QString::number(i);
 
-      w = fm.width(speed);
-      h = fm.height();
-      painter.drawText(QPointF(x - w / 2.f, y + h / 4.f), speed);
+        w = fm.width(speed);
+        h = fm.height();
+        painter.drawText(QPointF(x - w / 2.f, y + h / 4.f), speed);
+      }
+    }
+    else if (biggerDividingMulriple_ != 0) {
+      if (i % (biggerDividingMulriple_ * dividingStep_) == 0) {
+        angle = 360.f - (startAngle_ + (i - minValue_) * anglePerVel); //角度
+        angleArc = angle * 3.14f / 180.f;                              //转换为弧度
+
+        x = indicatorRadius * cos(angleArc);
+        y = -indicatorRadius * sin(angleArc); // 取负是因为Qt坐标系Y轴和数学坐标系Y轴方向相反
+
+        QString speed = QString::number(i);
+
+        w = fm.width(speed);
+        h = fm.height();
+        painter.drawText(QPointF(x - w / 2.f, y + h / 4.f), speed);
+      }
     }
   }
 
@@ -190,7 +279,7 @@ void QDashboardWidget::drawNumberValue(QPainter &painter, int radius, int refSiz
 
 void QDashboardWidget::drawNeedle(QPainter &painter, int radius, int refSize) {
   painter.save();
-  //绘制指针
+
   double anglePerVel = (360.f - (startAngle_ - endAngle_)) / (maxValue_ - minValue_);
   double curAngle = startAngle_ + curValue_ * anglePerVel;
   painter.rotate(curAngle); //旋转坐标系

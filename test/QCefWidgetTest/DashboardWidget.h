@@ -35,6 +35,14 @@ public:
   int dividingStartAngleOffset() const;
   int dividingEndAngleOffset() const;
 
+  void setFrameWidth(int w);
+  int frameWidth() const;
+
+  void setFrameBackground(QBrush& brush);
+  QBrush frameBackground() const;
+
+  void setPlateBackground(QBrush& brush);
+  QBrush plateBackground() const;
 
 protected:
   void paintEvent(QPaintEvent* event) override;
@@ -50,6 +58,11 @@ protected:
   int maxValue_;
   int minValue_;
   int curValue_;
+
+  int frameWidth_;
+  QBrush frameBackground_;
+
+  QBrush plateBackground_;
 
   int startAngle_;
   int endAngle_;

@@ -15,10 +15,8 @@
 #pragma execution_character_set("utf-8")
 
 namespace {
-QSize kWindowDefaultSize = QSize(900, 600);
+QSize kWindowDefaultSize = QSize(920, 680);
 }
-
-namespace {} // namespace
 
 TestWnd::TestWnd(QWidget *parent)
     : QWidget(parent)
@@ -29,7 +27,7 @@ TestWnd::TestWnd(QWidget *parent)
     , renderProcessMemCounter_(nullptr) {
   QCefSetting::setFlashPlugin("TestResource\\pepperflash\\26.0.0.126\\pepflashplayer.dll", "26.0.0.126");
 
-  QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}}, {"tree.html", {IDR_TREE_PAGE, "PAGE"}}});
+  QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}}, {"tree.html", {IDR_TREE_PAGE, "PAGE"}}, {"test.swf", {IDR_SWF1, "SWF"}} });
 
   setupUi();
   systemPerformanceMonitor();
@@ -380,7 +378,7 @@ void TestWnd::systemPerformanceMonitor() {
     status = PdhAddCounter(query_, TEXT("\\Process(QCefWing)\\Working Set"), NULL, &renderProcessMemCounter_);
   }
 
-  cpuUsageTimer_.setInterval(500);
+  cpuUsageTimer_.setInterval(100);
   connect(&cpuUsageTimer_, &QTimer::timeout, [this]() {
     PdhCollectQueryData(query_);
     PDH_FMT_COUNTERVALUE pdhValue;
