@@ -17,6 +17,7 @@ QCefOpenGLWidget::QCefOpenGLWidget(const QString &url, QWidget *parent /*= nullp
   pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_OpenGLWidget, this, url);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
+  setAttribute(Qt::WA_StyledBackground, true);
 }
 
 QCefOpenGLWidget::~QCefOpenGLWidget() {
@@ -53,9 +54,9 @@ bool QCefOpenGLWidget::isLoadingBrowser() {
   return pImpl_->isLoadingBrowser();
 }
 
-void QCefOpenGLWidget::reloadBrowser() {
+void QCefOpenGLWidget::reloadBrowser(bool bIgnoreCache) {
   Q_ASSERT(pImpl_);
-  pImpl_->reloadBrowser();
+  pImpl_->reloadBrowser(bIgnoreCache);
 }
 
 void QCefOpenGLWidget::stopLoadBrowser() {
@@ -118,6 +119,16 @@ bool QCefOpenGLWidget::allowExecuteUnknownProtocolViaOS() {
   return pImpl_->browserSetting().executeUnknownProtocolViaOS;
 }
 
+void QCefOpenGLWidget::setAutoDestoryCefWhenCloseEvent(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setAutoDestoryCefWhenCloseEvent(b);
+}
+
+bool QCefOpenGLWidget::autoDestoryCefWhenCloseEvent() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().autoDestroyCefWhenCloseEvent;
+}
+
 void QCefOpenGLWidget::setFPS(int fps) {
   Q_ASSERT(pImpl_);
   pImpl_->setFPS(fps);
@@ -141,6 +152,21 @@ QColor QCefOpenGLWidget::browserBackgroundColor() const {
 void QCefOpenGLWidget::showDevTools() { QCefManager::getInstance().showDevTools(this); }
 
 void QCefOpenGLWidget::closeDevTools() { QCefManager::getInstance().closeDevTools(this); }
+
+bool QCefOpenGLWidget::addResourceProvider(QCefResourceProvider *provider, const QString &identifier) {
+  Q_ASSERT(pImpl_);
+  return pImpl_->addResourceProvider(provider, identifier);
+}
+
+bool QCefOpenGLWidget::removeResourceProvider(const QString &identifier) {
+  Q_ASSERT(pImpl_);
+  return pImpl_->removeResourceProvider(identifier);
+}
+
+bool QCefOpenGLWidget::removeAllResourceProvider() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->removeAllResourceProvider();
+}
 
 bool QCefOpenGLWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
   // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().

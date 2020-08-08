@@ -26,7 +26,7 @@ public:
   void goBack();
   void goForward();
   bool isLoadingBrowser();
-  void reloadBrowser();
+  void reloadBrowser(bool bIgnoreCache);
   void stopLoadBrowser();
 
   bool triggerEvent(const QString &name, const QCefEvent &event);
@@ -61,17 +61,22 @@ public:
   void setContextMenuEnabled(bool b);
   void setAutoShowDevToolsContextMenu(bool b);
   void setAllowExecuteUnknownProtocolViaOS(bool b);
+  void setAutoDestoryCefWhenCloseEvent(bool b);
   void setFPS(int fps);
   void setConsoleLogPath(const QString &path);
-  const QCefBrowserSetting& browserSetting() const;
+  const QCefBrowserSetting &browserSetting() const;
 
-  void updateCefWidget();
+  void updateCefWidget(const QRect &region);
 
   void setBrowserClosing(bool b);
 
   CefRefPtr<CefBrowser> browser() const;
 
   float deviceScaleFactor();
+
+  bool addResourceProvider(QCefResourceProvider *provider, const QString &identifier);
+  bool removeResourceProvider(const QString &identifier);
+  bool removeAllResourceProvider();
 
 protected:
   bool sendEventNotifyMessage(const QString &name, const QCefEvent &event);
@@ -86,6 +91,7 @@ protected:
 
 private slots:
   void onScreenChanged(QScreen *screen);
+
 private:
   WidgetType vt_;
   QWidget *pWidget_;
@@ -105,5 +111,7 @@ private:
   HRGN draggableRegion_;
 
   float deviceScaleFactor_;
+
+  QMap<QString, QCefResourceProvider*> todoAddProviders_;
 };
 #endif

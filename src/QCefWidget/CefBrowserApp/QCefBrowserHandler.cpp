@@ -14,6 +14,7 @@
 #include "QCefManager.h"
 #include "Include/QCefWidget.h"
 #include "Include/QCefOpenGLWidget.h"
+#include "Include/QCefResourceProvider.h"
 #include "QCefResourceUtil.h"
 
 namespace {
@@ -336,13 +337,13 @@ void QCefBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
   if (pImpl_->getWidgetType() == WT_Widget) {
     QCefWidget *p = qobject_cast<QCefWidget *>(pImpl_->getWidget());
     if (p)
-      emit p->loadStart();
+      emit p->loadStart(frame->IsMain());
   }
 #ifndef QT_NO_OPENGL
   else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pImpl_->getWidget());
     if (p)
-      emit p->loadStart();
+      emit p->loadStart(frame->IsMain());
   }
 #endif
 }
@@ -353,13 +354,13 @@ void QCefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefF
   if (pImpl_->getWidgetType() == WT_Widget) {
     QCefWidget *p = qobject_cast<QCefWidget *>(pImpl_->getWidget());
     if (p)
-      emit p->loadEnd(httpStatusCode);
+      emit p->loadEnd(frame->IsMain(), httpStatusCode);
   }
 #ifndef QT_NO_OPENGL
   else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pImpl_->getWidget());
     if (p)
-      emit p->loadEnd(httpStatusCode);
+      emit p->loadEnd(frame->IsMain(), httpStatusCode);
   }
 #endif
 }
@@ -381,13 +382,13 @@ void QCefBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
   if (pImpl_->getWidgetType() == WT_Widget) {
     QCefWidget *p = qobject_cast<QCefWidget *>(pImpl_->getWidget());
     if (p)
-      emit p->loadError(errorCode, msg, url);
+      emit p->loadError(frame->IsMain(), errorCode, msg, url);
   }
 #ifndef QT_NO_OPENGL
   else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
     QCefOpenGLWidget *p = qobject_cast<QCefOpenGLWidget *>(pImpl_->getWidget());
     if (p)
-      emit p->loadError(errorCode, msg, url);
+      emit p->loadError(frame->IsMain(), errorCode, msg, url);
   }
 #endif
 }
@@ -621,8 +622,15 @@ void QCefBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser, CefRenderHandler
     } while (false);
   }
 
+  float dpiScale = pImpl_->deviceScaleFactor();
+
+  QRect updateRegion = { 0,0,0,0 };
+  for (auto &dr : dirtyRects) {
+    updateRegion = updateRegion.united(QRect((float)dr.x / dpiScale, (float)dr.y / dpiScale, (float)dr.width / dpiScale, (float)dr.height / dpiScale));
+  }
+
   if (pImpl_)
-    pImpl_->updateCefWidget();
+    pImpl_->updateCefWidget(updateRegion);
 }
 
 void QCefBrowserHandler::OnCursorChange(CefRefPtr<CefBrowser> browser, CefCursorHandle cursor, CursorType type, const CefCursorInfo &custom_cursor_info) {
@@ -762,6 +770,30 @@ bool QCefBrowserHandler::isOverPopupWidget(int x, int y) const {
 int QCefBrowserHandler::getPopupXOffset() const { return originalPopupRect_.x - popupRect_.x; }
 
 int QCefBrowserHandler::getPopupYOffset() const { return originalPopupRect_.y - popupRect_.y; }
+
+bool QCefBrowserHandler::addResourceProvider(QCefResourceProvider *provider, const QString &identifier) {
+  if (!pResourceManager_)
+    return false;
+  CustomResourceProvider* pCustomProvider = new CustomResourceProvider(provider);
+  pResourceManager_->AddProvider(pCustomProvider, 101, identifier.toStdString());
+  return true;
+}
+
+bool QCefBrowserHandler::removeResourceProvider(const QString &identifier) {
+  if (pResourceManager_) {
+    pResourceManager_->RemoveProviders(identifier.toStdString());
+    return true;
+  }
+  return false;
+}
+
+bool QCefBrowserHandler::removeAllResourceProvider() {
+  if (pResourceManager_) {
+    pResourceManager_->RemoveAllProviders();
+    return true;
+  }
+  return false;
+}
 
 CefRect QCefBrowserHandler::getPopupRectInWebView(const CefRect &original_rect) const {
   CefRect rc(original_rect);

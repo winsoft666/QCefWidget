@@ -5,9 +5,10 @@
 #include "include/wrapper/cef_stream_resource_handler.h"
 #include "QCefGlobalSetting.h"
 #include <QDebug>
+#include "Include/QCefResourceProvider.h"
 
 namespace {
-bool loadBinaryResource(int binaryId, const QString& resourceType, DWORD &dwSize, LPBYTE &pBytes) {
+bool loadBinaryResource(int binaryId, const QString &resourceType, DWORD &dwSize, LPBYTE &pBytes) {
   HINSTANCE hInst = GetModuleHandle(NULL);
   HRSRC hRes = FindResourceW(hInst, MAKEINTRESOURCE(binaryId), resourceType.toStdWString().c_str());
   if (hRes) {
@@ -70,7 +71,9 @@ private:
   DISALLOW_COPY_AND_ASSIGN(BinaryResourceProvider);
 };
 
-bool getResourceId(const QString &resourceName, QPair<int, QString>& rcInfo) { 
+
+
+bool getResourceId(const QString &resourceName, QPair<int, QString> &rcInfo) {
   QCefGlobalSetting::initializeInstance();
   QMap<QString, QPair<int, QString>> resourceMap = QCefGlobalSetting::resource_map;
 
@@ -81,7 +84,6 @@ bool getResourceId(const QString &resourceName, QPair<int, QString>& rcInfo) {
   return false;
 }
 } // namespace
-
 
 bool loadBinaryResource(const char *resourceName, std::string &resourceData) {
   QPair<int, QString> rcInfo;
@@ -118,4 +120,25 @@ CefRefPtr<CefStreamReader> GetBinaryResourceReader(const char *resourceName) {
 
 CefResourceManager::Provider *CreateBinaryResourceProvider(const std::string &urlPath, const std::string &resourcePathPrefix) {
   return new BinaryResourceProvider(urlPath, resourcePathPrefix);
+}
+
+bool CustomResourceProvider::OnRequest(scoped_refptr<CefResourceManager::Request> request) {
+  CEF_REQUIRE_IO_THREAD();
+  if (!provider_)
+    return false;
+
+  QString url = QString::fromStdString(request->url());
+  CefRefPtr<ResourceOwner> owner = new ResourceOwner();
+  if (!provider_->onRequest(url, owner->buffer))
+    return false;
+
+  CefRefPtr<CefResourceHandler> handler;
+
+  CefRefPtr<CefStreamReader> stream = CefStreamReader::CreateForHandler(new CefByteReadHandler((const unsigned char *)owner->buffer.constData(), (size_t)owner->buffer.size(), owner));
+  if (stream.get()) {
+    handler = new CefStreamResourceHandler(request->mime_type_resolver().Run(request->url()), stream);
+  }
+
+  request->Continue(handler);
+  return true;
 }

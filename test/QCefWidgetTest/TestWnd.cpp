@@ -191,10 +191,10 @@ void TestWnd::setupUi() {
   dashboardWidgetMainProcMemory_->setValuePrefix("Mem: ");
   dashboardWidgetMainProcMemory_->setValueSuffix("MB");
   dashboardWidgetMainProcMemory_->setMinValue(0);
-  dashboardWidgetMainProcMemory_->setMaxValue(200);
-  dashboardWidgetMainProcMemory_->setDividingStep(2);
-  dashboardWidgetMainProcMemory_->setBiggerDividingMulriple(5);
-  dashboardWidgetMainProcMemory_->setBiggestDividingMulriple(10);
+  dashboardWidgetMainProcMemory_->setMaxValue(1000);
+  dashboardWidgetMainProcMemory_->setDividingStep(5);
+  dashboardWidgetMainProcMemory_->setBiggerDividingMulriple(10);
+  dashboardWidgetMainProcMemory_->setBiggestDividingMulriple(20);
   hlMainProcDashboard->addWidget(dashboardWidgetMainProcMemory_);
 
   QHBoxLayout *hlRenderProcDashboard = new QHBoxLayout();
@@ -218,10 +218,10 @@ void TestWnd::setupUi() {
   dashboardWidgetRenderProcMemory_->setValuePrefix("Mem: ");
   dashboardWidgetRenderProcMemory_->setValueSuffix("MB");
   dashboardWidgetRenderProcMemory_->setMinValue(0);
-  dashboardWidgetRenderProcMemory_->setMaxValue(200);
-  dashboardWidgetRenderProcMemory_->setDividingStep(2);
-  dashboardWidgetRenderProcMemory_->setBiggerDividingMulriple(5);
-  dashboardWidgetRenderProcMemory_->setBiggestDividingMulriple(10);
+  dashboardWidgetRenderProcMemory_->setMaxValue(1000);
+  dashboardWidgetRenderProcMemory_->setDividingStep(5);
+  dashboardWidgetRenderProcMemory_->setBiggerDividingMulriple(10);
+  dashboardWidgetRenderProcMemory_->setBiggestDividingMulriple(20);
   hlRenderProcDashboard->addWidget(dashboardWidgetRenderProcMemory_);
 
   QVBoxLayout *vlButton = new QVBoxLayout();
@@ -378,8 +378,8 @@ void TestWnd::systemPerformanceMonitor() {
     status = PdhAddCounter(query_, TEXT("\\Process(QCefWing)\\Working Set"), NULL, &renderProcessMemCounter_);
   }
 
-  cpuUsageTimer_.setInterval(100);
-  connect(&cpuUsageTimer_, &QTimer::timeout, [this]() {
+  performanceTimer_.setInterval(200);
+  connect(&performanceTimer_, &QTimer::timeout, [this]() {
     PdhCollectQueryData(query_);
     PDH_FMT_COUNTERVALUE pdhValue;
     DWORD dwValue = 0;
@@ -408,5 +408,5 @@ void TestWnd::systemPerformanceMonitor() {
         dashboardWidgetRenderProcMemory_->setValue(pdhValue.doubleValue / 1024.f / 1024.f);
     }
   });
-  cpuUsageTimer_.start();
+  performanceTimer_.start();
 }

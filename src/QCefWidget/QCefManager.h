@@ -51,7 +51,6 @@ private:
   CefRefPtr<QCefBrowserApp> app_;
   CefSettings cefSettings_;
   bool initialized_;
-  bool appWillExit_;
 
   typedef struct _CefInfo {
     QWidget* cefWidget;

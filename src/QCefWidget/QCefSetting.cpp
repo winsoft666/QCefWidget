@@ -64,22 +64,22 @@ const QString QCefSetting::userDataPath() {
 
 void QCefSetting::setPersistSessionCookies(bool enabled) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::persist_session_cookies = enabled ? TRUE : FALSE;
+  QCefGlobalSetting::persist_session_cookies = enabled;
 }
 
 const bool QCefSetting::persistSessionCookies() {
   QCefGlobalSetting::initializeInstance();
-  return QCefGlobalSetting::persist_session_cookies ? true : false;
+  return QCefGlobalSetting::persist_session_cookies;
 }
 
 void QCefSetting::setPersistUserPreferences(bool enabled) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::persist_user_preferences = enabled ? TRUE : FALSE;
+  QCefGlobalSetting::persist_user_preferences = enabled;
 }
 
 const bool QCefSetting::persistUserPreferences() {
   QCefGlobalSetting::initializeInstance();
-  return QCefGlobalSetting::persist_user_preferences ? true : false;
+  return QCefGlobalSetting::persist_user_preferences;
 }
 
 void QCefSetting::setLocale(const QString &locale) {

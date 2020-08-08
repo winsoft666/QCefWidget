@@ -14,6 +14,7 @@ public:
   bool executeUnknownProtocolViaOS;
   bool autoShowDevToolsContextMenu;
   bool devToolsResourceExist;
+  bool autoDestroyCefWhenCloseEvent;
 
   int fps;
   QColor backgroundColor;

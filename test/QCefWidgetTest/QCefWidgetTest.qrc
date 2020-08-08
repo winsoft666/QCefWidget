@@ -9,5 +9,6 @@
         <file>images/devtools_n.svg</file>
         <file>images/javascript_h.svg</file>
         <file>images/javascript_n.svg</file>
+        <file>images/logo_blue.svg</file>
     </qresource>
 </RCC>

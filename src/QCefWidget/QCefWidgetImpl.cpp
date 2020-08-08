@@ -113,6 +113,11 @@ bool QCefWidgetImpl::createBrowser(const QString &url) {
   }
 
   pQCefViewHandler_ = new QCefBrowserHandler(this);
+  for (auto & it : todoAddProviders_.keys()) {
+    pQCefViewHandler_->addResourceProvider(todoAddProviders_[it], it);
+  }
+
+  todoAddProviders_.clear();
 
   CefRefPtr<CefRequestContext> requestContext = CefRequestContext::CreateContext(CefRequestContext::GetGlobalContext(), new RequestContextHandler);
 
@@ -387,9 +392,12 @@ bool QCefWidgetImpl::isLoadingBrowser() {
   return false;
 }
 
-void QCefWidgetImpl::reloadBrowser() {
+void QCefWidgetImpl::reloadBrowser(bool bIgnoreCache) {
   if (pQCefViewHandler_ && pQCefViewHandler_->browser())
-    pQCefViewHandler_->browser()->Reload();
+    if (bIgnoreCache)
+      pQCefViewHandler_->browser()->Reload();
+    else
+      pQCefViewHandler_->browser()->ReloadIgnoreCache();
 }
 
 void QCefWidgetImpl::stopLoadBrowser() {
@@ -652,12 +660,13 @@ bool QCefWidgetImpl::paintEventHandle(QPaintEvent *event) {
   float scale = deviceScaleFactor_;
   QPainter paint(pWidget_);
 
+  QRectF updateRect = event->rect();
+  QRectF srcRect = { updateRect.x() * scale, updateRect.y() * scale, updateRect.width() *scale, updateRect.height() * scale };
+
   CefRenderBuffer *pRenderBuffer = pQCefViewHandler_->lockViewBuffer();
   if (pRenderBuffer) {
     QImage image(pRenderBuffer->buffer.get(), pRenderBuffer->width, pRenderBuffer->height, QImage::Format_ARGB32);
-
-    QRect destRect(pRenderBuffer->x, pRenderBuffer->y, pRenderBuffer->width / scale, pRenderBuffer->height / scale);
-    paint.drawImage(destRect, image);
+    paint.drawImage(updateRect, image, srcRect);
   }
   pQCefViewHandler_->unlockViewBuffer();
 
@@ -665,9 +674,7 @@ bool QCefWidgetImpl::paintEventHandle(QPaintEvent *event) {
     CefRenderBuffer *pPopupImageParam = pQCefViewHandler_->lockPopupBuffer();
     if (pPopupImageParam) {
       QImage image(pPopupImageParam->buffer.get(), pPopupImageParam->width, pPopupImageParam->height, QImage::Format_ARGB32);
-
-      QRect destRect(pPopupImageParam->x, pPopupImageParam->y, pPopupImageParam->width / scale, pPopupImageParam->height / scale);
-      paint.drawImage(destRect, image);
+      paint.drawImage(updateRect, image, srcRect);
     }
     pQCefViewHandler_->unlockPopupBuffer();
   }
@@ -743,6 +750,10 @@ void QCefWidgetImpl::setAutoShowDevToolsContextMenu(bool b) { browserSetting_.au
 
 void QCefWidgetImpl::setAllowExecuteUnknownProtocolViaOS(bool b) { browserSetting_.executeUnknownProtocolViaOS = b; }
 
+void QCefWidgetImpl::setAutoDestoryCefWhenCloseEvent(bool b) {
+  browserSetting_.autoDestroyCefWhenCloseEvent = b;
+}
+
 void QCefWidgetImpl::setFPS(int fps) {
   browserSetting_.fps = fps;
   CefRefPtr<CefBrowser> b = browser();
@@ -757,9 +768,9 @@ const QCefBrowserSetting &QCefWidgetImpl::browserSetting() const { return browse
 
 void QCefWidgetImpl::setBrowserBackgroundColor(const QColor &color) { browserSetting_.backgroundColor = color; }
 
-void QCefWidgetImpl::updateCefWidget() {
+void QCefWidgetImpl::updateCefWidget(const QRect& region) {
   if (pWidget_) {
-    pWidget_->update();
+    pWidget_->update(region);
   }
 }
 
@@ -773,3 +784,35 @@ CefRefPtr<CefBrowser> QCefWidgetImpl::browser() const {
 }
 
 float QCefWidgetImpl::deviceScaleFactor() { return deviceScaleFactor_; }
+
+bool QCefWidgetImpl::addResourceProvider(QCefResourceProvider *provider, const QString &identifier) {
+  if (pQCefViewHandler_) {
+    return pQCefViewHandler_->addResourceProvider(provider, identifier);
+  }
+
+  todoAddProviders_[identifier] = provider;
+  return true;
+}
+
+bool QCefWidgetImpl::removeResourceProvider(const QString &identifier) {
+  if (pQCefViewHandler_) {
+    return pQCefViewHandler_->removeResourceProvider(identifier);
+  }
+
+  auto it = todoAddProviders_.find(identifier);
+  if (it == todoAddProviders_.end())
+    return false;
+
+  todoAddProviders_.erase(it);
+
+  return true;
+}
+
+bool QCefWidgetImpl::removeAllResourceProvider() {
+  if (pQCefViewHandler_) {
+    return pQCefViewHandler_->removeAllResourceProvider();
+  }
+
+  todoAddProviders_.clear();
+  return true;
+}

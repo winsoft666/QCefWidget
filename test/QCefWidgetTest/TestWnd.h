@@ -54,7 +54,7 @@ private:
   QDashboardWidget* dashboardWidgetMainProcMemory_;
   QDashboardWidget *dashboardWidgetRenderProcCPU_;
   QDashboardWidget *dashboardWidgetRenderProcMemory_;
-  QTimer cpuUsageTimer_;
+  QTimer performanceTimer_;
 
   HQUERY query_;
   HCOUNTER mainProcessCpuCounter_;

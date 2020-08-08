@@ -15,6 +15,7 @@
 #include <set>
 #include <string>
 
+class QCefResourceProvider;
 class QCefWidgetImpl;
 class QCefBase;
 
@@ -244,6 +245,9 @@ public:
   int getPopupXOffset() const;
   int getPopupYOffset() const;
 
+  bool addResourceProvider(QCefResourceProvider* provider, const QString &identifier);
+  bool removeResourceProvider(const QString &identifier);
+  bool removeAllResourceProvider();
 protected:
   CefRect getPopupRectInWebView(const CefRect &original_rect) const;
 

@@ -7,7 +7,7 @@
 #include "QCefDevToolsWnd.h"
 
 QCefManager::QCefManager()
-    : initialized_(false), appWillExit_(false) {}
+    : initialized_(false) {}
 
 QCefManager::~QCefManager() {
 }
@@ -345,7 +345,14 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
     return 0;
 
   if (uMsg == WM_CLOSE) {
+    Q_ASSERT(pCefWidgetImpl);
     qDebug() << "QCefManager::newWndProc WM_CLOSE, HWND: " << hWnd;
+    if (pCefWidgetImpl) {
+      if (!pCefWidgetImpl->browserSetting().autoDestroyCefWhenCloseEvent) {
+        qDebug() << "Not Destroy CEF";
+        return ::CallWindowProc(preWndProc, hWnd, uMsg, wParam, lParam);
+      }
+    }
     pThis->tryCloseAllBrowsers(hWnd);
 
     if (pThis->aliveBrowserCount(hWnd) == 0) {
@@ -375,6 +382,14 @@ bool QCefManager::eventFilter(QObject *obj, QEvent *event) {
     std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
     for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
       if (it->cefWidgetTopWidget == obj) {
+        QCefWidgetImpl* pImp = it->cefWidgetImpl;
+        Q_ASSERT(pImp);
+        if (pImp) {
+          if (!pImp->browserSetting().autoDestroyCefWhenCloseEvent) {
+            qDebug() << "Not Destroy CEF";
+            return QObject::eventFilter(obj, event);
+          }
+        }
         this->tryCloseAllBrowsers(it->cefWidgetTopWidget);
 
         if (this->aliveBrowserCount(it->cefWidgetTopWidget) == 0) {

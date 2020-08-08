@@ -4,6 +4,9 @@
 #include <QDebug>
 #include <QResizeEvent>
 #include <QVariant>
+#include <QStyle>
+#include <QStyleOption>
+#include <QPainter>
 #include <include/base/cef_logging.h>
 #include <include/cef_app.h>
 #include <include/cef_browser.h>
@@ -16,6 +19,7 @@ QCefWidget::QCefWidget(const QString &url, QWidget *parent)
   pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this, url);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
+  setAttribute(Qt::WA_StyledBackground, true);
 }
 
 QCefWidget::~QCefWidget() { qDebug() << "QCefWidget::~QCefWidget"; }
@@ -50,9 +54,9 @@ bool QCefWidget::isLoadingBrowser() {
   return pImpl_->isLoadingBrowser();
 }
 
-void QCefWidget::reloadBrowser() {
+void QCefWidget::reloadBrowser(bool bIgnoreCache) {
   Q_ASSERT(pImpl_);
-  pImpl_->reloadBrowser();
+  pImpl_->reloadBrowser(bIgnoreCache);
 }
 
 void QCefWidget::stopLoadBrowser() {
@@ -115,6 +119,16 @@ bool QCefWidget::allowExecuteUnknownProtocolViaOS() const {
   return pImpl_->browserSetting().executeUnknownProtocolViaOS;
 }
 
+void QCefWidget::setAutoDestoryCefWhenCloseEvent(bool b) {
+  Q_ASSERT(pImpl_);
+  pImpl_->setAutoDestoryCefWhenCloseEvent(b);
+}
+
+bool QCefWidget::autoDestoryCefWhenCloseEvent() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->browserSetting().autoDestroyCefWhenCloseEvent;
+}
+
 void QCefWidget::setFPS(int fps) {
   Q_ASSERT(pImpl_);
   pImpl_->setFPS(fps);
@@ -138,6 +152,21 @@ QColor QCefWidget::browserBackgroundColor() const {
 void QCefWidget::showDevTools() { QCefManager::getInstance().showDevTools(this); }
 
 void QCefWidget::closeDevTools() { QCefManager::getInstance().closeDevTools(this); }
+
+bool QCefWidget::addResourceProvider(QCefResourceProvider *provider, const QString &identifier) {
+  Q_ASSERT(pImpl_);
+  return pImpl_->addResourceProvider(provider, identifier);
+}
+
+bool QCefWidget::removeResourceProvider(const QString &identifier) {
+  Q_ASSERT(pImpl_);
+  return pImpl_->removeResourceProvider(identifier);
+}
+
+bool QCefWidget::removeAllResourceProvider() {
+  Q_ASSERT(pImpl_);
+  return pImpl_->removeAllResourceProvider();
+}
 
 bool QCefWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
   // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().

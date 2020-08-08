@@ -11,6 +11,7 @@
 #include <QAbstractNativeEventFilter>
 #include "QCefQuery.h"
 #include "QCefEvent.h"
+#include "QCefResourceProvider.h"
 
 #ifndef QCEFWIDGET_EXPORT
 #ifdef QCEFWIDGET_LIB
@@ -38,7 +39,7 @@ public:
   virtual void goBack();
   virtual void goForward();
   virtual bool isLoadingBrowser();
-  virtual void reloadBrowser();
+  virtual void reloadBrowser(bool bIgnoreCache);
   virtual void stopLoadBrowser();
 
   virtual bool triggerEvent(const QString &name, const QCefEvent &event);
@@ -64,6 +65,9 @@ public:
   virtual void setAllowExecuteUnknownProtocolViaOS(bool b);
   virtual bool allowExecuteUnknownProtocolViaOS();
 
+  virtual void setAutoDestoryCefWhenCloseEvent(bool b);
+  virtual bool autoDestoryCefWhenCloseEvent();
+
   virtual void setFPS(int fps);
   virtual int fps() const;
 
@@ -72,13 +76,17 @@ public:
 
   virtual void showDevTools();
   virtual void closeDevTools();
+
+  virtual bool addResourceProvider(QCefResourceProvider *provider, const QString &identifier);
+  virtual bool removeResourceProvider(const QString &identifier);
+  virtual bool removeAllResourceProvider();
 signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);
   void urlChanged(bool isMainFrame, const QString &url);
-  void loadStart();
-  void loadEnd(int httpStatusCode);
-  void loadError(int errorCode, const QString &errorMsg, const QString &failedUrl);
+  void loadStart(bool isMainFrame);
+  void loadEnd(bool isMainFrame, int httpStatusCode);
+  void loadError(bool isMainFrame, int errorCode, const QString &errorMsg, const QString &failedUrl);
   void renderProcessTerminated(int status);
   void cefQueryRequest(const QCefQuery &query);
   void invokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);

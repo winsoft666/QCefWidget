@@ -58,6 +58,10 @@ void QDashboardWidget::setMinValue(int minValue) {
 int QDashboardWidget::minValue() const { return minValue_; }
 
 void QDashboardWidget::setValue(int value) {
+  if (value > maxValue_)
+    value = maxValue_;
+  if (value < minValue_)
+    value = minValue_;
   if (curValue_ != value) {
     curValue_ = value;
     update();

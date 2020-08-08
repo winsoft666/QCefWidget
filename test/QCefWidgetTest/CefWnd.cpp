@@ -46,6 +46,7 @@ void CefWnd::setupUi() {
     pCefGLWidget_->setContextMenuEnabled(contextMenuEnabled_);
     pCefGLWidget_->setAutoShowDevToolsContextMenu(autoAddDevToolsContextMenu_);
     pCefGLWidget_->setBrowserBackgroundColor(browserBkColor_);
+    pCefGLWidget_->setStyleSheet("image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefGLWidget_, &QCefOpenGLWidget::invokeMethodNotify, this, &CefWnd::onInvokeMethodNotify);
     connect(pCefGLWidget_, &QCefOpenGLWidget::cefQueryRequest, this, &CefWnd::onCefQueryRequest);
@@ -57,6 +58,7 @@ void CefWnd::setupUi() {
     pCefWidget_->setContextMenuEnabled(contextMenuEnabled_);
     pCefWidget_->setAutoShowDevToolsContextMenu(autoAddDevToolsContextMenu_);
     pCefWidget_->setBrowserBackgroundColor(browserBkColor_);
+    pCefWidget_->setStyleSheet("image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefWidget_, &QCefWidget::invokeMethodNotify, this, &CefWnd::onInvokeMethodNotify);
     connect(pCefWidget_, &QCefWidget::cefQueryRequest, this, &CefWnd::onCefQueryRequest);
@@ -137,11 +139,11 @@ void CefWnd::onNavigateToUrl(QString url) {
 void CefWnd::onReload() {
   if (usingGLWidget_) {
     if (pCefGLWidget_)
-      pCefGLWidget_->reloadBrowser();
+      pCefGLWidget_->reloadBrowser(true);
   }
   else {
     if (pCefWidget_)
-      pCefWidget_->reloadBrowser();
+      pCefWidget_->reloadBrowser(true);
   }
 }
 
