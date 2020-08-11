@@ -4,8 +4,6 @@
 #include <QDebug>
 #include <QResizeEvent>
 #include <QVariant>
-#include <QStyle>
-#include <QStyleOption>
 #include <QPainter>
 #include <include/base/cef_logging.h>
 #include <include/cef_app.h>
@@ -22,7 +20,9 @@ QCefWidget::QCefWidget(const QString &url, QWidget *parent)
   setAttribute(Qt::WA_StyledBackground, true);
 }
 
-QCefWidget::~QCefWidget() { qDebug() << "QCefWidget::~QCefWidget"; }
+QCefWidget::~QCefWidget() { 
+  qDebug() << "QCefWidget::~QCefWidget"; 
+}
 
 void QCefWidget::navigateToUrl(const QString &url) {
   Q_ASSERT(pImpl_);
