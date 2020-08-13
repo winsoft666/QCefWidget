@@ -101,6 +101,9 @@ void TestWnd::setupUi() {
   checkboxOsrEnabled_ = new QCheckBox("OSR(Off-screen Render)");
   checkboxOsrEnabled_->setChecked(false);
 
+  checkboxInitHide_ = new QCheckBox("Hidden");
+  checkboxInitHide_->setChecked(false);
+
   QHBoxLayout *hlFPS = new QHBoxLayout();
   hlFPS->addWidget(new QLabel("Browser Maximum FPS(1~60): "));
   lineEditFPS_ = new QLineEdit("25");
@@ -157,6 +160,7 @@ void TestWnd::setupUi() {
 
   QVBoxLayout *vlOption = new QVBoxLayout();
   vlOption->addLayout(hlCefWidget);
+  vlOption->addWidget(checkboxInitHide_);
   vlOption->addWidget(checkboxFramelessWindow_);
   vlOption->addWidget(checkboxTranslucentWindowBackground_);
   vlOption->addWidget(checkboxOsrEnabled_);
@@ -297,7 +301,9 @@ void TestWnd::onPushButtonNewBrowserClicked() {
   listBrowser_->setItemWidget(item, blt);
 
   pCefWnd->setupUi();
-  pCefWnd->show();
+
+  if(!checkboxInitHide_->isChecked())
+    pCefWnd->show();
 }
 
 void TestWnd::onPushButtonGetSourceCodeClicked() {

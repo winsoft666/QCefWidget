@@ -8,6 +8,9 @@ public:
   ~BrowserListItem();
 
   CefWnd* cefWnd();
+
+protected slots:
+  void onCefWndVisibleChanged(bool bVisible);
 protected:
   void setupUi();
 
@@ -17,6 +20,7 @@ protected:
   QPushButton* pushButtonInvokeJS_;
   QPushButton* pushButtonDevTools_;
   QPushButton* pushButtonClose_;
+  QPushButton* pushButtonVisible_;
 
   CefWnd* pCefWnd_;
 };

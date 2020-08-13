@@ -1,0 +1,142 @@
+---
+BasedOnStyle: LLVM
+
+# 访问说明符(public、private等)的偏移
+AccessModifierOffset:	-2
+
+# 连续赋值时，对齐所有等号
+AlignConsecutiveAssignments:	false
+
+# 连续声明时，对齐所有声明的变量名
+AlignConsecutiveDeclarations:	false
+
+# 左对齐逃脱换行(使用反斜杠换行)的反斜杠
+AlignEscapedNewlinesLeft:	true
+
+# 水平对齐二元和三元表达式的操作数
+AlignOperands:	true
+
+# 允许函数声明的所有参数在放在下一行
+AllowAllParametersOfDeclarationOnNextLine:	true
+
+# 允许短的块放在同一行
+AllowShortBlocksOnASingleLine:	false
+
+# 允许短的case标签放在同一行
+AllowShortCaseLabelsOnASingleLine:	false
+
+# 允许短的函数放在同一行: None, InlineOnly(定义在类中), Empty(空函数), Inline(定义在类中，空函数), All
+AllowShortFunctionsOnASingleLine:	Empty
+
+# 允许短的if语句保持在同一行
+AllowShortIfStatementsOnASingleLine:	false
+
+# 允许短的循环保持在同一行
+AllowShortLoopsOnASingleLine:	false
+
+# false表示函数实参要么都在同一行，要么都各自一行
+BinPackArguments:	false
+
+# false表示所有形参要么都在同一行，要么都各自一行
+BinPackParameters:	false
+
+# 总是在返回类型后换行: None, All, TopLevel(顶级函数，不包括在类中的函数), 
+#   AllDefinitions(所有的定义，不包括声明), TopLevelDefinitions(所有的顶级函数的定义)
+AlwaysBreakAfterReturnType:	None
+
+# 打断字符串
+BreakStringLiterals: false
+
+# 总是在多行string字面量前换行
+AlwaysBreakBeforeMultilineStrings:	false
+
+# 总是在template声明后换行
+AlwaysBreakTemplateDeclarations: true
+
+# 在大括号前换行: Attach(始终将大括号附加到周围的上下文), Linux(除函数、命名空间和类定义，与Attach类似), 
+#   Mozilla(除枚举、函数、记录定义，与Attach类似), Stroustrup(除函数定义、catch、else，与Attach类似), 
+#   Allman(总是在大括号前换行), GNU(总是在大括号前换行，并对于控制语句的大括号增加额外的缩进), WebKit(在函数前换行), Custom
+#   注：这里认为语句块也属于函数
+BreakBeforeBraces: Custom
+
+# 大括号换行，只有当BreakBeforeBraces设置为Custom时才有效
+BraceWrapping:   
+  # class定义后面
+  AfterClass:	false
+  # 控制语句后面
+  AfterControlStatement:	false
+  # enum定义后面
+  AfterEnum:	false
+  # 函数定义后面
+  AfterFunction:	false
+  # 命名空间定义后面
+  AfterNamespace:	false
+  # ObjC定义后面
+  AfterObjCDeclaration:	false
+  # struct定义后面
+  AfterStruct:	false
+  # union定义后面
+  AfterUnion:	false
+  # catch之前
+  BeforeCatch:	true
+  # else之前
+  BeforeElse:	true
+  # 缩进大括号
+  IndentBraces:	false
+  
+# 构造函数的初始化列表要么都在同一行，要么都各自一行
+ConstructorInitializerAllOnOneLineOrOnePerLine: false
+  
+# 在构造函数的初始化列表的逗号前换行
+BreakConstructorInitializersBeforeComma:	true
+
+# 在二元运算符前换行: None(在操作符后换行), NonAssignment(在非赋值的操作符前换行), All(在操作符前换行)
+BreakBeforeBinaryOperators:	None
+
+# 在三元运算符前换行
+BreakBeforeTernaryOperators:	true
+
+# 构造函数的初始化列表的缩进宽度
+ConstructorInitializerIndentWidth:	2
+
+# 延续的行的缩进宽度
+ContinuationIndentWidth:	2
+
+# 每行字符的限制，0表示没有限制
+ColumnLimit: 80
+
+# 连续空行的最大数量
+MaxEmptyLinesToKeep:	2
+
+# 缩进宽度
+IndentWidth: 2
+
+# 缩进case标签
+IndentCaseLabels:	false
+
+# 指针和引用的对齐: Left, Right, Middle
+PointerAlignment:	Left
+
+# 在空的圆括号中添加空格
+SpaceInEmptyParentheses:	false
+
+# 保留在块开始处的空行
+KeepEmptyLinesAtTheStartOfBlocks: true
+
+SpaceAfterTemplateKeyword: false
+
+# 标准: Cpp03, Cpp11, Auto
+Standard: Cpp11
+
+# tab宽度
+TabWidth: 2
+
+# 使用tab字符: Never, ForIndentation, ForContinuationAndIndentation, Always
+UseTab: Never
+
+# 允许重新排版注释
+ReflowComments:	false
+
+# 允许排序#include
+SortIncludes:	false
+...

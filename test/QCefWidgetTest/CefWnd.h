@@ -49,8 +49,12 @@ public:
   QColor browserBkColor();
   void setBrowserBkColor(QColor c);
 
+signals:
+  void cefWndVisibleChange(bool bVisible);
 protected:
   QSize sizeHint() const override;
+  void showEvent(QShowEvent *event) override;
+  void hideEvent(QHideEvent *event) override;
 public slots :
   virtual void onNavigateToUrl(QString url);
   virtual void onReload();

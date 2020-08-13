@@ -123,6 +123,18 @@ void CefWnd::setBrowserBkColor(QColor c) { browserBkColor_ = c; }
 
 QSize CefWnd::sizeHint() const { return initSize_; }
 
+void CefWnd::showEvent(QShowEvent *event) {
+  QWidget::showEvent(event);
+
+  emit cefWndVisibleChange(true);
+}
+
+void CefWnd::hideEvent(QHideEvent *event) {
+  QWidget::hideEvent(event);
+
+  emit cefWndVisibleChange(false);
+}
+
 void CefWnd::onNavigateToUrl(QString url) {
   if (usingGLWidget_) {
     if (pCefGLWidget_)

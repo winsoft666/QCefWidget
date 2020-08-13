@@ -31,6 +31,7 @@ private:
   QLineEdit* lineEditWindowBkColor_;
   QLineEdit* lineEditBrowserBkColor_;
   QComboBox* comboBoxUrl_;
+  QCheckBox* checkboxInitHide_;
   QCheckBox* checkboxFramelessWindow_;
   QCheckBox* checkboxTranslucentWindowBackground_;
   QCheckBox* checkboxOsrEnabled_;

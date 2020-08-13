@@ -7,6 +7,8 @@ BrowserListItem::BrowserListItem(CefWnd *pCefWnd, QWidget *parent)
     , pCefWnd_(pCefWnd) {
   setupUi();
 
+  connect(pCefWnd, &CefWnd::cefWndVisibleChange, this, &BrowserListItem::onCefWndVisibleChanged);
+
   comboBoxUrl_->lineEdit()->setText(pCefWnd_->initUrl());
 }
 
@@ -14,6 +16,17 @@ BrowserListItem::~BrowserListItem() {}
 
 CefWnd *BrowserListItem::cefWnd() {
   return pCefWnd_;
+}
+
+void BrowserListItem::onCefWndVisibleChanged(bool bVisible) {
+  if (bVisible) {
+    pushButtonVisible_->setProperty("status", "visible");
+  }
+  else {
+    pushButtonVisible_->setProperty("status", "invisible");
+  }
+  this->style()->unpolish(pushButtonVisible_);
+  this->style()->polish(pushButtonVisible_);
 }
 
 void BrowserListItem::setupUi() {
@@ -26,6 +39,13 @@ void BrowserListItem::setupUi() {
   comboBoxUrl_->setEditable(true);
   comboBoxUrl_->addItems(getBuiltInUrl());
   comboBoxUrl_->setStyleSheet("font:normal normal 12px Arial;");
+
+  pushButtonVisible_ = new QPushButton();
+  pushButtonVisible_->setFixedSize(20, 20);
+  pushButtonVisible_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+  pushButtonVisible_->setStyleSheet(
+      "QPushButton[status=\"visible\"] {border: none;image: url(:/QCefWidgetTest/images/visible.svg);} QPushButton[status=\"invisible\"] {border: none;image: url(:/QCefWidgetTest/images/invisible.svg);}");
+  pushButtonVisible_->setProperty("status", "invisible");
 
   pushButtonInvokeJS_ = new QPushButton();
   pushButtonInvokeJS_->setFixedSize(18, 18);
@@ -55,6 +75,7 @@ void BrowserListItem::setupUi() {
 
   hlMain->addWidget(comboBoxUrl_);
   hlMain->addWidget(labelStatus_);
+  hlMain->addWidget(pushButtonVisible_);
   hlMain->addWidget(pushButtonInvokeJS_);
   hlMain->addWidget(pushButtonDevTools_);
   hlMain->addWidget(pushButtonClose_);
@@ -64,6 +85,15 @@ void BrowserListItem::setupUi() {
   connect(pushButtonClose_, &QPushButton::clicked, pCefWnd_, &CefWnd::close);
   connect(pushButtonDevTools_, &QPushButton::clicked, pCefWnd_, &CefWnd::onShowDevTools);
   connect(pushButtonInvokeJS_, &QPushButton::clicked, pCefWnd_, &CefWnd::onTriggerEvent);
+  connect(pushButtonVisible_, &QPushButton::clicked, [this]() {
+    QString strStatus = pushButtonVisible_->property("status").toString();
+    if (strStatus == "invisible") {
+      pCefWnd_->show();
+    }
+    else {
+      pCefWnd_->hide();
+    }
+  });
 
   connect(comboBoxUrl_->lineEdit(), &QLineEdit::returnPressed, [this]() {
     QString url = comboBoxUrl_->lineEdit()->text();

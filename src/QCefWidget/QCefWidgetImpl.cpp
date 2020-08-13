@@ -40,7 +40,7 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &u
 }
 
 QCefWidgetImpl::~QCefWidgetImpl() {
-  qDebug() << "QCefWidgetImpl::~QCefWidgetImpl";
+  qDebug() << "QCefWidgetImpl::~QCefWidgetImpl:" << this;
   ::DeleteObject(draggableRegion_);
   draggableRegion_ = nullptr;
 
@@ -214,7 +214,7 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 }
 
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
-  qDebug() << "QCefWidgetImpl::browserClosingNotify";
+  qDebug() << "QCefWidgetImpl::browserClosingNotify" << this;
   browserCreated_ = false;
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
@@ -222,7 +222,7 @@ void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
 }
 
 void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
-  qDebug() << "QCefWidgetImpl::browserDestoryedNotify";
+  qDebug() << "QCefWidgetImpl::browserDestoryedNotify:" << this;
   Q_ASSERT(!pCefUIEventWin_);
 
   QCefManager::getInstance().setBrowserClosed(pWidget_);
