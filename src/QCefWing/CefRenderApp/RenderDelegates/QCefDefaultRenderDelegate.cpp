@@ -2,7 +2,9 @@
 #include "QCefClient.h"
 
 namespace QCefDefaultRenderDelegate {
-void CreateBrowserDelegate(QCefRenderApp::RenderDelegateSet &delegates) { delegates.insert(new RenderDelegate()); }
+void CreateBrowserDelegate(QCefRenderApp::RenderDelegateSet& delegates) {
+  delegates.insert(new RenderDelegate());
+}
 
 RenderDelegate::RenderDelegate() {}
 
@@ -13,7 +15,10 @@ void RenderDelegate::OnWebKitInitialized(CefRefPtr<QCefRenderApp> app) {
   render_message_router_ = CefMessageRouterRendererSide::Create(config);
 }
 
-void RenderDelegate::OnContextCreated(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
+void RenderDelegate::OnContextCreated(CefRefPtr<QCefRenderApp> app,
+                                      CefRefPtr<CefBrowser> browser,
+                                      CefRefPtr<CefFrame> frame,
+                                      CefRefPtr<CefV8Context> context) {
   render_message_router_->OnContextCreated(browser, frame, context);
 
   int64 frameId = frame->GetIdentifier();
@@ -22,12 +27,16 @@ void RenderDelegate::OnContextCreated(CefRefPtr<QCefRenderApp> app, CefRefPtr<Ce
     // create and insert the QCefClient Object into this frame.window object
     CefRefPtr<CefV8Value> objWindow = context->GetGlobal();
     CefRefPtr<QCefClient> objClient = new QCefClient(browser, frame);
-    objWindow->SetValue(QCEF_OBJECT_NAME, objClient->GetObject(), V8_PROPERTY_ATTRIBUTE_READONLY);
+    objWindow->SetValue(
+      QCEF_OBJECT_NAME, objClient->GetObject(), V8_PROPERTY_ATTRIBUTE_READONLY);
     frame_id_to_client_map_[frameId] = objClient;
   }
 }
 
-void RenderDelegate::OnContextReleased(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefRefPtr<CefV8Context> context) {
+void RenderDelegate::OnContextReleased(CefRefPtr<QCefRenderApp> app,
+                                       CefRefPtr<CefBrowser> browser,
+                                       CefRefPtr<CefFrame> frame,
+                                       CefRefPtr<CefV8Context> context) {
   render_message_router_->OnContextReleased(browser, frame, context);
 
   int64 frameId = frame->GetIdentifier();
@@ -37,9 +46,14 @@ void RenderDelegate::OnContextReleased(CefRefPtr<QCefRenderApp> app, CefRefPtr<C
   }
 }
 
-bool RenderDelegate::OnProcessMessageReceived(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process,
-                                              CefRefPtr<CefProcessMessage> message) {
-  if (render_message_router_->OnProcessMessageReceived(browser, source_process, message)) {
+bool RenderDelegate::OnProcessMessageReceived(
+  CefRefPtr<QCefRenderApp> app,
+  CefRefPtr<CefBrowser> browser,
+  CefRefPtr<CefFrame> frame,
+  CefProcessId source_process,
+  CefRefPtr<CefProcessMessage> message) {
+  if (render_message_router_->OnProcessMessageReceived(
+        browser, source_process, message)) {
     return true;
   }
 
@@ -50,7 +64,11 @@ bool RenderDelegate::OnProcessMessageReceived(CefRefPtr<QCefRenderApp> app, CefR
   return false;
 }
 
-bool RenderDelegate::OnTriggerEventNotifyMessage(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) {
+bool RenderDelegate::OnTriggerEventNotifyMessage(
+  CefRefPtr<CefBrowser> browser,
+  CefRefPtr<CefFrame> frame,
+  CefProcessId source_process,
+  CefRefPtr<CefProcessMessage> message) {
   if (message->GetName() == TRIGGEREVENT_NOTIFY_MESSAGE) {
     CefRefPtr<CefListValue> messageArguments = message->GetArgumentList();
     if (messageArguments && (messageArguments->GetSize() >= 2)) {
@@ -59,7 +77,8 @@ bool RenderDelegate::OnTriggerEventNotifyMessage(CefRefPtr<CefBrowser> browser, 
         CefString eventName = messageArguments->GetString(idx++);
 
         if (CefValueType::VTYPE_DICTIONARY == messageArguments->GetType(idx)) {
-          CefRefPtr<CefDictionaryValue> dict = messageArguments->GetDictionary(idx++);
+          CefRefPtr<CefDictionaryValue> dict =
+            messageArguments->GetDictionary(idx++);
 
           ExecuteEventListener(browser, frame, eventName, dict);
           return true;
@@ -71,12 +90,15 @@ bool RenderDelegate::OnTriggerEventNotifyMessage(CefRefPtr<CefBrowser> browser, 
   return false;
 }
 
-void RenderDelegate::ExecuteEventListener(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString &name, CefRefPtr<CefDictionaryValue> dict) {
+void RenderDelegate::ExecuteEventListener(CefRefPtr<CefBrowser> browser,
+                                          CefRefPtr<CefFrame> frame,
+                                          const CefString& name,
+                                          CefRefPtr<CefDictionaryValue> dict) {
   if (browser && frame) {
     int64 frameId = frame->GetIdentifier();
     auto it = frame_id_to_client_map_.find(frameId);
     if (it != frame_id_to_client_map_.end()) {
-      const CefRefPtr<QCefClient> &objClient = it->second;
+      const CefRefPtr<QCefClient>& objClient = it->second;
       objClient->ExecuteEventListener(name, dict);
     }
   }

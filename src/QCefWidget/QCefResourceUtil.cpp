@@ -8,9 +8,13 @@
 #include "Include/QCefResourceProvider.h"
 
 namespace {
-bool loadBinaryResource(int binaryId, const QString &resourceType, DWORD &dwSize, LPBYTE &pBytes) {
+bool loadBinaryResource(int binaryId,
+                        const QString& resourceType,
+                        DWORD& dwSize,
+                        LPBYTE& pBytes) {
   HINSTANCE hInst = GetModuleHandle(NULL);
-  HRSRC hRes = FindResourceW(hInst, MAKEINTRESOURCE(binaryId), resourceType.toStdWString().c_str());
+  HRSRC hRes = FindResourceW(
+    hInst, MAKEINTRESOURCE(binaryId), resourceType.toStdWString().c_str());
   if (hRes) {
     HGLOBAL hGlob = LoadResource(hInst, hRes);
     if (hGlob) {
@@ -29,11 +33,13 @@ bool loadBinaryResource(int binaryId, const QString &resourceType, DWORD &dwSize
 // Provider of binary resources.
 class BinaryResourceProvider : public CefResourceManager::Provider {
 public:
-  BinaryResourceProvider(const std::string &urlPath, const std::string &resourcePathPrefix)
-      : urlPath_(urlPath)
-      , resourcePathPrefix_(resourcePathPrefix) {
+  BinaryResourceProvider(const std::string& urlPath,
+                         const std::string& resourcePathPrefix)
+    : urlPath_(urlPath)
+    , resourcePathPrefix_(resourcePathPrefix) {
     DCHECK(!urlPath.empty());
-    if (!resourcePathPrefix_.empty() && resourcePathPrefix_[resourcePathPrefix_.length() - 1] != '/') {
+    if (!resourcePathPrefix_.empty() &&
+        resourcePathPrefix_[resourcePathPrefix_.length() - 1] != '/') {
       resourcePathPrefix_ += "/";
     }
   }
@@ -41,7 +47,7 @@ public:
   bool OnRequest(scoped_refptr<CefResourceManager::Request> request) OVERRIDE {
     CEF_REQUIRE_IO_THREAD();
 
-    const std::string &url = request->url();
+    const std::string& url = request->url();
     if (url.find(urlPath_) != 0L) {
       // Not handled by this provider.
       return false;
@@ -54,9 +60,11 @@ public:
       if (!resourcePathPrefix_.empty())
         relative_path = resourcePathPrefix_ + relative_path;
 
-      CefRefPtr<CefStreamReader> stream = GetBinaryResourceReader(relative_path.data());
+      CefRefPtr<CefStreamReader> stream =
+        GetBinaryResourceReader(relative_path.data());
       if (stream.get()) {
-        handler = new CefStreamResourceHandler(request->mime_type_resolver().Run(url), stream);
+        handler = new CefStreamResourceHandler(
+          request->mime_type_resolver().Run(url), stream);
       }
     }
 
@@ -72,10 +80,10 @@ private:
 };
 
 
-
-bool getResourceId(const QString &resourceName, QPair<int, QString> &rcInfo) {
+bool getResourceId(const QString& resourceName, QPair<int, QString>& rcInfo) {
   QCefGlobalSetting::initializeInstance();
-  QMap<QString, QPair<int, QString>> resourceMap = QCefGlobalSetting::resource_map;
+  QMap<QString, QPair<int, QString>> resourceMap =
+    QCefGlobalSetting::resource_map;
 
   if (resourceMap.contains(resourceName)) {
     rcInfo = resourceMap[resourceName];
@@ -85,7 +93,7 @@ bool getResourceId(const QString &resourceName, QPair<int, QString> &rcInfo) {
 }
 } // namespace
 
-bool loadBinaryResource(const char *resourceName, std::string &resourceData) {
+bool loadBinaryResource(const char* resourceName, std::string& resourceData) {
   QPair<int, QString> rcInfo;
   if (!getResourceId(resourceName, rcInfo))
     return false;
@@ -94,7 +102,7 @@ bool loadBinaryResource(const char *resourceName, std::string &resourceData) {
   LPBYTE pBytes = NULL;
 
   if (loadBinaryResource(rcInfo.first, rcInfo.second, dwSize, pBytes)) {
-    resourceData = std::string(reinterpret_cast<char *>(pBytes), dwSize);
+    resourceData = std::string(reinterpret_cast<char*>(pBytes), dwSize);
     return true;
   }
 
@@ -102,7 +110,7 @@ bool loadBinaryResource(const char *resourceName, std::string &resourceData) {
   return false;
 }
 
-CefRefPtr<CefStreamReader> GetBinaryResourceReader(const char *resourceName) {
+CefRefPtr<CefStreamReader> GetBinaryResourceReader(const char* resourceName) {
   QPair<int, QString> rcInfo;
   if (!getResourceId(resourceName, rcInfo))
     return NULL;
@@ -111,18 +119,22 @@ CefRefPtr<CefStreamReader> GetBinaryResourceReader(const char *resourceName) {
   LPBYTE pBytes;
 
   if (loadBinaryResource(rcInfo.first, rcInfo.second, dwSize, pBytes)) {
-    return CefStreamReader::CreateForHandler(new CefByteReadHandler(pBytes, dwSize, NULL));
+    return CefStreamReader::CreateForHandler(
+      new CefByteReadHandler(pBytes, dwSize, NULL));
   }
 
   NOTREACHED(); // The resource should be found.
   return NULL;
 }
 
-CefResourceManager::Provider *CreateBinaryResourceProvider(const std::string &urlPath, const std::string &resourcePathPrefix) {
+CefResourceManager::Provider*
+CreateBinaryResourceProvider(const std::string& urlPath,
+                             const std::string& resourcePathPrefix) {
   return new BinaryResourceProvider(urlPath, resourcePathPrefix);
 }
 
-bool CustomResourceProvider::OnRequest(scoped_refptr<CefResourceManager::Request> request) {
+bool CustomResourceProvider::OnRequest(
+  scoped_refptr<CefResourceManager::Request> request) {
   CEF_REQUIRE_IO_THREAD();
   if (!provider_)
     return false;
@@ -134,9 +146,13 @@ bool CustomResourceProvider::OnRequest(scoped_refptr<CefResourceManager::Request
 
   CefRefPtr<CefResourceHandler> handler;
 
-  CefRefPtr<CefStreamReader> stream = CefStreamReader::CreateForHandler(new CefByteReadHandler((const unsigned char *)owner->buffer.constData(), (size_t)owner->buffer.size(), owner));
+  CefRefPtr<CefStreamReader> stream = CefStreamReader::CreateForHandler(
+    new CefByteReadHandler((const unsigned char*)owner->buffer.constData(),
+                           (size_t)owner->buffer.size(),
+                           owner));
   if (stream.get()) {
-    handler = new CefStreamResourceHandler(request->mime_type_resolver().Run(request->url()), stream);
+    handler = new CefStreamResourceHandler(
+      request->mime_type_resolver().Run(request->url()), stream);
   }
 
   request->Continue(handler);

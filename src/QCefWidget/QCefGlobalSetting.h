@@ -27,6 +27,7 @@ public:
   static bool gpu_enabled;
   static bool osr_enabled;
   static QMap<QString, QPair<int, QString>> resource_map;
+
 protected:
   QCefGlobalSetting();
   ~QCefGlobalSetting();

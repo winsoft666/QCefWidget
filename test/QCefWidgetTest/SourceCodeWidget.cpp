@@ -6,16 +6,19 @@
 #include <QFile>
 #include <QIcon>
 
-SourceCodeWidget::SourceCodeWidget(QWidget *parent)
-    : QDialog(parent, Qt::WindowSystemMenuHint | Qt::WindowTitleHint | Qt::WindowCloseButtonHint)
-    , reply_(nullptr) {
+SourceCodeWidget::SourceCodeWidget(QWidget* parent)
+  : QDialog(parent,
+            Qt::WindowSystemMenuHint | Qt::WindowTitleHint |
+              Qt::WindowCloseButtonHint)
+  , reply_(nullptr) {
   this->setWindowIcon(QIcon(":/QCefWidgetTest/images/weixin.svg"));
   setAttribute(Qt::WA_DeleteOnClose, true);
   setWindowTitle("Get source code");
 
   weiXinQRCodeWidget_ = new QWidget();
   weiXinQRCodeWidget_->setObjectName("weiXinQRCodeWidget");
-  weiXinQRCodeWidget_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  weiXinQRCodeWidget_->setSizePolicy(QSizePolicy::Expanding,
+                                     QSizePolicy::Expanding);
 
   QHBoxLayout* hlEmail = new QHBoxLayout();
   hlEmail->addWidget(new QLabel("Email:  "));
@@ -25,7 +28,7 @@ SourceCodeWidget::SourceCodeWidget(QWidget *parent)
   lineEditEmail_->setStyleSheet("border:none;");
   hlEmail->addWidget(lineEditEmail_);
 
-  QHBoxLayout *hlGithub = new QHBoxLayout();
+  QHBoxLayout* hlGithub = new QHBoxLayout();
   hlGithub->addWidget(new QLabel("Github: "));
   lineEditGithub_ = new QLineEdit("https://github.com/winsoft666");
   lineEditGithub_->setReadOnly(true);
@@ -33,7 +36,7 @@ SourceCodeWidget::SourceCodeWidget(QWidget *parent)
   lineEditGithub_->setStyleSheet("border:none;");
   hlGithub->addWidget(lineEditGithub_);
 
-  QHBoxLayout *hlGitee = new QHBoxLayout();
+  QHBoxLayout* hlGitee = new QHBoxLayout();
   hlGitee->addWidget(new QLabel("Gitee:  "));
   lineEditGitee_ = new QLineEdit("https://gitee.com/china_jeffery");
   lineEditGitee_->setReadOnly(true);
@@ -59,23 +62,29 @@ SourceCodeWidget::SourceCodeWidget(QWidget *parent)
 
   QString weiXinImgSrc = QCoreApplication::applicationDirPath() + "/weixin.jpg";
 
-  connect(manager_, &QNetworkAccessManager::finished, this, [this, weiXinImgSrc](QNetworkReply *reply) {
-    if (reply->error() == QNetworkReply::NoError) {
-      QFile f(weiXinImgSrc);
-      f.open(QFile::WriteOnly);
-      if (f.isOpen()) {
-        f.write(reply->readAll());
-        f.close();
-        weiXinQRCodeWidget_->setStyleSheet(QString("QWidget{image: url(%1);}").arg(weiXinImgSrc));
-      }
-    }
-  });
-  
+  connect(manager_,
+          &QNetworkAccessManager::finished,
+          this,
+          [this, weiXinImgSrc](QNetworkReply* reply) {
+            if (reply->error() == QNetworkReply::NoError) {
+              QFile f(weiXinImgSrc);
+              f.open(QFile::WriteOnly);
+              if (f.isOpen()) {
+                f.write(reply->readAll());
+                f.close();
+                weiXinQRCodeWidget_->setStyleSheet(
+                  QString("QWidget{image: url(%1);}").arg(weiXinImgSrc));
+              }
+            }
+          });
+
   if (QFile::exists(weiXinImgSrc)) {
-    weiXinQRCodeWidget_->setStyleSheet(QString("QWidget{image: url(%1);}").arg(weiXinImgSrc));
+    weiXinQRCodeWidget_->setStyleSheet(
+      QString("QWidget{image: url(%1);}").arg(weiXinImgSrc));
   }
   else {
-    reply_ = manager_->get(QNetworkRequest(QString("https://gitee.com/china_jeffery/myprofile/raw/master/weixin.jpg")));
+    reply_ = manager_->get(QNetworkRequest(QString(
+      "https://gitee.com/china_jeffery/myprofile/raw/master/weixin.jpg")));
   }
 }
 

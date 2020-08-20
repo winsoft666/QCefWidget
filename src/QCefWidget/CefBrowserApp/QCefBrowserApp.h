@@ -14,14 +14,18 @@ private:
 
   //////////////////////////////////////////////////////////////////////////
   // CefApp methods:
-  virtual void OnBeforeCommandLineProcessing(const CefString &process_type,
-                                             CefRefPtr<CefCommandLine> command_line) override;
+  virtual void OnBeforeCommandLineProcessing(
+    const CefString& process_type,
+    CefRefPtr<CefCommandLine> command_line) override;
 
-  virtual void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
+  virtual void
+  OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
 
-  virtual CefRefPtr<CefResourceBundleHandler> GetResourceBundleHandler() override;
+  virtual CefRefPtr<CefResourceBundleHandler>
+  GetResourceBundleHandler() override;
 
-  virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;
+  virtual CefRefPtr<CefBrowserProcessHandler>
+  GetBrowserProcessHandler() override;
 
   virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
 
@@ -32,9 +36,11 @@ private:
   // CefBrowserProcessHandler methods:
   virtual void OnContextInitialized() override;
 
-  virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
+  virtual void
+  OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
 
-  virtual void OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extra_info) override;
+  virtual void
+  OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extra_info) override;
 
   virtual CefRefPtr<CefPrintHandler> GetPrintHandler() override;
 

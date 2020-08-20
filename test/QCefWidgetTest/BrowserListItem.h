@@ -11,6 +11,7 @@ public:
 
 protected slots:
   void onCefWndVisibleChanged(bool bVisible);
+
 protected:
   void setupUi();
 

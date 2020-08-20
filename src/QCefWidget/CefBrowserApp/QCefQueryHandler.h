@@ -9,19 +9,28 @@
 
 class QCefWidgetImpl;
 
-class QCefQueryHandler : public CefBaseRefCounted, public CefMessageRouterBrowserSide::Handler {
+class QCefQueryHandler : public CefBaseRefCounted,
+                         public CefMessageRouterBrowserSide::Handler {
 public:
-  QCefQueryHandler(QCefWidgetImpl *pImpl);
+  QCefQueryHandler(QCefWidgetImpl* pImpl);
   ~QCefQueryHandler();
 
-  virtual bool OnQuery(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id, const CefString &request, bool persistent, CefRefPtr<Callback> callback) override;
+  virtual bool OnQuery(CefRefPtr<CefBrowser> browser,
+                       CefRefPtr<CefFrame> frame,
+                       int64 query_id,
+                       const CefString& request,
+                       bool persistent,
+                       CefRefPtr<Callback> callback) override;
 
-  virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int64 query_id) override;
+  virtual void OnQueryCanceled(CefRefPtr<CefBrowser> browser,
+                               CefRefPtr<CefFrame> frame,
+                               int64 query_id) override;
 
-  bool Response(int64_t query, bool success, const CefString &response, int error);
+  bool
+  Response(int64_t query, bool success, const CefString& response, int error);
 
 private:
-  QCefWidgetImpl *pCefImpl_;
+  QCefWidgetImpl* pCefImpl_;
   std::map<int64, CefRefPtr<Callback>> mapCallback_;
   std::mutex mtxCallbackMap_;
 

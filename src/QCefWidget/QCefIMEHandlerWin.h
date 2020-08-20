@@ -19,7 +19,9 @@ public:
   virtual ~QCefIMEHandlerWin();
 
   // Retrieves whether or not there is an ongoing composition.
-  bool is_composing() const { return is_composing_; }
+  bool is_composing() const {
+    return is_composing_;
+  }
 
   // Retrieves the input language from Windows and update it.
   void SetInputLanguage();
@@ -38,13 +40,15 @@ public:
   void ResetComposition();
 
   // Retrieves a composition result of the ongoing composition if it exists.
-  bool GetResult(LPARAM lparam, CefString &result);
+  bool GetResult(LPARAM lparam, CefString& result);
 
   // Retrieves the current composition status of the ongoing composition.
   // Includes composition text, underline information and selection range in the
   // composition text. IMM32 does not support char selection.
-  bool GetComposition(LPARAM lparam, CefString &composition_text,
-                      std::vector<CefCompositionUnderline> &underlines, int &composition_start);
+  bool GetComposition(LPARAM lparam,
+                      CefString& composition_text,
+                      std::vector<CefCompositionUnderline>& underlines,
+                      int& composition_start);
 
   // Enables the IME attached to the given window.
   virtual void EnableIME();
@@ -61,19 +65,22 @@ public:
   // Updates the composition range. |selected_range| is the range of characters
   // that have been selected. |character_bounds| is the bounds of each character
   // in view device coordinates.
-  void ChangeCompositionRange(const CefRange &selection_range,
-                              const std::vector<CefRect> &character_bounds);
+  void ChangeCompositionRange(const CefRange& selection_range,
+                              const std::vector<CefRect>& character_bounds);
 
   // Updates the position of the IME windows.
   void MoveImeWindow();
 
 private:
   // Retrieves the composition information.
-  void GetCompositionInfo(HIMC imm_context, LPARAM lparam, CefString &composition_text,
-                          std::vector<CefCompositionUnderline> &underlines, int &composition_start);
+  void GetCompositionInfo(HIMC imm_context,
+                          LPARAM lparam,
+                          CefString& composition_text,
+                          std::vector<CefCompositionUnderline>& underlines,
+                          int& composition_start);
 
   // Retrieves a string from the IMM.
-  bool GetString(HIMC imm_context, WPARAM lparam, int type, CefString &result);
+  bool GetString(HIMC imm_context, WPARAM lparam, int type, CefString& result);
 
   // Represents whether or not there is an ongoing composition.
   bool is_composing_;

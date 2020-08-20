@@ -10,7 +10,9 @@
 
 class QCefWidgetUIEventHandlerWin {
 public:
-  QCefWidgetUIEventHandlerWin(HWND h, CefRefPtr<CefBrowser> pCefBrowser, CefRefPtr<QCefBrowserHandler> pBrowserHandler);
+  QCefWidgetUIEventHandlerWin(HWND h,
+                              CefRefPtr<CefBrowser> pCefBrowser,
+                              CefRefPtr<QCefBrowserHandler> pBrowserHandler);
   ~QCefWidgetUIEventHandlerWin();
 
   void OnSize(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
@@ -20,16 +22,20 @@ public:
   void OnTouchEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
   void OnFocusEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
   void OnIMEEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-  void OnCaptureLostEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+  void
+  OnCaptureLostEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
-  void OnImeCompositionRangeChanged(CefRefPtr<CefBrowser> browser, const CefRange &selection_range,
-                                    const CefRenderHandler::RectList &character_bounds);
+  void OnImeCompositionRangeChanged(
+    CefRefPtr<CefBrowser> browser,
+    const CefRange& selection_range,
+    const CefRenderHandler::RectList& character_bounds);
 
   void setDeviceScaleFactor(float factor);
   bool IsOverPopupWidget(int x, int y) const;
   int GetPopupXOffset() const;
   int GetPopupYOffset() const;
-  void ApplyPopupOffset(int &x, int &y) const;
+  void ApplyPopupOffset(int& x, int& y) const;
+
 private:
   bool IsKeyDown(WPARAM wParam);
   int GetCefMouseModifiers(WPARAM wParam);

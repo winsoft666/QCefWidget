@@ -35,7 +35,7 @@ class QCefClient : public CefBaseRefCounted {
   typedef std::map<CefString, std::list<EventListener>> EventListenerListMap;
 
   class V8Handler : public CefV8Handler {
-   public:
+  public:
     V8Handler(CefRefPtr<CefBrowser> browser,
               CefRefPtr<CefFrame> frame,
               QCefClient::EventListenerListMap& eventListenerListMap);
@@ -46,7 +46,7 @@ class QCefClient : public CefBaseRefCounted {
                          CefRefPtr<CefV8Value>& retval,
                          CefString& exception) override;
 
-   protected:
+  protected:
     void ExecuteInvokeMethod(const CefString& function,
                              CefRefPtr<CefV8Value> object,
                              const CefV8ValueList& arguments,
@@ -65,16 +65,16 @@ class QCefClient : public CefBaseRefCounted {
                                     CefRefPtr<CefV8Value>& retval,
                                     CefString& exception);
 
-   private:
+  private:
     CefRefPtr<CefBrowser> browser_;
     CefRefPtr<CefFrame> frame_;
     QCefClient::EventListenerListMap& eventListenerListMap_;
 
-   private:
+  private:
     IMPLEMENT_REFCOUNTING(V8Handler);
   };
 
- public:
+public:
   QCefClient(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame);
 
   CefRefPtr<CefV8Value> GetObject();
@@ -82,7 +82,7 @@ class QCefClient : public CefBaseRefCounted {
   void ExecuteEventListener(const CefString eventName,
                             CefRefPtr<CefDictionaryValue> dict);
 
- private:
+private:
   CefRefPtr<CefV8Value> object_;
 
   CefRefPtr<CefBrowser> browser_;
@@ -91,6 +91,6 @@ class QCefClient : public CefBaseRefCounted {
 
   EventListenerListMap eventListenerListMap_;
 
- private:
+private:
   IMPLEMENT_REFCOUNTING(QCefClient);
 };

@@ -10,21 +10,24 @@ class QDashboardWidget;
 class TestWnd : public QWidget {
   Q_OBJECT
 public:
-  TestWnd(QWidget *parent = 0);
+  TestWnd(QWidget* parent = 0);
   ~TestWnd();
+
 protected:
   void setupUi();
-  void closeEvent(QCloseEvent *event) override;
+  void closeEvent(QCloseEvent* event) override;
   QSize sizeHint() const override;
 private slots:
   void onPushButtonNewBrowserClicked();
   void onPushButtonGetSourceCodeClicked();
   void onPushButtonQuickSettingForIrregularWndClicked();
   void onPushButtonQuickSettingForElectronClicked();
-  void onCefWndDestroyed(QObject *obj);
+  void onCefWndDestroyed(QObject* obj);
+
 private:
   bool stringToColor(QString s, QColor& c);
   void systemPerformanceMonitor();
+
 private:
   QLineEdit* lineEditInitSize_;
   QLineEdit* lineEditFPS_;
@@ -47,7 +50,7 @@ private:
   QPushButton* pushButtonClose_;
   QPushButton* pushButtonNewBrowser_;
   QPushButton* pushButtonQuickSettingForIrregularWnd_;
-  QPushButton *pushButtonQuickSettingForElectron_;
+  QPushButton* pushButtonQuickSettingForElectron_;
 
 
   QListWidget* listBrowser_;
@@ -56,8 +59,8 @@ private:
 
   QDashboardWidget* dashboardWidgetMainProcCPU_;
   QDashboardWidget* dashboardWidgetMainProcMemory_;
-  QDashboardWidget *dashboardWidgetRenderProcCPU_;
-  QDashboardWidget *dashboardWidgetRenderProcMemory_;
+  QDashboardWidget* dashboardWidgetRenderProcCPU_;
+  QDashboardWidget* dashboardWidgetRenderProcMemory_;
   QTimer performanceTimer_;
 
   HQUERY query_;

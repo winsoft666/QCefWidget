@@ -4,24 +4,29 @@
 #include "QCefManager.h"
 #include <QDebug>
 
-QCefDevToolsWnd::QCefDevToolsWnd(CefRefPtr<CefBrowser> targetBrowser, QWidget *parent /*= nullptr*/)
-    : cefWidget_(nullptr)
-    , targetBrowser_(targetBrowser) {
+QCefDevToolsWnd::QCefDevToolsWnd(CefRefPtr<CefBrowser> targetBrowser,
+                                 QWidget* parent /*= nullptr*/)
+  : cefWidget_(nullptr)
+  , targetBrowser_(targetBrowser) {
   setAttribute(Qt::WA_DeleteOnClose, true);
   setupUi();
 
-  cefWidget_->setStyleSheet(QString("QWidget {background-color: rgba(255,255,255,1);}"));
+  cefWidget_->setStyleSheet(
+    QString("QWidget {background-color: rgba(255,255,255,1);}"));
 
   if (targetBrowser_) {
-    QString str = QString::fromStdWString(targetBrowser_->GetMainFrame()->GetURL().ToWString());
+    QString str = QString::fromStdWString(
+      targetBrowser_->GetMainFrame()->GetURL().ToWString());
     setWindowTitle(QString("[DevTools] %1").arg(str));
     cefWidget_->pImpl_->createDevTools(targetBrowser_);
   }
 }
 
-QCefDevToolsWnd::~QCefDevToolsWnd() { qDebug() << "QCefDevToolsWnd::~QCefDevToolsWnd"; }
+QCefDevToolsWnd::~QCefDevToolsWnd() {
+  qDebug() << "QCefDevToolsWnd::~QCefDevToolsWnd";
+}
 
-void QCefDevToolsWnd::closeEvent(QCloseEvent *event) {
+void QCefDevToolsWnd::closeEvent(QCloseEvent* event) {
   QCefManager::getInstance().devToolsClosedNotify(this);
   event->accept();
 }

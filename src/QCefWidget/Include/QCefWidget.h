@@ -27,10 +27,10 @@ class QCefDevToolsWnd;
 class QCEFWIDGET_EXPORT QCefWidget : public QWidget {
   Q_OBJECT
 public:
-  QCefWidget(const QString &url = "", QWidget *parent = nullptr);
+  QCefWidget(const QString& url = "", QWidget* parent = nullptr);
   virtual ~QCefWidget();
 
-  virtual void navigateToUrl(const QString &url);
+  virtual void navigateToUrl(const QString& url);
 
   virtual bool canGoBack();
   virtual bool canGoForward();
@@ -41,13 +41,13 @@ public:
   virtual void reloadBrowser(bool bIgnoreCache);
   virtual void stopLoadBrowser();
 
-  virtual bool triggerEvent(const QString &name, const QCefEvent &event);
+  virtual bool triggerEvent(const QString& name, const QCefEvent& event);
 
   // When received cefQueryRequest signal notify, can call this function to response.
   //
-  virtual bool responseCefQuery(const QCefQuery &query);
+  virtual bool responseCefQuery(const QCefQuery& query);
 
-  virtual void executeJavascript(const QString &javascript);
+  virtual void executeJavascript(const QString& javascript);
 
   // Must be set before browser created, otherwise return false.
   // OSR is enabled by default.
@@ -72,31 +72,41 @@ public:
   virtual void setFPS(int fps);
   virtual int fps() const;
 
-  virtual void setBrowserBackgroundColor(const QColor &color);
+  virtual void setBrowserBackgroundColor(const QColor& color);
   virtual QColor browserBackgroundColor() const;
 
   virtual void showDevTools();
   virtual void closeDevTools();
 
-  virtual bool addResourceProvider(QCefResourceProvider* provider, const QString &identifier);
-  virtual bool removeResourceProvider(const QString &identifier);
+  virtual bool addResourceProvider(QCefResourceProvider* provider,
+                                   const QString& identifier);
+  virtual bool removeResourceProvider(const QString& identifier);
   virtual bool removeAllResourceProvider();
 signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);
-  void urlChanged(bool isMainFrame, const QString &url);
+  void urlChanged(bool isMainFrame, const QString& url);
   void loadStart(bool isMainFrame);
   void loadEnd(bool isMainFrame, int httpStatusCode);
-  void loadError(bool isMainFrame, int errorCode, const QString &errorMsg, const QString &failedUrl);
+  void loadError(bool isMainFrame,
+                 int errorCode,
+                 const QString& errorMsg,
+                 const QString& failedUrl);
   void renderProcessTerminated(int status);
-  void cefQueryRequest(const QCefQuery &query);
-  void invokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
+  void cefQueryRequest(const QCefQuery& query);
+  void invokeMethodNotify(int browserId,
+                          int frameId,
+                          const QString& method,
+                          const QVariantList& arguments);
+
 protected:
-  bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
-  void showEvent(QShowEvent *event) override;
-  void hideEvent(QHideEvent *event) override;
-  bool event(QEvent *event) override;
-  void paintEvent(QPaintEvent *event) override;
+  bool nativeEvent(const QByteArray& eventType,
+                   void* message,
+                   long* result) override;
+  void showEvent(QShowEvent* event) override;
+  void hideEvent(QHideEvent* event) override;
+  bool event(QEvent* event) override;
+  void paintEvent(QPaintEvent* event) override;
 
   std::shared_ptr<QCefWidgetImpl> pImpl_;
   friend QCefDevToolsWnd;

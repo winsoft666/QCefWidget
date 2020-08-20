@@ -22,7 +22,9 @@ bool QCefGlobalSetting::gpu_enabled = true;
 bool QCefGlobalSetting::osr_enabled = true;
 QMap<QString, QPair<int, QString>> QCefGlobalSetting::resource_map;
 
-void QCefGlobalSetting::initializeInstance() { static QCefGlobalSetting s_instance; }
+void QCefGlobalSetting::initializeInstance() {
+  static QCefGlobalSetting s_instance;
+}
 
 QCefGlobalSetting::QCefGlobalSetting() {
   QDir exeDir = QCoreApplication::applicationDirPath();
@@ -31,14 +33,17 @@ QCefGlobalSetting::QCefGlobalSetting() {
   cache_path.FromWString(QDir::toNativeSeparators(strCachePath).toStdWString());
 
   QString strExePath = exeDir.filePath(RENDER_PROCESS_NAME);
-  browser_sub_process_path.FromWString(QDir::toNativeSeparators(strExePath).toStdWString());
+  browser_sub_process_path.FromWString(
+    QDir::toNativeSeparators(strExePath).toStdWString());
 
   QString strResPath = exeDir.filePath(RESOURCE_DIRECTORY_NAME);
-  resource_directory_path.FromWString(QDir::toNativeSeparators(strResPath).toStdWString());
+  resource_directory_path.FromWString(
+    QDir::toNativeSeparators(strResPath).toStdWString());
 
   QDir ResPath(strResPath);
   locales_directory_path.FromWString(
-      QDir::toNativeSeparators(ResPath.filePath(LOCALES_DIRECTORY_NAME)).toStdWString());
+    QDir::toNativeSeparators(ResPath.filePath(LOCALES_DIRECTORY_NAME))
+      .toStdWString());
 
   user_agent.FromString(QCEF_USER_AGENT);
 
@@ -46,7 +51,8 @@ QCefGlobalSetting::QCefGlobalSetting() {
   locale.FromWString(L"zh-CN");
 
   QString debugLogPath = exeDir.filePath(DEBUG_LOG_NAME);
-  debug_log_path.FromWString(QDir::toNativeSeparators(debugLogPath).toStdWString());
+  debug_log_path.FromWString(
+    QDir::toNativeSeparators(debugLogPath).toStdWString());
 }
 
 QCefGlobalSetting::~QCefGlobalSetting() {}

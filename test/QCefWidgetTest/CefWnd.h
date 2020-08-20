@@ -11,7 +11,7 @@ class QCefOpenGLWidget;
 class CefWnd : public QWidget {
   Q_OBJECT
 public:
-  CefWnd(QWidget *parent = nullptr);
+  CefWnd(QWidget* parent = nullptr);
   virtual ~CefWnd();
 
   void setupUi();
@@ -54,18 +54,23 @@ public:
 
 signals:
   void cefWndVisibleChange(bool bVisible);
+
 protected:
   QSize sizeHint() const override;
-  void showEvent(QShowEvent *event) override;
-  void hideEvent(QHideEvent *event) override;
-public slots :
+  void showEvent(QShowEvent* event) override;
+  void hideEvent(QHideEvent* event) override;
+public slots:
   virtual void onNavigateToUrl(QString url);
   virtual void onReload();
   virtual void onShowDevTools();
   virtual void onCloseDevTools();
-  virtual void onInvokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
+  virtual void onInvokeMethodNotify(int browserId,
+                                    int frameId,
+                                    const QString& method,
+                                    const QVariantList& arguments);
   virtual void onTriggerEvent();
-  virtual void onCefQueryRequest(const QCefQuery &query);
+  virtual void onCefQueryRequest(const QCefQuery& query);
+
 protected:
   bool usingGLWidget_;
   bool framelessWindow_;
@@ -80,6 +85,6 @@ protected:
   bool osrEnabled_;
   int maximumFps_;
 
-  QCefWidget *pCefWidget_;
-  QCefOpenGLWidget *pCefGLWidget_;
+  QCefWidget* pCefWidget_;
+  QCefOpenGLWidget* pCefGLWidget_;
 };

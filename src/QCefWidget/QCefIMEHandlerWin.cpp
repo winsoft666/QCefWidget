@@ -7,27 +7,31 @@
 #include "include/base/cef_build.h"
 
 #define ColorUNDERLINE 0xFF000000 // Black SkColor value for underline,
-#define ColorBKCOLOR 0x00000000 // White SkColor value for background,
+#define ColorBKCOLOR 0x00000000   // White SkColor value for background,
 
 
 namespace {
 
 // Determines whether or not the given attribute represents a selection
 bool IsSelectionAttribute(char attribute) {
-  return (attribute == ATTR_TARGET_CONVERTED || attribute == ATTR_TARGET_NOTCONVERTED);
+  return (attribute == ATTR_TARGET_CONVERTED ||
+          attribute == ATTR_TARGET_NOTCONVERTED);
 }
 
 // Helper function for OsrImeHandlerWin::GetCompositionInfo() method,
 // to get the target range that's selected by the user in the current
 // composition string.
-void GetCompositionSelectionRange(HIMC imc, int *target_start, int *target_end) {
+void GetCompositionSelectionRange(HIMC imc,
+                                  int* target_start,
+                                  int* target_end) {
   int attribute_size = ::ImmGetCompositionString(imc, GCS_COMPATTR, NULL, 0);
   if (attribute_size > 0) {
     int start = 0;
     int end = 0;
     std::vector<char> attribute_data(attribute_size);
 
-    ::ImmGetCompositionString(imc, GCS_COMPATTR, &attribute_data[0], attribute_size);
+    ::ImmGetCompositionString(
+      imc, GCS_COMPATTR, &attribute_data[0], attribute_size);
     for (start = 0; start < attribute_size; ++start) {
       if (IsSelectionAttribute(attribute_data[start]))
         break;
@@ -44,14 +48,18 @@ void GetCompositionSelectionRange(HIMC imc, int *target_start, int *target_end) 
 
 // Helper function for OsrImeHandlerWin::GetCompositionInfo() method, to get
 // underlines information of the current composition string.
-void GetCompositionUnderlines(HIMC imc, int target_start, int target_end,
-                              std::vector<CefCompositionUnderline> &underlines) {
+void GetCompositionUnderlines(
+  HIMC imc,
+  int target_start,
+  int target_end,
+  std::vector<CefCompositionUnderline>& underlines) {
   int clause_size = ::ImmGetCompositionString(imc, GCS_COMPCLAUSE, NULL, 0);
   int clause_length = clause_size / sizeof(uint32);
   if (clause_length) {
     std::vector<uint32> clause_data(clause_length);
 
-    ::ImmGetCompositionString(imc, GCS_COMPCLAUSE, &clause_data[0], clause_size);
+    ::ImmGetCompositionString(
+      imc, GCS_COMPCLAUSE, &clause_data[0], clause_size);
     for (int i = 0; i < clause_length - 1; ++i) {
       cef_composition_underline_t underline;
       underline.range.from = clause_data[i];
@@ -61,7 +69,8 @@ void GetCompositionUnderlines(HIMC imc, int target_start, int target_end,
       underline.thick = 0;
 
       // Use thick underline for the target clause.
-      if (underline.range.from >= target_start && underline.range.to <= target_end) {
+      if (underline.range.from >= target_start &&
+          underline.range.to <= target_end) {
         underline.thick = 1;
       }
       underlines.push_back(underline);
@@ -72,15 +81,17 @@ void GetCompositionUnderlines(HIMC imc, int target_start, int target_end,
 } // namespace
 
 QCefIMEHandlerWin::QCefIMEHandlerWin(HWND hwnd)
-    : is_composing_(false)
-    , input_language_id_(LANG_USER_DEFAULT)
-    , system_caret_(false)
-    , cursor_index_(-1)
-    , hwnd_(hwnd) {
+  : is_composing_(false)
+  , input_language_id_(LANG_USER_DEFAULT)
+  , system_caret_(false)
+  , cursor_index_(-1)
+  , hwnd_(hwnd) {
   ime_rect_ = {-1, -1, 0, 0};
 }
 
-QCefIMEHandlerWin::~QCefIMEHandlerWin() { DestroyImeWindow(); }
+QCefIMEHandlerWin::~QCefIMEHandlerWin() {
+  DestroyImeWindow();
+}
 
 void QCefIMEHandlerWin::SetInputLanguage() {
   // Retrieve the current input language from the system's keyboard layout.
@@ -91,7 +102,8 @@ void QCefIMEHandlerWin::SetInputLanguage() {
   // See crbug.com/344834.
   WCHAR keyboard_layout[KL_NAMELENGTH];
   if (::GetKeyboardLayoutNameW(keyboard_layout)) {
-    input_language_id_ = static_cast<LANGID>(_wtoi(&keyboard_layout[KL_NAMELENGTH >> 1]));
+    input_language_id_ =
+      static_cast<LANGID>(_wtoi(&keyboard_layout[KL_NAMELENGTH >> 1]));
   }
   else {
     input_language_id_ = 0x0409; // Fallback to en-US.
@@ -158,7 +170,8 @@ void QCefIMEHandlerWin::MoveImeWindow() {
       // parameter CFS_CANDIDATEPOS.
       // Therefore, we do not only call ::ImmSetCandidateWindow() but also
       // set the positions of the temporary system caret if it exists.
-      CANDIDATEFORM candidate_position = {0, CFS_CANDIDATEPOS, {rc.x, rc.y}, {0, 0, 0, 0}};
+      CANDIDATEFORM candidate_position = {
+        0, CFS_CANDIDATEPOS, {rc.x, rc.y}, {0, 0, 0, 0}};
       ::ImmSetCandidateWindow(imc, &candidate_position);
     }
     if (system_caret_) {
@@ -182,7 +195,10 @@ void QCefIMEHandlerWin::MoveImeWindow() {
     // ::ImmSetCandidateWindow() with its 'dwStyle' parameter CFS_EXCLUDE
     // Therefore, we also set this parameter here.
     CANDIDATEFORM exclude_rectangle = {
-        0, CFS_EXCLUDE, {rc.x, rc.y}, {rc.x, rc.y, rc.x + rc.width, rc.y + rc.height}};
+      0,
+      CFS_EXCLUDE,
+      {rc.x, rc.y},
+      {rc.x, rc.y, rc.x + rc.width, rc.y + rc.height}};
     ::ImmSetCandidateWindow(imc, &exclude_rectangle);
 
     ::ImmReleaseContext(hwnd_, imc);
@@ -209,9 +225,12 @@ void QCefIMEHandlerWin::ResetComposition() {
   cursor_index_ = -1;
 }
 
-void QCefIMEHandlerWin::GetCompositionInfo(HIMC imc, LPARAM lparam, CefString &composition_text,
-                                       std::vector<CefCompositionUnderline> &underlines,
-                                       int &composition_start) {
+void QCefIMEHandlerWin::GetCompositionInfo(
+  HIMC imc,
+  LPARAM lparam,
+  CefString& composition_text,
+  std::vector<CefCompositionUnderline>& underlines,
+  int& composition_start) {
   // We only care about GCS_COMPATTR, GCS_COMPCLAUSE and GCS_CURSORPOS, and
   // convert them into underlines and selection range respectively.
   underlines.clear();
@@ -271,7 +290,10 @@ void QCefIMEHandlerWin::GetCompositionInfo(HIMC imc, LPARAM lparam, CefString &c
   }
 }
 
-bool QCefIMEHandlerWin::GetString(HIMC imc, WPARAM lparam, int type, CefString &result) {
+bool QCefIMEHandlerWin::GetString(HIMC imc,
+                                  WPARAM lparam,
+                                  int type,
+                                  CefString& result) {
   if (!(lparam & type))
     return false;
   LONG string_size = ::ImmGetCompositionString(imc, type, NULL, 0);
@@ -287,7 +309,7 @@ bool QCefIMEHandlerWin::GetString(HIMC imc, WPARAM lparam, int type, CefString &
   return true;
 }
 
-bool QCefIMEHandlerWin::GetResult(LPARAM lparam, CefString &result) {
+bool QCefIMEHandlerWin::GetResult(LPARAM lparam, CefString& result) {
   bool ret = false;
   HIMC imc = ::ImmGetContext(hwnd_);
   if (imc) {
@@ -297,9 +319,11 @@ bool QCefIMEHandlerWin::GetResult(LPARAM lparam, CefString &result) {
   return ret;
 }
 
-bool QCefIMEHandlerWin::GetComposition(LPARAM lparam, CefString &composition_text,
-                                   std::vector<CefCompositionUnderline> &underlines,
-                                   int &composition_start) {
+bool QCefIMEHandlerWin::GetComposition(
+  LPARAM lparam,
+  CefString& composition_text,
+  std::vector<CefCompositionUnderline>& underlines,
+  int& composition_start) {
   bool ret = false;
   HIMC imc = ::ImmGetContext(hwnd_);
   if (imc) {
@@ -308,7 +332,8 @@ bool QCefIMEHandlerWin::GetComposition(LPARAM lparam, CefString &composition_tex
 
     if (ret) {
       // Retrieve the composition underlines and selection range information.
-      GetCompositionInfo(imc, lparam, composition_text, underlines, composition_start);
+      GetCompositionInfo(
+        imc, lparam, composition_text, underlines, composition_start);
 
       // Mark that there is an ongoing composition.
       is_composing_ = true;
@@ -347,8 +372,8 @@ void QCefIMEHandlerWin::UpdateCaretPosition(int index) {
   MoveImeWindow();
 }
 
-void QCefIMEHandlerWin::ChangeCompositionRange(const CefRange &selection_range,
-                                           const std::vector<CefRect> &bounds) {
+void QCefIMEHandlerWin::ChangeCompositionRange(
+  const CefRange& selection_range, const std::vector<CefRect>& bounds) {
   composition_range_ = selection_range;
   composition_bounds_ = bounds;
   MoveImeWindow();

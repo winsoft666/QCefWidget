@@ -12,8 +12,9 @@
 #include <include/cef_sandbox_win.h>
 #include "QCefManager.h"
 
-QCefOpenGLWidget::QCefOpenGLWidget(const QString &url, QWidget *parent /*= nullptr*/)
-    : QOpenGLWidget(parent) {
+QCefOpenGLWidget::QCefOpenGLWidget(const QString& url,
+                                   QWidget* parent /*= nullptr*/)
+  : QOpenGLWidget(parent) {
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
   setAttribute(Qt::WA_StyledBackground, true);
@@ -28,7 +29,7 @@ QCefOpenGLWidget::~QCefOpenGLWidget() {
   qDebug() << "QCefOpenGLWidget::~QCefOpenGLWidget";
 }
 
-void QCefOpenGLWidget::navigateToUrl(const QString &url) {
+void QCefOpenGLWidget::navigateToUrl(const QString& url) {
   Q_ASSERT(pImpl_);
   pImpl_->navigateToUrl(url);
 }
@@ -68,17 +69,18 @@ void QCefOpenGLWidget::stopLoadBrowser() {
   pImpl_->stopLoadBrowser();
 }
 
-bool QCefOpenGLWidget::triggerEvent(const QString &name, const QCefEvent &event) {
+bool QCefOpenGLWidget::triggerEvent(const QString& name,
+                                    const QCefEvent& event) {
   Q_ASSERT(pImpl_);
   return pImpl_->triggerEvent(name, event);
 }
 
-bool QCefOpenGLWidget::responseCefQuery(const QCefQuery &query) {
+bool QCefOpenGLWidget::responseCefQuery(const QCefQuery& query) {
   Q_ASSERT(pImpl_);
   return pImpl_->responseCefQuery(query);
 }
 
-void QCefOpenGLWidget::executeJavascript(const QString &javascript) {
+void QCefOpenGLWidget::executeJavascript(const QString& javascript) {
   Q_ASSERT(pImpl_);
   pImpl_->executeJavascript(javascript);
 }
@@ -143,7 +145,7 @@ int QCefOpenGLWidget::fps() const {
   return pImpl_->browserSetting().fps;
 }
 
-void QCefOpenGLWidget::setBrowserBackgroundColor(const QColor &color) {
+void QCefOpenGLWidget::setBrowserBackgroundColor(const QColor& color) {
   Q_ASSERT(pImpl_);
   pImpl_->setBrowserBackgroundColor(color);
 }
@@ -153,16 +155,21 @@ QColor QCefOpenGLWidget::browserBackgroundColor() const {
   return pImpl_->browserSetting().backgroundColor;
 }
 
-void QCefOpenGLWidget::showDevTools() { QCefManager::getInstance().showDevTools(this); }
+void QCefOpenGLWidget::showDevTools() {
+  QCefManager::getInstance().showDevTools(this);
+}
 
-void QCefOpenGLWidget::closeDevTools() { QCefManager::getInstance().closeDevTools(this); }
+void QCefOpenGLWidget::closeDevTools() {
+  QCefManager::getInstance().closeDevTools(this);
+}
 
-bool QCefOpenGLWidget::addResourceProvider(QCefResourceProvider *provider, const QString &identifier) {
+bool QCefOpenGLWidget::addResourceProvider(QCefResourceProvider* provider,
+                                           const QString& identifier) {
   Q_ASSERT(pImpl_);
   return pImpl_->addResourceProvider(provider, identifier);
 }
 
-bool QCefOpenGLWidget::removeResourceProvider(const QString &identifier) {
+bool QCefOpenGLWidget::removeResourceProvider(const QString& identifier) {
   Q_ASSERT(pImpl_);
   return pImpl_->removeResourceProvider(identifier);
 }
@@ -172,7 +179,9 @@ bool QCefOpenGLWidget::removeAllResourceProvider() {
   return pImpl_->removeAllResourceProvider();
 }
 
-bool QCefOpenGLWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
+bool QCefOpenGLWidget::nativeEvent(const QByteArray& eventType,
+                                   void* message,
+                                   long* result) {
   // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
   if (!pImpl_)
     return QOpenGLWidget::nativeEvent(eventType, message, result);
@@ -181,7 +190,7 @@ bool QCefOpenGLWidget::nativeEvent(const QByteArray &eventType, void *message, l
   return QOpenGLWidget::nativeEvent(eventType, message, result);
 }
 
-bool QCefOpenGLWidget::event(QEvent *event) {
+bool QCefOpenGLWidget::event(QEvent* event) {
   // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
   if (!pImpl_)
     return QOpenGLWidget::event(event);
@@ -206,7 +215,7 @@ void QCefOpenGLWidget::hideEvent(QHideEvent* event) {
   QOpenGLWidget::hideEvent(event);
 }
 
-void QCefOpenGLWidget::paintEvent(QPaintEvent *event) {
+void QCefOpenGLWidget::paintEvent(QPaintEvent* event) {
   Q_ASSERT(pImpl_);
   if (!pImpl_ || !pImpl_->openGLPaintEventHandle(event)) {
     QOpenGLWidget::paintEvent(event);

@@ -12,8 +12,8 @@
 #include <include/cef_sandbox_win.h>
 #include "QCefManager.h"
 
-QCefWidget::QCefWidget(const QString &url, QWidget *parent)
-    : QWidget(parent) {
+QCefWidget::QCefWidget(const QString& url, QWidget* parent)
+  : QWidget(parent) {
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
   setAttribute(Qt::WA_StyledBackground, true);
@@ -25,11 +25,11 @@ QCefWidget::QCefWidget(const QString &url, QWidget *parent)
   }
 }
 
-QCefWidget::~QCefWidget() { 
-  qDebug() << "QCefWidget::~QCefWidget"; 
+QCefWidget::~QCefWidget() {
+  qDebug() << "QCefWidget::~QCefWidget";
 }
 
-void QCefWidget::navigateToUrl(const QString &url) {
+void QCefWidget::navigateToUrl(const QString& url) {
   Q_ASSERT(pImpl_);
   pImpl_->navigateToUrl(url);
 }
@@ -69,17 +69,17 @@ void QCefWidget::stopLoadBrowser() {
   pImpl_->stopLoadBrowser();
 }
 
-bool QCefWidget::triggerEvent(const QString &name, const QCefEvent &event) {
+bool QCefWidget::triggerEvent(const QString& name, const QCefEvent& event) {
   Q_ASSERT(pImpl_);
   return pImpl_->triggerEvent(name, event);
 }
 
-bool QCefWidget::responseCefQuery(const QCefQuery &query) {
+bool QCefWidget::responseCefQuery(const QCefQuery& query) {
   Q_ASSERT(pImpl_);
   return pImpl_->responseCefQuery(query);
 }
 
-void QCefWidget::executeJavascript(const QString &javascript) {
+void QCefWidget::executeJavascript(const QString& javascript) {
   Q_ASSERT(pImpl_);
   pImpl_->executeJavascript(javascript);
 }
@@ -144,7 +144,7 @@ int QCefWidget::fps() const {
   return pImpl_->browserSetting().fps;
 }
 
-void QCefWidget::setBrowserBackgroundColor(const QColor &color) {
+void QCefWidget::setBrowserBackgroundColor(const QColor& color) {
   Q_ASSERT(pImpl_);
   pImpl_->setBrowserBackgroundColor(color);
 }
@@ -154,16 +154,21 @@ QColor QCefWidget::browserBackgroundColor() const {
   return pImpl_->browserSetting().backgroundColor;
 }
 
-void QCefWidget::showDevTools() { QCefManager::getInstance().showDevTools(this); }
+void QCefWidget::showDevTools() {
+  QCefManager::getInstance().showDevTools(this);
+}
 
-void QCefWidget::closeDevTools() { QCefManager::getInstance().closeDevTools(this); }
+void QCefWidget::closeDevTools() {
+  QCefManager::getInstance().closeDevTools(this);
+}
 
-bool QCefWidget::addResourceProvider(QCefResourceProvider *provider, const QString &identifier) {
+bool QCefWidget::addResourceProvider(QCefResourceProvider* provider,
+                                     const QString& identifier) {
   Q_ASSERT(pImpl_);
   return pImpl_->addResourceProvider(provider, identifier);
 }
 
-bool QCefWidget::removeResourceProvider(const QString &identifier) {
+bool QCefWidget::removeResourceProvider(const QString& identifier) {
   Q_ASSERT(pImpl_);
   return pImpl_->removeResourceProvider(identifier);
 }
@@ -173,7 +178,9 @@ bool QCefWidget::removeAllResourceProvider() {
   return pImpl_->removeAllResourceProvider();
 }
 
-bool QCefWidget::nativeEvent(const QByteArray &eventType, void *message, long *result) {
+bool QCefWidget::nativeEvent(const QByteArray& eventType,
+                             void* message,
+                             long* result) {
   // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
   if (!pImpl_)
     return QWidget::nativeEvent(eventType, message, result);
@@ -196,7 +203,7 @@ void QCefWidget::hideEvent(QHideEvent* event) {
   QWidget::hideEvent(event);
 }
 
-bool QCefWidget::event(QEvent *event) {
+bool QCefWidget::event(QEvent* event) {
   // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
   if (!pImpl_)
     return QWidget::event(event);
@@ -207,7 +214,7 @@ bool QCefWidget::event(QEvent *event) {
   return QWidget::event(event);
 }
 
-void QCefWidget::paintEvent(QPaintEvent *event) {
+void QCefWidget::paintEvent(QPaintEvent* event) {
   Q_ASSERT(pImpl_);
   if (!pImpl_ || !pImpl_->paintEventHandle(event)) {
     QWidget::paintEvent(event);

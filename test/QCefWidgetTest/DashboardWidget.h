@@ -7,10 +7,10 @@ public:
   QDashboardWidget(QWidget* parent = nullptr);
   virtual ~QDashboardWidget();
 
-  void setValuePrefix(const QString &prefix);
+  void setValuePrefix(const QString& prefix);
   QString valuePrefix() const;
 
-  void setValueSuffix(const QString &suffix);
+  void setValueSuffix(const QString& suffix);
   QString valueSuffix() const;
 
   void setMaxValue(int maxValue);
@@ -49,10 +49,10 @@ protected:
   void drawFrame(QPainter& painter, int radius, int refSize);
   void drawDividing(QPainter& painter, int radius, int refSize);
 
-  void drawDividingNumber(QPainter &painter, int radius, int refSize);
-  void drawNumberValue(QPainter &painter, int radius, int refSize);
+  void drawDividingNumber(QPainter& painter, int radius, int refSize);
+  void drawNumberValue(QPainter& painter, int radius, int refSize);
 
-  void drawNeedle(QPainter &painter, int radius, int refSize);
+  void drawNeedle(QPainter& painter, int radius, int refSize);
 
 protected:
   int maxValue_;

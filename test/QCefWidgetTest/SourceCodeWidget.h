@@ -6,8 +6,9 @@ class QNetworkReply;
 class SourceCodeWidget : public QDialog {
   Q_OBJECT
 public:
-  SourceCodeWidget(QWidget *parent = Q_NULLPTR);
+  SourceCodeWidget(QWidget* parent = Q_NULLPTR);
   ~SourceCodeWidget();
+
 protected:
   QNetworkAccessManager* manager_;
   QNetworkReply* reply_;

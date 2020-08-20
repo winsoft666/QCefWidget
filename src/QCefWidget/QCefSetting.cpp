@@ -2,37 +2,43 @@
 #include "QCefGlobalSetting.h"
 #include <QDir>
 
-void QCefSetting::setBrowserSubProcessPath(const QString &path) {
+void QCefSetting::setBrowserSubProcessPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::browser_sub_process_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::browser_sub_process_path.FromWString(
+    QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::browserSubProcessPath() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(QCefGlobalSetting::browser_sub_process_path.ToWString());
+  return QString::fromStdWString(
+    QCefGlobalSetting::browser_sub_process_path.ToWString());
 }
 
-void QCefSetting::setResourceDirectoryPath(const QString &path) {
+void QCefSetting::setResourceDirectoryPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::resource_directory_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::resource_directory_path.FromWString(
+    QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::resourceDirectoryPath() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(QCefGlobalSetting::resource_directory_path.ToWString());
+  return QString::fromStdWString(
+    QCefGlobalSetting::resource_directory_path.ToWString());
 }
 
-void QCefSetting::setLocalesDirectoryPath(const QString &path) {
+void QCefSetting::setLocalesDirectoryPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::locales_directory_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::locales_directory_path.FromWString(
+    QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::localesDirectoryPath() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(QCefGlobalSetting::locales_directory_path.ToWString());
+  return QString::fromStdWString(
+    QCefGlobalSetting::locales_directory_path.ToWString());
 }
 
-void QCefSetting::setUserAgent(const QString &agent) {
+void QCefSetting::setUserAgent(const QString& agent) {
   QCefGlobalSetting::initializeInstance();
   QCefGlobalSetting::user_agent.FromWString(agent.toStdWString());
 }
@@ -42,9 +48,10 @@ const QString QCefSetting::userAgent() {
   return QString::fromStdWString(QCefGlobalSetting::user_agent.ToWString());
 }
 
-void QCefSetting::setCachePath(const QString &path) {
+void QCefSetting::setCachePath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::cache_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::cache_path.FromWString(
+    QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::cachePath() {
@@ -52,7 +59,7 @@ const QString QCefSetting::cachePath() {
   return QString::fromStdWString(QCefGlobalSetting::cache_path.ToWString());
 }
 
-void QCefSetting::setUserDataPath(const QString &path) {
+void QCefSetting::setUserDataPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
   QCefGlobalSetting::user_data_path.FromWString(path.toStdWString());
 }
@@ -82,7 +89,7 @@ const bool QCefSetting::persistUserPreferences() {
   return QCefGlobalSetting::persist_user_preferences;
 }
 
-void QCefSetting::setLocale(const QString &locale) {
+void QCefSetting::setLocale(const QString& locale) {
   QCefGlobalSetting::initializeInstance();
   QCefGlobalSetting::locale.FromString(locale.toStdString());
 }
@@ -102,14 +109,15 @@ const int QCefSetting::remoteDebuggingPort() {
   return QCefGlobalSetting::remote_debugging_port;
 }
 
-void QCefSetting::setAcceptLanguageList(const QString &languages) {
+void QCefSetting::setAcceptLanguageList(const QString& languages) {
   QCefGlobalSetting::initializeInstance();
   QCefGlobalSetting::accept_language_list.FromWString(languages.toStdWString());
 }
 
 const QString QCefSetting::acceptLanguageList() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(QCefGlobalSetting::accept_language_list.ToWString());
+  return QString::fromStdWString(
+    QCefGlobalSetting::accept_language_list.ToWString());
 }
 
 const void QCefSetting::setGpuEnabled(bool b) {
@@ -122,21 +130,23 @@ const bool QCefSetting::gpuEnabled() {
   return QCefGlobalSetting::gpu_enabled;
 }
 
-void QCefSetting::setFlashPlugin(const QString &path, const QString &ver) {
+void QCefSetting::setFlashPlugin(const QString& path, const QString& ver) {
   QCefGlobalSetting::initializeInstance();
-  
+
   QCefGlobalSetting::flush_plugin_path.FromWString(path.toStdWString());
   QCefGlobalSetting::flush_plugin_ver.FromWString(ver.toStdWString());
 }
 
 const QString QCefSetting::flashPluginPath() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(QCefGlobalSetting::flush_plugin_path.ToWString());
+  return QString::fromStdWString(
+    QCefGlobalSetting::flush_plugin_path.ToWString());
 }
 
 const QString QCefSetting::flashPluginVersion() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(QCefGlobalSetting::flush_plugin_ver.ToWString());
+  return QString::fromStdWString(
+    QCefGlobalSetting::flush_plugin_ver.ToWString());
 }
 
 const void QCefSetting::setOsrEnabled(bool b) {
@@ -149,9 +159,10 @@ const bool QCefSetting::osrEnabled() {
   return QCefGlobalSetting::osr_enabled;
 }
 
-void QCefSetting::setDebugLogPath(const QString &path) {
+void QCefSetting::setDebugLogPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::debug_log_path.FromWString(QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::debug_log_path.FromWString(
+    QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::debugLogPath() {
@@ -159,7 +170,8 @@ const QString QCefSetting::debugLogPath() {
   return QString::fromStdWString(QCefGlobalSetting::debug_log_path.ToWString());
 }
 
-void QCefSetting::setResourceMap(const QMap<QString, QPair<int, QString>> &resourceMap) {
+void QCefSetting::setResourceMap(
+  const QMap<QString, QPair<int, QString>>& resourceMap) {
   QCefGlobalSetting::initializeInstance();
   QCefGlobalSetting::resource_map = resourceMap;
 }

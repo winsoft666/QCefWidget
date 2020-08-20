@@ -92,16 +92,19 @@ void TestWnd::setupUi() {
   checkboxPerformanceMonitor_ = new QCheckBox("Run Performance Monitor");
   checkboxPerformanceMonitor_->setChecked(true);
 
-  connect(checkboxPerformanceMonitor_, &QCheckBox::stateChanged, this, [this](int state) {
-    if (state == Qt::CheckState::Checked) {
-      if (!performanceTimer_.isActive())
-        performanceTimer_.start();
-    }
-    else {
-      if (performanceTimer_.isActive())
-        performanceTimer_.stop();
-    }
-  });
+  connect(checkboxPerformanceMonitor_,
+          &QCheckBox::stateChanged,
+          this,
+          [this](int state) {
+            if (state == Qt::CheckState::Checked) {
+              if (!performanceTimer_.isActive())
+                performanceTimer_.start();
+            }
+            else {
+              if (performanceTimer_.isActive())
+                performanceTimer_.stop();
+            }
+          });
 
   QRegExp rxColor(
     "((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]).){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])");

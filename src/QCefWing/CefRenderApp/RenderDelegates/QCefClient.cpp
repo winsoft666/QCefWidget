@@ -1,11 +1,18 @@
 #include "QCefClient.h"
 
-QCefClient::V8Handler::V8Handler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, QCefClient::EventListenerListMap &eventListenerListMap)
-    : browser_(browser)
-    , frame_(frame)
-    , eventListenerListMap_(eventListenerListMap) {}
+QCefClient::V8Handler::V8Handler(
+  CefRefPtr<CefBrowser> browser,
+  CefRefPtr<CefFrame> frame,
+  QCefClient::EventListenerListMap& eventListenerListMap)
+  : browser_(browser)
+  , frame_(frame)
+  , eventListenerListMap_(eventListenerListMap) {}
 
-bool QCefClient::V8Handler::Execute(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval, CefString &exception) {
+bool QCefClient::V8Handler::Execute(const CefString& function,
+                                    CefRefPtr<CefV8Value> object,
+                                    const CefV8ValueList& arguments,
+                                    CefRefPtr<CefV8Value>& retval,
+                                    CefString& exception) {
   if (function == QCEF_INVOKEMETHOD)
     ExecuteInvokeMethod(function, object, arguments, retval, exception);
   else if (function == QCEF_ADDEVENTLISTENER)
@@ -18,9 +25,13 @@ bool QCefClient::V8Handler::Execute(const CefString &function, CefRefPtr<CefV8Va
   return true;
 }
 
-void QCefClient::V8Handler::ExecuteInvokeMethod(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval,
-                                                CefString &exception) {
-  CefRefPtr<CefProcessMessage> msg = CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
+void QCefClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
+                                                CefRefPtr<CefV8Value> object,
+                                                const CefV8ValueList& arguments,
+                                                CefRefPtr<CefV8Value>& retval,
+                                                CefString& exception) {
+  CefRefPtr<CefProcessMessage> msg =
+    CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
 
   CefRefPtr<CefListValue> args = msg->GetArgumentList();
   int frameId = (int)frame_->GetIdentifier();
@@ -49,8 +60,12 @@ void QCefClient::V8Handler::ExecuteInvokeMethod(const CefString &function, CefRe
   retval = CefV8Value::CreateUndefined();
 }
 
-void QCefClient::V8Handler::ExecuteAddEventListener(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval,
-                                                    CefString &exception) {
+void QCefClient::V8Handler::ExecuteAddEventListener(
+  const CefString& function,
+  CefRefPtr<CefV8Value> object,
+  const CefV8ValueList& arguments,
+  CefRefPtr<CefV8Value>& retval,
+  CefString& exception) {
   bool bRet = false;
 
   if (arguments.size() == 2) {
@@ -68,7 +83,7 @@ void QCefClient::V8Handler::ExecuteAddEventListener(const CefString &function, C
           eventListenerListMap_[eventName] = eventListenerList;
         }
         else {
-          EventListenerList &eventListenerList = itListenerList->second;
+          EventListenerList& eventListenerList = itListenerList->second;
           // does this listener exist?
           bool found = false;
           for (auto item : eventListenerList) {
@@ -95,8 +110,12 @@ void QCefClient::V8Handler::ExecuteAddEventListener(const CefString &function, C
   retval = CefV8Value::CreateBool(bRet);
 }
 
-void QCefClient::V8Handler::ExecuteRemoveEventListener(const CefString &function, CefRefPtr<CefV8Value> object, const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval,
-                                                       CefString &exception) {
+void QCefClient::V8Handler::ExecuteRemoveEventListener(
+  const CefString& function,
+  CefRefPtr<CefV8Value> object,
+  const CefV8ValueList& arguments,
+  CefRefPtr<CefV8Value>& retval,
+  CefString& exception) {
   bool bRet = false;
 
   if (arguments.size() == 2) {
@@ -109,8 +128,10 @@ void QCefClient::V8Handler::ExecuteRemoveEventListener(const CefString &function
 
         auto itListenerList = eventListenerListMap_.find(eventName);
         if (itListenerList != eventListenerListMap_.end()) {
-          EventListenerList &eventListenerList = itListenerList->second;
-          for (auto itListener = eventListenerList.begin(); itListener != eventListenerList.end(); itListener++) {
+          EventListenerList& eventListenerList = itListenerList->second;
+          for (auto itListener = eventListenerList.begin();
+               itListener != eventListenerList.end();
+               itListener++) {
             if (itListener->callback_->IsSame(listener.callback_))
               eventListenerList.erase(itListener);
           }
@@ -131,38 +152,51 @@ void QCefClient::V8Handler::ExecuteRemoveEventListener(const CefString &function
 //////////////////////////////////////////////////////////////////////////
 
 QCefClient::QCefClient(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame)
-    : object_(CefV8Value::CreateObject(nullptr, nullptr))
-    , browser_(browser)
-    , frame_(frame) {
+  : object_(CefV8Value::CreateObject(nullptr, nullptr))
+  , browser_(browser)
+  , frame_(frame) {
   // create function handler
-  CefRefPtr<V8Handler> handler = new V8Handler(browser_, frame_, eventListenerListMap_);
+  CefRefPtr<V8Handler> handler =
+    new V8Handler(browser_, frame_, eventListenerListMap_);
 
   // create function function
-  CefRefPtr<CefV8Value> funcInvokeMethod = CefV8Value::CreateFunction(QCEF_INVOKEMETHOD, handler);
+  CefRefPtr<CefV8Value> funcInvokeMethod =
+    CefV8Value::CreateFunction(QCEF_INVOKEMETHOD, handler);
   // add this function to window object
-  object_->SetValue(QCEF_INVOKEMETHOD, funcInvokeMethod, V8_PROPERTY_ATTRIBUTE_READONLY);
+  object_->SetValue(
+    QCEF_INVOKEMETHOD, funcInvokeMethod, V8_PROPERTY_ATTRIBUTE_READONLY);
 
   // create function function
-  CefRefPtr<CefV8Value> funcAddEventListener = CefV8Value::CreateFunction(QCEF_ADDEVENTLISTENER, handler);
+  CefRefPtr<CefV8Value> funcAddEventListener =
+    CefV8Value::CreateFunction(QCEF_ADDEVENTLISTENER, handler);
   // add this function to window object
-  object_->SetValue(QCEF_ADDEVENTLISTENER, funcAddEventListener, V8_PROPERTY_ATTRIBUTE_READONLY);
+  object_->SetValue(QCEF_ADDEVENTLISTENER,
+                    funcAddEventListener,
+                    V8_PROPERTY_ATTRIBUTE_READONLY);
 
   // create function function
-  CefRefPtr<CefV8Value> funcRemoveEventListener = CefV8Value::CreateFunction(QCEF_REMOVEEVENTLISTENER, handler);
+  CefRefPtr<CefV8Value> funcRemoveEventListener =
+    CefV8Value::CreateFunction(QCEF_REMOVEEVENTLISTENER, handler);
   // add this function to window object
-  object_->SetValue(QCEF_REMOVEEVENTLISTENER, funcRemoveEventListener, V8_PROPERTY_ATTRIBUTE_READONLY);
+  object_->SetValue(QCEF_REMOVEEVENTLISTENER,
+                    funcRemoveEventListener,
+                    V8_PROPERTY_ATTRIBUTE_READONLY);
 }
 
-CefRefPtr<CefV8Value> QCefClient::GetObject() { return object_; }
+CefRefPtr<CefV8Value> QCefClient::GetObject() {
+  return object_;
+}
 
-void QCefClient::ExecuteEventListener(const CefString eventName, CefRefPtr<CefDictionaryValue> dict) {
+void QCefClient::ExecuteEventListener(const CefString eventName,
+                                      CefRefPtr<CefDictionaryValue> dict) {
   auto itListenerList = eventListenerListMap_.find(eventName);
   if (itListenerList != eventListenerListMap_.end()) {
-    EventListenerList &eventListenerList = itListenerList->second;
+    EventListenerList& eventListenerList = itListenerList->second;
     for (auto listener : eventListenerList) {
       listener.context_->Enter();
 
-      CefRefPtr<CefV8Value> eventObject = CefV8Value::CreateObject(nullptr, nullptr);
+      CefRefPtr<CefV8Value> eventObject =
+        CefV8Value::CreateObject(nullptr, nullptr);
       CefDictionaryValue::KeyList kyes;
       dict->GetKeys(kyes);
       CefRefPtr<CefValue> value;
