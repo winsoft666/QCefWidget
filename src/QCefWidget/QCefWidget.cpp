@@ -14,10 +14,15 @@
 
 QCefWidget::QCefWidget(const QString &url, QWidget *parent)
     : QWidget(parent) {
-  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this, url);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
   setAttribute(Qt::WA_StyledBackground, true);
+
+  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this);
+
+  if (!url.isEmpty()) {
+    pImpl_->navigateToUrl(url);
+  }
 }
 
 QCefWidget::~QCefWidget() { 
@@ -177,6 +182,20 @@ bool QCefWidget::nativeEvent(const QByteArray &eventType, void *message, long *r
   return QWidget::nativeEvent(eventType, message, result);
 }
 
+void QCefWidget::showEvent(QShowEvent* event) {
+  if (pImpl_) {
+    pImpl_->visibleChangedNotify(true);
+  }
+  QWidget::showEvent(event);
+}
+
+void QCefWidget::hideEvent(QHideEvent* event) {
+  if (pImpl_) {
+    pImpl_->visibleChangedNotify(false);
+  }
+  QWidget::hideEvent(event);
+}
+
 bool QCefWidget::event(QEvent *event) {
   // pImpl_ may be empty, if we call winId in QCefWidgetImpl::QCefWidgetImpl().
   if (!pImpl_)
@@ -193,11 +212,4 @@ void QCefWidget::paintEvent(QPaintEvent *event) {
   if (!pImpl_ || !pImpl_->paintEventHandle(event)) {
     QWidget::paintEvent(event);
   }
-}
-
-void QCefWidget::setVisible(bool visible) {
-  QWidget::setVisible(visible);
-  Q_ASSERT(pImpl_);
-  if (pImpl_)
-    pImpl_->setVisible(visible);
 }

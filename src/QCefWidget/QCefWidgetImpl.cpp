@@ -19,13 +19,12 @@ LPCWSTR kDraggableRegion = L"CefDraggableRegion";
 LPCWSTR kTopLevelHwnd = L"CefTopLevelHwnd";
 } // namespace
 
-QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &url)
+QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget *pWidget)
     : pWidget_(pWidget)
     , pTopWidget_(nullptr)
     , draggableRegion_(nullptr)
     , vt_(vt)
     , widgetWId_(0)
-    , initUrl_(url)
     , deviceScaleFactor_(1.f)
     , browserCreated_(false)
     , browserClosing_(false)
@@ -195,6 +194,7 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
 }
 
 void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
+  Q_ASSERT(pWidget_);
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
@@ -211,6 +211,8 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 #endif
 
   pTopWidget_ = QCefManager::getInstance().addBrowser(pWidget_, this, browser, browserSetting_.osrEnabled);
+
+  visibleChangedNotify(pWidget_->isVisible());
 }
 
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
@@ -493,18 +495,18 @@ bool QCefWidgetImpl::event(QEvent *event) {
     widgetWId_ = pWidget_ ? pWidget_->winId() : 0;
     qDebug() << "QEvent::WinIdChange to:" << widgetWId_;
   }
-  else if (event->type() == QEvent::Resize) {
-    qDebug() << "QEvent::Resize";
-    if (initUrl_.length() > 0) {
-      QString url = initUrl_;
-      initUrl_.clear();
-      QMetaObject::invokeMethod(pWidget_, [this, url]() {
-        if (!createBrowser(url)) {
-          Q_ASSERT(false);
-        }
-      });
-    }
-  }
+  //else if (event->type() == QEvent::Resize) {
+  //  qDebug() << "QEvent::Resize";
+  //  if (initUrl_.length() > 0) {
+  //    QString url = initUrl_;
+  //    initUrl_.clear();
+  //    QMetaObject::invokeMethod(pWidget_, [this, url]() {
+  //      if (!createBrowser(url)) {
+  //        Q_ASSERT(false);
+  //      }
+  //    });
+  //  }
+  //}
 
   return false;
 }
@@ -721,7 +723,7 @@ bool QCefWidgetImpl::openGLPaintEventHandle(QPaintEvent *event) {
 }
 #endif
 
-void QCefWidgetImpl::setVisible(bool visible) {
+void QCefWidgetImpl::visibleChangedNotify(bool visible) {
   if (browserClosing_)
     return;
   CefRefPtr<CefBrowserHost> host = getCefBrowserHost();

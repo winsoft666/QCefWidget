@@ -37,11 +37,14 @@ private:
   QCheckBox* checkboxOsrEnabled_;
   QCheckBox* checkboxContextMenuEnabled_;
   QCheckBox* checkboxAutoShowDevToolsContextMenu_;
+  QCheckBox* checkboxAllowExecuteUnknownProtocolViaOS_;
+  QCheckBox* checkboxPerformanceMonitor_;
 
   QButtonGroup* cefWidgetGroup_;
   QRadioButton* radioButtonCefWidget_;
   QRadioButton* radioButtonCefOpenGLWidget_;
 
+  QPushButton* pushButtonClose_;
   QPushButton* pushButtonNewBrowser_;
   QPushButton* pushButtonQuickSettingForIrregularWnd_;
   QPushButton *pushButtonQuickSettingForElectron_;

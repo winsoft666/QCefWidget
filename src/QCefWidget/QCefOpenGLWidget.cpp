@@ -14,10 +14,14 @@
 
 QCefOpenGLWidget::QCefOpenGLWidget(const QString &url, QWidget *parent /*= nullptr*/)
     : QOpenGLWidget(parent) {
-  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_OpenGLWidget, this, url);
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
   setAttribute(Qt::WA_StyledBackground, true);
+
+  pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_OpenGLWidget, this);
+  if (!url.isEmpty()) {
+    pImpl_->navigateToUrl(url);
+  }
 }
 
 QCefOpenGLWidget::~QCefOpenGLWidget() {
@@ -188,17 +192,24 @@ bool QCefOpenGLWidget::event(QEvent *event) {
   return QOpenGLWidget::event(event);
 }
 
+void QCefOpenGLWidget::showEvent(QShowEvent* event) {
+  if (pImpl_) {
+    pImpl_->visibleChangedNotify(true);
+  }
+  QOpenGLWidget::showEvent(event);
+}
+
+void QCefOpenGLWidget::hideEvent(QHideEvent* event) {
+  if (pImpl_) {
+    pImpl_->visibleChangedNotify(false);
+  }
+  QOpenGLWidget::hideEvent(event);
+}
+
 void QCefOpenGLWidget::paintEvent(QPaintEvent *event) {
   Q_ASSERT(pImpl_);
   if (!pImpl_ || !pImpl_->openGLPaintEventHandle(event)) {
     QOpenGLWidget::paintEvent(event);
   }
-}
-
-void QCefOpenGLWidget::setVisible(bool visible) {
-  QOpenGLWidget::setVisible(visible);
-  Q_ASSERT(pImpl_);
-  if (pImpl_)
-    pImpl_->setVisible(visible);
 }
 #endif

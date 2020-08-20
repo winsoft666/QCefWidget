@@ -10,6 +10,7 @@ CefWnd::CefWnd(QWidget *parent /*= nullptr*/)
     , usingGLWidget_(false)
     , contextMenuEnabled_(false)
     , autoAddDevToolsContextMenu_(false)
+    , allowExecuteUnknownProtocolViaOS_(false)
     , osrEnabled_(false)
     , maximumFps_(25)
     , windowBkColor_(255, 255, 255, 255)
@@ -46,6 +47,7 @@ void CefWnd::setupUi() {
     pCefGLWidget_->setContextMenuEnabled(contextMenuEnabled_);
     pCefGLWidget_->setAutoShowDevToolsContextMenu(autoAddDevToolsContextMenu_);
     pCefGLWidget_->setBrowserBackgroundColor(browserBkColor_);
+    pCefGLWidget_->setAllowExecuteUnknownProtocolViaOS(allowExecuteUnknownProtocolViaOS_);
     pCefGLWidget_->setStyleSheet("image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefGLWidget_, &QCefOpenGLWidget::invokeMethodNotify, this, &CefWnd::onInvokeMethodNotify);
@@ -58,6 +60,7 @@ void CefWnd::setupUi() {
     pCefWidget_->setContextMenuEnabled(contextMenuEnabled_);
     pCefWidget_->setAutoShowDevToolsContextMenu(autoAddDevToolsContextMenu_);
     pCefWidget_->setBrowserBackgroundColor(browserBkColor_);
+    pCefWidget_->setAllowExecuteUnknownProtocolViaOS(allowExecuteUnknownProtocolViaOS_);
     pCefWidget_->setStyleSheet("image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefWidget_, &QCefWidget::invokeMethodNotify, this, &CefWnd::onInvokeMethodNotify);
@@ -80,6 +83,14 @@ void CefWnd::setupUi() {
 bool CefWnd::usingGLWidget() { return usingGLWidget_; }
 
 void CefWnd::setUsingGLWidget(bool b) { usingGLWidget_ = b; }
+
+void CefWnd::setAllowExecuteUnknownProtocolViaOS(bool b) {
+  allowExecuteUnknownProtocolViaOS_ = b;
+}
+
+bool CefWnd::allowExecuteUnknownProtocolViaOS() {
+  return allowExecuteUnknownProtocolViaOS_;
+}
 
 bool CefWnd::framelessWindow() { return framelessWindow_; }
 

@@ -19,6 +19,9 @@ public:
   bool usingGLWidget();
   void setUsingGLWidget(bool b);
 
+  void setAllowExecuteUnknownProtocolViaOS(bool b);
+  bool allowExecuteUnknownProtocolViaOS();
+
   bool framelessWindow();
   void setFramelessWindow(bool b);
 
@@ -67,6 +70,7 @@ protected:
   bool usingGLWidget_;
   bool framelessWindow_;
   bool translucentWindowBackground_;
+  bool allowExecuteUnknownProtocolViaOS_;
   QSize initSize_;
   QString initUrl_;
   QColor windowBkColor_;

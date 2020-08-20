@@ -15,7 +15,7 @@ enum WidgetType { WT_Widget = 0, WT_OpenGLWidget };
 class QCefWidgetImpl : public QObject {
   Q_OBJECT
 public:
-  explicit QCefWidgetImpl(WidgetType vt, QWidget *pWidget, const QString &url);
+  explicit QCefWidgetImpl(WidgetType vt, QWidget *pWidget);
   ~QCefWidgetImpl();
 
 public:
@@ -54,7 +54,7 @@ public:
 #ifndef QT_NO_OPENGL
   bool openGLPaintEventHandle(QPaintEvent *event);
 #endif
-  void setVisible(bool visible);
+  void visibleChangedNotify(bool visible);
 
   void setBrowserBackgroundColor(const QColor &color);
   bool setOsrEnabled(bool b);
@@ -96,7 +96,6 @@ private:
   WidgetType vt_;
   QWidget *pWidget_;
   QWidget *pTopWidget_;
-  QString initUrl_;
 
   WId widgetWId_;
 

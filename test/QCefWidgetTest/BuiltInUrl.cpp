@@ -6,6 +6,7 @@ QStringList getBuiltInUrl() {
     << "http://qcefwidget/test.html"
     << "http://qcefwidget/tree.html"
     << "chrome://version"
+    << "steam://install/1234/"
     << "https://html5test.com"
     << "https://www.bing.com"
     << "https://www.google.com"

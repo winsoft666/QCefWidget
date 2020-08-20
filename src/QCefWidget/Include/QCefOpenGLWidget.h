@@ -92,10 +92,10 @@ signals:
   void invokeMethodNotify(int browserId, int frameId, const QString &method, const QVariantList &arguments);
 protected:
   bool event(QEvent *event) override;
+  void showEvent(QShowEvent* event) override;
+  void hideEvent(QHideEvent* event) override;
   bool nativeEvent(const QByteArray &eventType, void *message, long *result) override;
   void paintEvent(QPaintEvent *event) override;
-  void setVisible(bool visible) override;
-
   std::shared_ptr<QCefWidgetImpl> pImpl_;
   friend QCefDevToolsWnd;
 };
