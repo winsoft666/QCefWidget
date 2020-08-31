@@ -240,10 +240,6 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 
   pTopWidget_ = QCefManager::getInstance().addBrowser(
     pWidget_, this, browser, browserSetting_.osrEnabled);
-
-  // 延时1000ms之后通知CEF当前是否隐藏
-  QTimer::singleShot(
-    1000, this, [this]() { visibleChangedNotify(pWidget_->isVisible()); });
 }
 
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
@@ -498,6 +494,10 @@ void QCefWidgetImpl::executeJavascript(const QString& javascript) {
 
 void QCefWidgetImpl::dpiChangedNotify() {
   simulateResizeEvent();
+}
+
+void QCefWidgetImpl::mainFrameLoadFinishedNotify() {
+  visibleChangedNotify(pWidget_->isVisible());
 }
 
 bool QCefWidgetImpl::sendEventNotifyMessage(const QString& name,

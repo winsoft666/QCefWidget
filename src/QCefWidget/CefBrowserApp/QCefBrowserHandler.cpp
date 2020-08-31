@@ -419,18 +419,23 @@ void QCefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
                                    int httpStatusCode) {
   CEF_REQUIRE_UI_THREAD();
 
-  if (pImpl_->getWidgetType() == WT_Widget) {
-    QCefWidget* p = qobject_cast<QCefWidget*>(pImpl_->getWidget());
-    if (p)
-      emit p->loadEnd(frame->IsMain(), httpStatusCode);
-  }
+  if (pImpl_) {
+    if (pImpl_->getWidgetType() == WT_Widget) {
+      QCefWidget* p = qobject_cast<QCefWidget*>(pImpl_->getWidget());
+      if (p)
+        emit p->loadEnd(frame->IsMain(), httpStatusCode);
+    }
 #ifndef QT_NO_OPENGL
-  else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
-    QCefOpenGLWidget* p = qobject_cast<QCefOpenGLWidget*>(pImpl_->getWidget());
-    if (p)
-      emit p->loadEnd(frame->IsMain(), httpStatusCode);
-  }
+    else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
+      QCefOpenGLWidget* p = qobject_cast<QCefOpenGLWidget*>(pImpl_->getWidget());
+      if (p)
+        emit p->loadEnd(frame->IsMain(), httpStatusCode);
+    }
 #endif
+    if (frame->IsMain()) {
+      pImpl_->mainFrameLoadFinishedNotify();
+    }
+  }
 }
 
 void QCefBrowserHandler::OnLoadError(CefRefPtr<CefBrowser> browser,

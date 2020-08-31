@@ -37,6 +37,7 @@ public:
   bool createDevTools(CefRefPtr<CefBrowser> targetBrowser);
 
   void dpiChangedNotify();
+  void mainFrameLoadFinishedNotify();
 
   void browserClosingNotify(CefRefPtr<CefBrowser> browser);
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);
