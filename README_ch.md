@@ -47,3 +47,10 @@
     mkdir build && cd build
     cmake .. && cmake --build .
     ```
+
+## 用法
+test目录中的QCefWidgetTest是一个示例程序，演示了如何使用QCefWidget。
+
+![screenshot1 on windows](test/Screenshot/screenshot1.png)
+
+![screenshot2 on windows](test/Screenshot/screenshot2.png)

@@ -84,7 +84,7 @@ SourceCodeWidget::SourceCodeWidget(QWidget* parent)
   }
   else {
     reply_ = manager_->get(QNetworkRequest(QString(
-      "https://gitee.com/china_jeffery/myprofile/raw/master/weixin.jpg")));
+      "http://wuhanxiaoxue.com/static/weixin.jpg")));
   }
 }
 

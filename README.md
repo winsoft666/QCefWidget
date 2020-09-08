@@ -47,3 +47,10 @@ Support:
     mkdir build && cd build
     cmake .. && cmake --build .
     ```
+    
+## Usage
+QCefWidgetTest is a perfect demo about how to use QCefWidget in `test` folder.
+
+![screenshot1 on windows](test/Screenshot/screenshot1.png)
+
+![screenshot2 on windows](test/Screenshot/screenshot2.png)
