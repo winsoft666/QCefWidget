@@ -19,7 +19,6 @@ protected:
   QSize sizeHint() const override;
 private slots:
   void onPushButtonNewBrowserClicked();
-  void onPushButtonGetSourceCodeClicked();
   void onPushButtonQuickSettingForIrregularWndClicked();
   void onPushButtonQuickSettingForElectronClicked();
   void onCefWndDestroyed(QObject* obj);
@@ -54,8 +53,6 @@ private:
 
 
   QListWidget* listBrowser_;
-
-  QPushButton* pushButtonGetSourceCode_;
 
   QDashboardWidget* dashboardWidgetMainProcCPU_;
   QDashboardWidget* dashboardWidgetMainProcMemory_;

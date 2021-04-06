@@ -31,7 +31,7 @@
 
 2. 从[Qt Downloads](https://download.qt.io/archive/qt/)下载安装Qt SDK.
 
-3. 从[Chromium Embedded Framework (CEF) Automated Builds](http://opensource.spotify.com/cefbuilds/index.html)下载CEF预编译版本，并解压到 ***dep*** 目录, 目录结构类似:
+3. 从[Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html)下载CEF预编译版本，并解压到 ***dep*** 目录, 目录结构类似:
     ```
     root
     ├─dep
@@ -47,6 +47,15 @@
     mkdir build && cd build
     cmake .. && cmake --build .
     ```
+
+## 测试
+已经针对下面版本的Qt和CEF组合进行了测试：
+
+|Qt版本|CEF版本|是否通过|
+|---|---|---|
+|5.12.10|3.3626.1895|✅|
+|5.14.2|3.3626.1895|✅|
+
 
 ## 用法
 test目录中的QCefWidgetTest是一个示例程序，演示了如何使用QCefWidget。

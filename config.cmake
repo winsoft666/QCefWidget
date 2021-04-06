@@ -7,7 +7,8 @@
 #
 set(QT_SDK_DIR
   # Change this value to the Qt SDK path of your build environment
-  "D:\\Qt-5.14.2\\5.14.2\\msvc2017\\"
+  "C:\\Qt\\Qt5.12.10\\5.12.10\\msvc2017\\"
+  #"C:\\Qt\\Qt5.14.2\\5.14.2\\msvc2017\\"
 )
 
 #
@@ -25,6 +26,7 @@ set(CEF_SDK_DIR
 if (DEFINED ENV{APPVEYOR})
   set(QT_SDK_DIR
     # Change this value to the Qt SDK path of your build environment
-    "D:\\Qt-5.14.2\\5.14.2\\msvc2017\\"
+    "C:\\Qt\\Qt5.12.10\\5.12.10\\msvc2017\\"
+	#"C:\\Qt\\Qt5.14.2\\5.14.2\\msvc2017\\"
   )
 endif()

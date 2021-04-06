@@ -497,7 +497,7 @@ void QCefWidgetImpl::dpiChangedNotify() {
 }
 
 void QCefWidgetImpl::mainFrameLoadFinishedNotify() {
-  visibleChangedNotify(pWidget_->isVisible());
+  //visibleChangedNotify(pWidget_->isVisible());
 }
 
 bool QCefWidgetImpl::sendEventNotifyMessage(const QString& name,

@@ -1,10 +1,10 @@
 Current commit is built/test with:
 
 [cef_binary_3.3626.1895.g7001d56_windows32]
-(http://opensource.spotify.com/cefbuilds/cef_binary_3.3626.1895.g7001d56_windows32.tar.bz2)
+(https://cef-builds.spotifycdn.com/cef_binary_3.3626.1895.g7001d56_windows32.tar.bz2)
 
 If you need to use a cef distribution in different version, please download from:
-http://opensource.spotify.com/cefbuilds/index.html
+[https://cef-builds.spotifycdn.com/index.html](https://cef-builds.spotifycdn.com/index.html)
 
 
 

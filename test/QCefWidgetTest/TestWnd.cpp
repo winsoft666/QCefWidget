@@ -6,7 +6,6 @@
 #include <QStyle>
 #include <QCloseEvent>
 #include "CefWnd.h"
-#include "SourceCodeWidget.h"
 #include "BrowserListItem.h"
 #include "DashboardWidget.h"
 #include "LayoutHelper.hpp"
@@ -282,13 +281,6 @@ void TestWnd::setupUi() {
   hlTop->addLayout(vlButton);
 
   QHBoxLayout* hlBottom = new QHBoxLayout();
-  pushButtonGetSourceCode_ =
-    newPushButton("pushButtonGetSourceCode", "Get source code");
-  connect(pushButtonGetSourceCode_,
-          &QPushButton::clicked,
-          this,
-          &TestWnd::onPushButtonGetSourceCodeClicked);
-  hlBottom->addWidget(pushButtonGetSourceCode_);
   hlBottom->addStretch();
   pushButtonClose_ = newPushButton("", "Close");
   pushButtonClose_->setToolTip("simulate exit with call close()");
@@ -359,11 +351,6 @@ void TestWnd::onPushButtonNewBrowserClicked() {
 
   if (!checkboxInitHide_->isChecked())
     pCefWnd->show();
-}
-
-void TestWnd::onPushButtonGetSourceCodeClicked() {
-  SourceCodeWidget* pWeiXin = new SourceCodeWidget(this);
-  pWeiXin->show();
 }
 
 void TestWnd::onPushButtonQuickSettingForIrregularWndClicked() {

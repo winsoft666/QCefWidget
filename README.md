@@ -31,7 +31,7 @@ Support:
 
 2. Download and install Qt SDK from [Qt Downloads](https://download.qt.io/archive/qt/)
 
-3. Download CEF binary distribution [Chromium Embedded Framework (CEF) Automated Builds](http://opensource.spotify.com/cefbuilds/index.html) and extract it to ***dep*** directory, for example:
+3. Download CEF binary distribution [Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html) and extract it to ***dep*** directory, for example:
     ```
     root
     ├─dep
@@ -48,6 +48,14 @@ Support:
     cmake .. && cmake --build .
     ```
     
+## Test
+QCefWidget has been tested with follow Qt and CEF version:
+
+|Qt Version|CEF Version|Pass|
+|---|---|---|
+|5.12.10|3.3626.1895|✅|
+|5.14.2|3.3626.1895|✅|
+
 ## Usage
 QCefWidgetTest is a perfect demo about how to use QCefWidget in `test` folder.
 

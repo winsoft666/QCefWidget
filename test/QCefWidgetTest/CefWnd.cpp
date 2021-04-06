@@ -53,8 +53,9 @@ void CefWnd::setupUi() {
     pCefGLWidget_->setBrowserBackgroundColor(browserBkColor_);
     pCefGLWidget_->setAllowExecuteUnknownProtocolViaOS(
       allowExecuteUnknownProtocolViaOS_);
-    pCefGLWidget_->setStyleSheet(
-      "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
+    if (!translucentWindowBackground_)
+      pCefGLWidget_->setStyleSheet(
+        "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefGLWidget_,
             &QCefOpenGLWidget::invokeMethodNotify,
@@ -74,8 +75,9 @@ void CefWnd::setupUi() {
     pCefWidget_->setBrowserBackgroundColor(browserBkColor_);
     pCefWidget_->setAllowExecuteUnknownProtocolViaOS(
       allowExecuteUnknownProtocolViaOS_);
-    pCefWidget_->setStyleSheet(
-      "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
+    if (!translucentWindowBackground_)
+      pCefWidget_->setStyleSheet(
+        "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefWidget_,
             &QCefWidget::invokeMethodNotify,
