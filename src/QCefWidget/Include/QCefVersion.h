@@ -4,6 +4,6 @@
 
 #define QCEF_VERSION_MAJOR 1
 #define QCEF_VERSION_MINOR 0
-#define QCEF_VERSION_PATCH 1
+#define QCEF_VERSION_PATCH 2
 
 #endif // !QCEF_VERSION_H_

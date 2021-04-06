@@ -1,6 +1,8 @@
 @echo off
 
-set QT_DIR=D:\Qt-5.14.2\5.14.2\msvc2017
+REM Update Qt Dir
+set QT_DIR=C:\Qt\Qt5.12.10\5.12.10\msvc2017
+
 set PATH=%QT_DIR%\bin;%PATH%
 
 
