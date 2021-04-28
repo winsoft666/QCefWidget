@@ -15,7 +15,7 @@
 #pragma execution_character_set("utf-8")
 
 namespace {
-QSize kWindowDefaultSize = QSize(920, 680);
+QSize kWindowDefaultSize = QSize(900, 600);
 }
 
 TestWnd::TestWnd(QWidget* parent)
@@ -30,6 +30,7 @@ TestWnd::TestWnd(QWidget* parent)
 
   QCefSetting::setResourceMap({{"test.html", {IDR_TEST_PAGE, "PAGE"}},
                                {"tree.html", {IDR_TREE_PAGE, "PAGE"}},
+                               {"javascript_h.svg", {IDR_SVG1, "SVG"}},
                                {"test.swf", {IDR_SWF1, "SWF"}}});
 
   setupUi();

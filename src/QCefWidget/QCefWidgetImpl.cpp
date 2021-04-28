@@ -135,6 +135,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                                      new RequestContextHandler);
 
   // This method can be called on any browser process thread and will not block.
+#if CEF_VERSION_MAJOR == 76
   if (!CefBrowserHost::CreateBrowser(window_info,
                                      pQCefViewHandler_,
                                      url.toStdWString(),
@@ -142,6 +143,16 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                                      requestContext)) {
     return false;
   }
+#elif CEF_VERSION_MAJOR == 89
+  if (!CefBrowserHost::CreateBrowser(window_info,
+                                     pQCefViewHandler_,
+                                     url.toStdWString(),
+                                     browserSettings,
+                                     nullptr,
+                                     requestContext)) {
+    return false;
+  }
+#endif
 
   browserCreated_ = true;
   return true;
@@ -399,14 +410,13 @@ void QCefWidgetImpl::imeCompositionRangeChangedNotify(
 
 void QCefWidgetImpl::navigateToUrl(const QString& url) {
   if (!browserCreated_) {
-    QMetaObject::invokeMethod(
-      pWidget_,
-      [this, url]() {
-        if (!createBrowser(url)) {
-          Q_ASSERT(false);
-        }
-      },
-      Qt::QueuedConnection);
+    QMetaObject::invokeMethod(pWidget_,
+                              [this, url]() {
+                                if (!createBrowser(url)) {
+                                  Q_ASSERT(false);
+                                }
+                              },
+                              Qt::QueuedConnection);
     return;
   }
 
@@ -837,6 +847,8 @@ bool QCefWidgetImpl::openGLPaintEventHandle(QPaintEvent* event) {
 
 void QCefWidgetImpl::visibleChangedNotify(bool visible) {
   if (browserClosing_)
+    return;
+  if (!browserSetting_.osrEnabled)
     return;
   CefRefPtr<CefBrowserHost> host = getCefBrowserHost();
   if (!host)

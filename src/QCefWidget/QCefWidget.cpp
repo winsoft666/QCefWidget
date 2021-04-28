@@ -19,7 +19,6 @@ QCefWidget::QCefWidget(const QString& url, QWidget* parent)
   setAttribute(Qt::WA_StyledBackground, true);
 
   pImpl_ = std::make_unique<QCefWidgetImpl>(WidgetType::WT_Widget, this);
-
   if (!url.isEmpty()) {
     pImpl_->navigateToUrl(url);
   }

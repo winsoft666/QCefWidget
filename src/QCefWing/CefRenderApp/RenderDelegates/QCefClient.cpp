@@ -54,8 +54,13 @@ void QCefClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
   }
 
   bool bRet = false;
+#if CEF_VERSION_MAJOR == 76
   if (browser_)
     browser_->SendProcessMessage(PID_BROWSER, msg);
+#elif CEF_VERSION_MAJOR == 89
+  if (frame_)
+    frame_->SendProcessMessage(PID_BROWSER, msg);
+#endif
 
   retval = CefV8Value::CreateUndefined();
 }

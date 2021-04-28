@@ -22,7 +22,3 @@ bool RequestContextHandler::OnBeforePluginLoad(
 
   return false;
 }
-
-CefRefPtr<CefCookieManager> RequestContextHandler::GetCookieManager() {
-  return nullptr;
-}

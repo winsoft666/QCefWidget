@@ -78,16 +78,15 @@ void QCefBrowserApp::OnContextInitialized() {
   CefRefPtr<CefCookieManager> manager =
     CefCookieManager::GetGlobalManager(nullptr);
   DCHECK(manager.get());
+#if CEF_VERSION_MAJOR == 76
   manager->SetSupportedSchemes(cookieable_schemes_, nullptr);
+#elif CEF_VERSION_MAJOR == 89
+  manager->SetSupportedSchemes(cookieable_schemes_, true, nullptr);
+#endif
 }
 
 void QCefBrowserApp::OnBeforeChildProcessLaunch(
   CefRefPtr<CefCommandLine> command_line) {}
-
-void QCefBrowserApp::OnRenderProcessThreadCreated(
-  CefRefPtr<CefListValue> extra_info) {
-  CEF_REQUIRE_IO_THREAD();
-}
 
 CefRefPtr<CefPrintHandler> QCefBrowserApp::GetPrintHandler() {
   return nullptr;

@@ -4,6 +4,7 @@
 
 #include <set>
 #include <include/cef_app.h>
+#include "../../QCefWidget/Include/QCefVersion.h"
 
 class QCefRenderApp : public CefApp, public CefRenderProcessHandler {
 public:
@@ -93,12 +94,17 @@ private:
 #pragma region CefRenderProcessHandler
 
   // CefRenderProcessHandler methods:
-  virtual void
-  OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) override;
+#if CEF_VERSION_MAJOR == 76
+  virtual void OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) override;
+#endif
 
   virtual void OnWebKitInitialized() override;
 
+#if CEF_VERSION_MAJOR == 76
   virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
+#elif CEF_VERSION_MAJOR == 89
+  virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) override;
+#endif
 
   virtual void OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) override;
 
@@ -123,10 +129,17 @@ private:
                                     CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefDOMNode> node) override;
 
+#if CEF_VERSION_MAJOR == 76
   virtual bool
   OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                            CefProcessId source_process,
                            CefRefPtr<CefProcessMessage> message) override;
+#elif CEF_VERSION_MAJOR == 89
+  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefProcessId source_process,
+    CefRefPtr<CefProcessMessage> message) override;
+#endif
 
 #pragma endregion CefRenderProcessHandler
 

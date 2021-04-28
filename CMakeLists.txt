@@ -7,6 +7,16 @@
 cmake_minimum_required(VERSION 3.4.1)
 project(QCefWidget)
 
+# Include the local config files
+###############################################################
+include(config.cmake)
+###############################################################
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/src/QCefWidget/Include/QCefVersion.h.in"
+  "${PROJECT_SOURCE_DIR}/src/QCefWidget/Include/QCefVersion.h"
+  )
+
 # Determine the platform.
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
   set(OS_MACOSX 1)
@@ -44,11 +54,6 @@ set(QCEF_WIDGET_SDK_BIN_OUT ${CMAKE_SOURCE_DIR}/out/${PROJECT_NAME}/bin)
 set(QCEF_WIDGET_SDK_LIB_OUT ${CMAKE_SOURCE_DIR}/out/${PROJECT_NAME}/lib)
 set(QCEF_WIDGET_SDK_INC_OUT ${CMAKE_SOURCE_DIR}/out/${PROJECT_NAME}/include)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCEF_WIDGET_SDK_BIN_OUT})
-###############################################################
-
-# Include the local config files
-###############################################################
-include(config.cmake)
 ###############################################################
 
 # Append the QT dir to CMAKE_PREFIX_PATH

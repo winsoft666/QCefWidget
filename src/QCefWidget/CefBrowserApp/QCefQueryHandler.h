@@ -6,6 +6,7 @@
 #include <include/cef_base.h>
 #include <include/wrapper/cef_stream_resource_handler.h>
 #include <include/wrapper/cef_message_router.h>
+#include "Include/QCefVersion.h"
 
 class QCefWidgetImpl;
 

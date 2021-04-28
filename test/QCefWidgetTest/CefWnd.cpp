@@ -274,7 +274,7 @@ void CefWnd::onInvokeMethodNotify(int browserId,
     strArgs += QString("[%1]: %2\r\n").arg(i).arg(arguments[i].toString());
   }
   str += strArgs;
-  qDebug() << str;
+  QMessageBox::information(this, "Invoked from JS", str, QMessageBox::Ok);
 }
 
 void CefWnd::onTriggerEvent() {
@@ -297,7 +297,7 @@ void CefWnd::onCefQueryRequest(const QCefQuery& query) {
   QString str = QString("[CefQueryRequest] id: %1, reqeust: %2\r\n")
                   .arg(query.id())
                   .arg(query.reqeust());
-  qDebug() << str;
+  qDebug().noquote() << str;
 
   QCefQuery rsp = query;
   rsp.setResponseResult(

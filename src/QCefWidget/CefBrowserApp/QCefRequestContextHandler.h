@@ -4,6 +4,7 @@
 
 #include "include/cef_request_context.h"
 #include "include/cef_request_context_handler.h"
+#include "Include/QCefVersion.h"
 
 class RequestContextHandler : public CefRequestContextHandler {
 public:
@@ -15,8 +16,6 @@ public:
                           const CefString& top_origin_url,
                           CefRefPtr<CefWebPluginInfo> plugin_info,
                           PluginPolicy* plugin_policy) override;
-  CefRefPtr<CefCookieManager> GetCookieManager() override;
-
 private:
   IMPLEMENT_REFCOUNTING(RequestContextHandler);
   DISALLOW_COPY_AND_ASSIGN(RequestContextHandler);

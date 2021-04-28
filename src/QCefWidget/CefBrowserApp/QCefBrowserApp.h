@@ -3,6 +3,7 @@
 #pragma once
 #include <set>
 #include <include/cef_app.h>
+#include "Include/QCefVersion.h"
 
 class QCefBrowserApp : public CefApp, public CefBrowserProcessHandler {
 public:
@@ -38,9 +39,6 @@ private:
 
   virtual void
   OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
-
-  virtual void
-  OnRenderProcessThreadCreated(CefRefPtr<CefListValue> extra_info) override;
 
   virtual CefRefPtr<CefPrintHandler> GetPrintHandler() override;
 

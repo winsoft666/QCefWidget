@@ -41,8 +41,8 @@ if (OS_WINDOWS)
 endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE
-	Qt5::Core
-	Qt5::Gui 
+  Qt5::Core
+  Qt5::Gui 
   Qt5::Widgets
   ${CEF_DLL_WRAPPER}
   ${CEF_LIB_FILE}

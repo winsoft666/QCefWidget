@@ -1,10 +1,10 @@
 #pragma once
 #include <include/cef_v8.h>
-
 #include <list>
 #include <map>
 
 #include "QCefProtocol.h"
+#include "../../../QCefWidget/Include/QCefVersion.h"
 
 class QCefClient : public CefBaseRefCounted {
   // class Accessor

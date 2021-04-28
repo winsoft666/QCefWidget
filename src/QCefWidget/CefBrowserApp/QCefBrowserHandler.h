@@ -3,6 +3,7 @@
 #pragma once
 #include "QCefQueryHandler.h"
 #include "Include/QCefQuery.h"
+#include "Include/QCefVersion.h"
 #include <QEvent>
 #include <QPaintEvent>
 #include <QTextStream>
@@ -48,6 +49,7 @@ class QCefBrowserHandler : public CefClient,
                            public CefLifeSpanHandler,
                            public CefLoadHandler,
                            public CefRequestHandler,
+                           public CefResourceRequestHandler,
                            //public CefResourceHandler,
                            public CefRenderHandler {
 public:
@@ -91,11 +93,17 @@ public:
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override {
     return this;
   }
-
+#if CEF_VERSION_MAJOR == 76
   virtual bool
   OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                            CefProcessId source_process,
                            CefRefPtr<CefProcessMessage> message) override;
+#elif CEF_VERSION_MAJOR == 89
+  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                CefRefPtr<CefFrame> frame,
+                                CefProcessId source_process,
+                                CefRefPtr<CefProcessMessage> message) override;
+#endif
 
 #pragma endregion CefClient
 
@@ -141,9 +149,16 @@ public:
                            CefRefPtr<CefDragData> dragData,
                            CefDragHandler::DragOperationsMask mask) override;
 
+#if CEF_VERSION_MAJOR == 76
   virtual void OnDraggableRegionsChanged(
     CefRefPtr<CefBrowser> browser,
     const std::vector<CefDraggableRegion>& regions) override;
+#elif CEF_VERSION_MAJOR == 89
+  void OnDraggableRegionsChanged(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    const std::vector<CefDraggableRegion>& regions) override;
+#endif
 
 #pragma endregion CefDragHandler
 
@@ -180,6 +195,7 @@ public:
 #pragma region CefLifeSpanHandler
 
   // CefLifeSpanHandler methods:
+#if CEF_VERSION_MAJOR == 76
   virtual bool
   OnBeforePopup(CefRefPtr<CefBrowser> browser,
                 CefRefPtr<CefFrame> frame,
@@ -192,6 +208,22 @@ public:
                 CefRefPtr<CefClient>& client,
                 CefBrowserSettings& settings,
                 bool* no_javascript_access) override;
+#elif CEF_VERSION_MAJOR == 89
+  bool
+  OnBeforePopup(CefRefPtr<CefBrowser> browser,
+                CefRefPtr<CefFrame> frame,
+                const CefString& target_url,
+                const CefString& target_frame_name,
+                CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+                bool user_gesture,
+                const CefPopupFeatures& popupFeatures,
+                CefWindowInfo& windowInfo,
+                CefRefPtr<CefClient>& client,
+                CefBrowserSettings& settings,
+                CefRefPtr<CefDictionaryValue>& extra_info,
+                bool* no_javascript_access) override;
+#endif
+
   virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) override;
   virtual bool DoClose(CefRefPtr<CefBrowser> browser) override;
   virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) override;
@@ -235,11 +267,16 @@ public:
                    CefRequestHandler::WindowOpenDisposition target_disposition,
                    bool user_gesture) override;
 
-  //virtual CefRefPtr<CefResourceRequestHandler>
-  //GetResourceRequestHandler(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame,
-  //                          CefRefPtr<CefRequest> request, bool is_navigation, bool is_download,
-  //                          const CefString &request_initiator,
-  //                          bool &disable_default_handling) override;
+#if CEF_VERSION_MAJOR == 89
+  virtual CefRefPtr<CefResourceRequestHandler>
+  GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
+                            CefRefPtr<CefFrame> frame,
+                            CefRefPtr<CefRequest> request,
+                            bool is_navigation,
+                            bool is_download,
+                            const CefString& request_initiator,
+                            bool& disable_default_handling) override;
+#endif
 
   virtual bool OnQuotaRequest(CefRefPtr<CefBrowser> browser,
                               const CefString& origin_url,
@@ -251,8 +288,8 @@ public:
 
 #pragma endregion CefRequestHandler
 
-#pragma region CefResourceRequestHandler
-
+#pragma region CefRequestHandler
+#if CEF_VERSION_MAJOR == 76
   virtual CefRequestHandler::ReturnValue
   OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                        CefRefPtr<CefFrame> frame,
@@ -267,8 +304,24 @@ public:
   virtual void OnProtocolExecution(CefRefPtr<CefBrowser> browser,
                                    const CefString& url,
                                    bool& allow_os_execution) override;
+#elif CEF_VERSION_MAJOR == 89
+  virtual CefResourceRequestHandler::ReturnValue
+  OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+                       CefRefPtr<CefFrame> frame,
+                       CefRefPtr<CefRequest> request,
+                       CefRefPtr<CefRequestCallback> callback) override;
 
-#pragma endregion CefResourceRequestHandler
+  virtual CefRefPtr<CefResourceHandler>
+  GetResourceHandler(CefRefPtr<CefBrowser> browser,
+                     CefRefPtr<CefFrame> frame,
+                     CefRefPtr<CefRequest> request) override;
+
+  void OnProtocolExecution(CefRefPtr<CefBrowser> browser,
+                           CefRefPtr<CefFrame> frame,
+                           CefRefPtr<CefRequest> request,
+                           bool& allow_os_execution) override;
+#endif
+#pragma endregion CefRequestHandler
 
 #pragma region CefRenderHandler
   bool GetRootScreenRect(CefRefPtr<CefBrowser> browser, CefRect& rect) OVERRIDE;
@@ -289,10 +342,17 @@ public:
                int width,
                int height) OVERRIDE;
 
+#if CEF_VERSION_MAJOR == 76
   void OnCursorChange(CefRefPtr<CefBrowser> browser,
                       CefCursorHandle cursor,
                       CursorType type,
                       const CefCursorInfo& custom_cursor_info) OVERRIDE;
+#elif CEF_VERSION_MAJOR == 89
+  bool OnCursorChange(CefRefPtr<CefBrowser> browser,
+                      CefCursorHandle cursor,
+                      cef_cursor_type_t type,
+                      const CefCursorInfo& custom_cursor_info) OVERRIDE;
+#endif
   void OnImeCompositionRangeChanged(
     CefRefPtr<CefBrowser> browser,
     const CefRange& selection_range,
