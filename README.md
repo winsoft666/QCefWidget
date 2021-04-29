@@ -41,25 +41,24 @@ Support:
 	```
 - Update the [config.cmake](config.cmake) to set the required build configurations.
   **QCefWidget SDK Version**
-  ```bash
-  SET(QCEF_VERSION_MAJOR 1)
-  SET(QCEF_VERSION_MINOR 0)
-  SET(QCEF_VERSION_PATCH 3)
- ```
+	```bash
+	SET(QCEF_VERSION_MAJOR 1)
+	SET(QCEF_VERSION_MINOR 0)
+	SET(QCEF_VERSION_PATCH 3)
+	```
 
-  **CEF SDK**
+  **CEF SDK** 
   Special CEF SDK folder (**Important**):
-  ```bash
-  set(CEF_SDK_DIR 
-	"${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
-  ```
+	```bash
+	set(CEF_SDK_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
+	```
 
   Special CEF SDK version (**Important**):
-  ```bash
-  SET(CEF_VERSION_MAJOR 76)
-  SET(CEF_VERSION_MINOR 1)
-  SET(CEF_VERSION_PATCH 13)
-  ```
+	```bash
+	SET(CEF_VERSION_MAJOR 76)
+	SET(CEF_VERSION_MINOR 1)
+	SET(CEF_VERSION_PATCH 13)
+	```
 
 CEF has two version format:
 - 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
@@ -85,10 +84,10 @@ QCefWidget library will use these version macro to support different CEF version
 
 - Using CMake to build the project
   For example:
-  ```bash
-  mkdir build && cd build
-  cmake .. && cmake --build .
-  ```
+	```bash
+	mkdir build && cd build
+	cmake .. && cmake --build .
+	```
 # 3. Test
 QCefWidget has been tested with follow Qt and CEF version:
 
