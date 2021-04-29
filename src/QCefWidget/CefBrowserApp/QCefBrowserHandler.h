@@ -49,7 +49,9 @@ class QCefBrowserHandler : public CefClient,
                            public CefLifeSpanHandler,
                            public CefLoadHandler,
                            public CefRequestHandler,
+#if CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
                            public CefResourceRequestHandler,
+#endif
                            //public CefResourceHandler,
                            public CefRenderHandler {
 public:
