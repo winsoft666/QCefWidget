@@ -94,15 +94,15 @@ private:
 #pragma region CefRenderProcessHandler
 
   // CefRenderProcessHandler methods:
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 76
   virtual void OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) override;
 #endif
 
   virtual void OnWebKitInitialized() override;
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
   virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
   virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) override;
 #endif
 
@@ -129,12 +129,12 @@ private:
                                     CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefDOMNode> node) override;
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
   virtual bool
   OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                            CefProcessId source_process,
                            CefRefPtr<CefProcessMessage> message) override;
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
   bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
     CefProcessId source_process,

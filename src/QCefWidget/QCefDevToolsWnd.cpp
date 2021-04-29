@@ -23,7 +23,7 @@ QCefDevToolsWnd::QCefDevToolsWnd(CefRefPtr<CefBrowser> targetBrowser,
 }
 
 QCefDevToolsWnd::~QCefDevToolsWnd() {
-  qDebug() << "QCefDevToolsWnd::~QCefDevToolsWnd";
+  qDebug().noquote() << "QCefDevToolsWnd::~QCefDevToolsWnd";
 }
 
 void QCefDevToolsWnd::closeEvent(QCloseEvent* event) {

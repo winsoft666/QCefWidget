@@ -78,9 +78,9 @@ void QCefBrowserApp::OnContextInitialized() {
   CefRefPtr<CefCookieManager> manager =
     CefCookieManager::GetGlobalManager(nullptr);
   DCHECK(manager.get());
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
   manager->SetSupportedSchemes(cookieable_schemes_, nullptr);
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
   manager->SetSupportedSchemes(cookieable_schemes_, true, nullptr);
 #endif
 }

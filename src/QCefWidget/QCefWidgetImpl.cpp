@@ -43,7 +43,7 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget* pWidget)
 }
 
 QCefWidgetImpl::~QCefWidgetImpl() {
-  qDebug() << "QCefWidgetImpl::~QCefWidgetImpl:" << this;
+   qDebug().noquote() << "QCefWidgetImpl::~QCefWidgetImpl:" << this;
   ::DeleteObject(draggableRegion_);
   draggableRegion_ = nullptr;
 
@@ -54,7 +54,7 @@ QCefWidgetImpl::~QCefWidgetImpl() {
 }
 
 bool QCefWidgetImpl::createBrowser(const QString& url) {
-  qDebug() << "QCefWidgetImpl::createBrowser: " << url;
+   qDebug().noquote() << "QCefWidgetImpl::createBrowser: " << url;
   if (browserCreated_)
     return true;
   Q_ASSERT(pWidget_);
@@ -69,7 +69,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
   if (!hwnd)
     return false;
 
-  qDebug() << "deviceScaleFactor: " << deviceScaleFactor_;
+   qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
@@ -135,7 +135,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                                      new RequestContextHandler);
 
   // This method can be called on any browser process thread and will not block.
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
   if (!CefBrowserHost::CreateBrowser(window_info,
                                      pQCefViewHandler_,
                                      url.toStdWString(),
@@ -143,7 +143,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                                      requestContext)) {
     return false;
   }
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
   if (!CefBrowserHost::CreateBrowser(window_info,
                                      pQCefViewHandler_,
                                      url.toStdWString(),
@@ -170,7 +170,7 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   if (!hwnd)
     return false;
 
-  qDebug() << "deviceScaleFactor: " << deviceScaleFactor_;
+   qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
@@ -254,7 +254,7 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 }
 
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
-  qDebug() << "QCefWidgetImpl::browserClosingNotify" << this;
+   qDebug().noquote() << "QCefWidgetImpl::browserClosingNotify" << this;
   browserCreated_ = false;
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
@@ -262,7 +262,7 @@ void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
 }
 
 void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
-  qDebug() << "QCefWidgetImpl::browserDestoryedNotify:" << this;
+   qDebug().noquote() << "QCefWidgetImpl::browserDestoryedNotify:" << this;
   Q_ASSERT(!pCefUIEventWin_);
 
   QCefManager::getInstance().setBrowserClosed(pWidget_);
@@ -351,7 +351,7 @@ BOOL CALLBACK QCefWidgetImpl::UnSubclassWindowsProc(HWND hwnd, LPARAM lParam) {
 }
 
 void QCefWidgetImpl::onScreenChanged(QScreen* screen) {
-  qDebug() << "onScreenChanged";
+   qDebug().noquote() << "onScreenChanged";
 
   simulateResizeEvent();
 }
@@ -570,10 +570,10 @@ QRect QCefWidgetImpl::rect() {
 bool QCefWidgetImpl::event(QEvent* event) {
   if (event->type() == QEvent::WinIdChange) {
     widgetWId_ = pWidget_ ? pWidget_->winId() : 0;
-    qDebug() << "QEvent::WinIdChange to:" << widgetWId_;
+     qDebug().noquote() << "QEvent::WinIdChange to:" << widgetWId_;
   }
   //else if (event->type() == QEvent::Resize) {
-  //  qDebug() << "QEvent::Resize";
+  //   qDebug().noquote() << "QEvent::Resize";
   //  if (initUrl_.length() > 0) {
   //    QString url = initUrl_;
   //    initUrl_.clear();
@@ -641,7 +641,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
       }
     }
     else if (pMsg->message == WM_SIZE) {
-      qDebug() << "WM_SIZE";
+       qDebug().noquote() << "WM_SIZE";
       float scale = pWidget_->devicePixelRatioF();
       bool dpiChanged = false;
       if (scale != deviceScaleFactor_) {
@@ -670,7 +670,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
         if (cefhwnd) {
           QRect rc = pWidget_->rect();
           float scale = deviceScaleFactor_;
-          qDebug() << "Rect:" << rc << ", DpiScale:" << scale;
+           qDebug().noquote() << "Rect:" << rc << ", DpiScale:" << scale;
           ::SetWindowPos(cefhwnd,
                          NULL,
                          rc.left() * scale,

@@ -58,7 +58,7 @@ QCefBrowserHandler::~QCefBrowserHandler() {
     consoleLog_.close();
 }
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
 bool QCefBrowserHandler::OnProcessMessageReceived(
   CefRefPtr<CefBrowser> browser,
   CefProcessId source_process,
@@ -73,7 +73,7 @@ bool QCefBrowserHandler::OnProcessMessageReceived(
 
   return false;
 }
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 bool QCefBrowserHandler::OnProcessMessageReceived(
   CefRefPtr<CefBrowser> browser,
   CefRefPtr<CefFrame> frame,
@@ -226,7 +226,7 @@ bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
 void QCefBrowserHandler::OnDraggableRegionsChanged(
   CefRefPtr<CefBrowser> browser,
   const std::vector<CefDraggableRegion>& regions) {
@@ -235,7 +235,7 @@ void QCefBrowserHandler::OnDraggableRegionsChanged(
     pImpl_->draggableRegionsChangedNotify(browser, regions);
   }
 }
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 void QCefBrowserHandler::OnDraggableRegionsChanged(
   CefRefPtr<CefBrowser> browser,
   CefRefPtr<CefFrame> frame,
@@ -282,7 +282,7 @@ bool QCefBrowserHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
 bool QCefBrowserHandler::OnBeforePopup(
   CefRefPtr<CefBrowser> browser,
   CefRefPtr<CefFrame> frame,
@@ -303,7 +303,7 @@ bool QCefBrowserHandler::OnBeforePopup(
   frame->LoadURL(target_url);
   return true;
 }
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 bool QCefBrowserHandler::OnBeforePopup(
   CefRefPtr<CefBrowser> browser,
   CefRefPtr<CefFrame> frame,
@@ -550,7 +550,7 @@ bool QCefBrowserHandler::OnOpenURLFromTab(
   return false; // return true to cancel this navigation.
 }
 
-#if CEF_VERSION_MAJOR == 89
+#if CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 CefRefPtr<CefResourceRequestHandler>
 QCefBrowserHandler::GetResourceRequestHandler(
   CefRefPtr<CefBrowser> browser,
@@ -603,7 +603,7 @@ void QCefBrowserHandler::OnRenderProcessTerminated(
 #endif
 }
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
 CefRequestHandler::ReturnValue QCefBrowserHandler::OnBeforeResourceLoad(
   CefRefPtr<CefBrowser> browser,
   CefRefPtr<CefFrame> frame,
@@ -628,7 +628,7 @@ void QCefBrowserHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
   }
 }
 
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89 
 CefResourceRequestHandler::ReturnValue QCefBrowserHandler::OnBeforeResourceLoad(
   CefRefPtr<CefBrowser> browser,
   CefRefPtr<CefFrame> frame,
@@ -682,7 +682,7 @@ bool QCefBrowserHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
   screenX = fScale * (float)globalPos.x();
   screenY = fScale * (float)globalPos.y();
 
-  //qDebug() << viewX << "," << viewY <<  " -> " << screenX << ", " << screenY;
+  // qDebug().noquote() << viewX << "," << viewY <<  " -> " << screenX << ", " << screenY;
   return true;
 }
 
@@ -838,7 +838,7 @@ void QCefBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser,
     pImpl_->updateCefWidget(updateRegion);
 }
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 76
 void QCefBrowserHandler::OnCursorChange(
   CefRefPtr<CefBrowser> browser,
   CefCursorHandle cursor,
@@ -890,13 +890,13 @@ bool QCefBrowserHandler::triggerEvent(const CefRefPtr<CefProcessMessage> msg) {
   if (msg->GetName().empty())
     return false;
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
   CefRefPtr<CefBrowser> pBrowser = browser();
   if (pBrowser) {
     pBrowser->SendProcessMessage(PID_RENDERER, msg);
     return true;
   }
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
   CefRefPtr<CefBrowser> pBrowser = browser();
   if (pBrowser && pBrowser->GetMainFrame()) {
     pBrowser->GetMainFrame()->SendProcessMessage(PID_RENDERER, msg);

@@ -5,8 +5,7 @@
 #include "QCefRenderApp.h"
 #include "RenderDelegates/QCefDefaultRenderDelegate.h"
 
-QCefRenderApp::QCefRenderApp() {
-}
+QCefRenderApp::QCefRenderApp() {}
 
 QCefRenderApp::~QCefRenderApp() {}
 
@@ -34,7 +33,7 @@ CefRefPtr<CefBrowserProcessHandler> QCefRenderApp::GetBrowserProcessHandler() {
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 76
 void QCefRenderApp::OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) {
   CEF_REQUIRE_RENDERER_THREAD();
 
@@ -49,22 +48,23 @@ void QCefRenderApp::OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) {
 void QCefRenderApp::OnWebKitInitialized() {
   CEF_REQUIRE_RENDERER_THREAD();
 
-  OutputDebugStringA("[CEF] OnWebKitInitialized\n");
+#if CEF_VERSION_MAJOR == 89
   CreateRenderDelegates(render_delegates_);
+#endif
 
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end(); ++it)
     (*it)->OnWebKitInitialized(this);
 }
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
 void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_RENDERER_THREAD();
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end(); ++it)
     (*it)->OnBrowserCreated(this, browser);
 }
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefDictionaryValue> extra_info) {
   CEF_REQUIRE_RENDERER_THREAD();
@@ -132,7 +132,7 @@ void QCefRenderApp::OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
     (*it)->OnFocusedNodeChanged(this, browser, frame, node);
 }
 
-#if CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72
 bool QCefRenderApp::OnProcessMessageReceived(
   CefRefPtr<CefBrowser> browser,
   CefProcessId source_process,
@@ -149,7 +149,7 @@ bool QCefRenderApp::OnProcessMessageReceived(
 
   return handled;
 }
-#elif CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 bool QCefRenderApp::OnProcessMessageReceived(
   CefRefPtr<CefBrowser> browser,
   CefRefPtr<CefFrame> frame,

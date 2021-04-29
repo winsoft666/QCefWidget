@@ -25,7 +25,7 @@ QCefWidget::QCefWidget(const QString& url, QWidget* parent)
 }
 
 QCefWidget::~QCefWidget() {
-  qDebug() << "QCefWidget::~QCefWidget";
+  qDebug().noquote() << "QCefWidget::~QCefWidget";
 }
 
 void QCefWidget::navigateToUrl(const QString& url) {
