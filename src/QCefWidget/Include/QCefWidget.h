@@ -82,6 +82,9 @@ public:
                                    const QString& identifier);
   virtual bool removeResourceProvider(const QString& identifier);
   virtual bool removeAllResourceProvider();
+
+  static QString QCefWidgetVersion();
+  static QString CefVersion();
 signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);

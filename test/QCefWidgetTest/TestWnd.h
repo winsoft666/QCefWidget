@@ -66,6 +66,8 @@ private:
   HCOUNTER renderProcessCpuCounter_;
   HCOUNTER renderProcessMemCounter_;
   int cpuProcessorCount_;
+
+  QLabel * labelVersion_;
 };
 
 #endif // TEST_WND_H__

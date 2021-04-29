@@ -282,6 +282,9 @@ void TestWnd::setupUi() {
   hlTop->addLayout(vlButton);
 
   QHBoxLayout* hlBottom = new QHBoxLayout();
+  labelVersion_ = new QLabel();
+  labelVersion_->setText(QString("QCefWidget: %1  CEF: %2").arg(QCefWidget::QCefWidgetVersion()).arg(QCefWidget::CefVersion()));
+  hlBottom->addWidget(labelVersion_);
   hlBottom->addStretch();
   pushButtonClose_ = newPushButton("", "Close");
   pushButtonClose_->setToolTip("simulate exit with call close()");

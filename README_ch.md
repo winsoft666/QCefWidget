@@ -1,5 +1,6 @@
 [ >>> English Version](README.md)
 
+# 一、QCefWidget
 `QCefWidget`项目提供一个Widget来显示网页.
 
 支持：
@@ -25,13 +26,12 @@
 ---
 
 
-## 快速构建
+# 二、快速构建
 
-1. 下载安装[CMake](https://cmake.org/).
-
-2. 从[Qt Downloads](https://download.qt.io/archive/qt/)下载安装Qt SDK.
-
-3. 从[Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html)下载CEF预编译版本，并解压到 ***dep*** 目录, 目录结构类似:
+- 下载安装[CMake](https://cmake.org/).
+- 从[Qt Downloads](https://download.qt.io/archive/qt/)下载安装Qt SDK.
+- 从[Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html)下载CEF预编译版本，并解压到 ***dep*** 目录（非必需的） 
+  目录结构类似:
     ```
     root
     ├─dep
@@ -39,25 +39,68 @@
     ├─src
     └─test
     ```
+	
+-  在[config.cmake](config.cmake)文件中配置必要的参数.
+	** QCefWidget版本 **
+	```
+	SET(QCEF_VERSION_MAJOR 1)
+	SET(QCEF_VERSION_MINOR 0)
+	SET(QCEF_VERSION_PATCH 3)
+	```
 
-4. 在[config.cmake](config.cmake)文件中设置必要的配置参数.
+	**CEF SDK**
+	指定CEF SDK目录（重要）：
+	```
+	set(CEF_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
+	```
 
-5. 使用`CMake`命令生成项目文件并构建:
-    ``` bat
+	指定CEF SDK的版本信息（重要）：
+	```
+	SET(CEF_VERSION_MAJOR 76)
+	SET(CEF_VERSION_MINOR 1)
+	SET(CEF_VERSION_PATCH 13)
+	```
+	
+	CEF有两种版本格式，例如：
+	- 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
+	- **73.1.3**+g46cf800+chromium-73.0.3683.75 / Chromium 73.0.3683.75
+	
+	在指定CEF_VERSION_XXX宏时，第一种借用Chromium版本号的前3段（加粗部分），第二种可以直接使用CEF的版本（加粗部分）。
+
+
+	在代码中将会使用这些预定义宏进行CEF版本适配，如：
+	```c++
+	#if CEF_VERSION_MAJOR == 72
+	  virtual bool
+	  OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+							   CefProcessId source_process,
+							   CefRefPtr<CefProcessMessage> message) override;
+	#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
+	  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+									CefRefPtr<CefFrame> frame,
+									CefProcessId source_process,
+									CefRefPtr<CefProcessMessage> message) override;
+	#endif
+	```
+
+- 使用`CMake`命令生成项目文件并构建:
+    ``` bash
     mkdir build && cd build
     cmake .. && cmake --build .
     ```
 
-## 测试
+# 三、测试
 已经针对下面版本的Qt和CEF组合进行了测试：
 
 |Qt版本|CEF版本|是否通过|
 |---|---|---|
 |5.12.10|3.3626.1895|✅|
+|5.12.10|76.1.13|✅|
+|5.12.10|89.0.18|✅|
 |5.14.2|3.3626.1895|✅|
 
 
-## 用法
+# 四、用法
 test目录中的QCefWidgetTest是一个示例程序，演示了如何使用QCefWidget。
 
 ![screenshot1 on windows](test/Screenshot/screenshot1.png)

@@ -1,4 +1,5 @@
 #include "Include/QCefWidget.h"
+#include "Include/QCefVersion.h"
 #include "QCefWidgetImpl.h"
 #include <QAbstractEventDispatcher>
 #include <QDebug>
@@ -175,6 +176,20 @@ bool QCefWidget::removeResourceProvider(const QString& identifier) {
 bool QCefWidget::removeAllResourceProvider() {
   Q_ASSERT(pImpl_);
   return pImpl_->removeAllResourceProvider();
+}
+
+QString QCefWidget::QCefWidgetVersion() {
+  return QString("%1.%2.%3")
+    .arg(QCEF_VERSION_MAJOR)
+    .arg(QCEF_VERSION_MINOR)
+    .arg(QCEF_VERSION_PATCH);
+}
+
+QString QCefWidget::CefVersion() {
+  return QString("%1.%2.%3")
+    .arg(CEF_VERSION_MAJOR)
+    .arg(CEF_VERSION_MINOR)
+    .arg(CEF_VERSION_PATCH);
 }
 
 bool QCefWidget::nativeEvent(const QByteArray& eventType,
