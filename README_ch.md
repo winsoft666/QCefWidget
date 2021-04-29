@@ -28,66 +28,80 @@
 
 # 二、快速构建
 
-- 下载安装[CMake](https://cmake.org/).
-- 从[Qt Downloads](https://download.qt.io/archive/qt/)下载安装Qt SDK.
-- 从[Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html)下载CEF预编译版本，并解压到 ***dep*** 目录（非必需的） 
-  目录结构类似:
-    ```
-    root
-    ├─dep
-    │  └─cef_binary_80.1.15+g7b802c9+chromium-80.0.3987.163_windows32
-    ├─src
-    └─test
-    ```
+## 2.1 CMake
+
+下载安装[CMake](https://cmake.org/).
+
+## 2.2 Qt SDK
+
+从[Qt Downloads](https://download.qt.io/archive/qt/)下载安装Qt SDK.
+
+## 2.3 CEF预编译文件
+
+从[Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html)下载CEF预编译版本，并解压到 ***dep*** 目录（非必需的）。
+
+目录结构类似:
+```txt
+root
+├─dep
+│  └─cef_binary_80.1.15+g7b802c9+chromium-80.0.3987.163_windows32
+├─src
+└─test
+```
 	
--  在[config.cmake](config.cmake)文件中配置必要的参数.
-	** QCefWidget版本 **
-	```
-	SET(QCEF_VERSION_MAJOR 1)
-	SET(QCEF_VERSION_MINOR 0)
-	SET(QCEF_VERSION_PATCH 3)
-	```
+## 2.4 config.cmake
+在[config.cmake](config.cmake)文件中配置必要的参数.
+### 2.4.1 QCefWidget版本
+```bash
+SET(QCEF_VERSION_MAJOR 1)
+SET(QCEF_VERSION_MINOR 0)
+SET(QCEF_VERSION_PATCH 3)
+```
 
-	**CEF SDK**
-	指定CEF SDK目录（重要）：
-	```
-	set(CEF_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
-	```
+### 2.4.2 CEF SDK
 
-	指定CEF SDK的版本信息（重要）：
-	```
-	SET(CEF_VERSION_MAJOR 76)
-	SET(CEF_VERSION_MINOR 1)
-	SET(CEF_VERSION_PATCH 13)
-	```
+指定CEF SDK目录：
+
+```bash
+set(CEF_SDK_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
+```
+
+指定CEF SDK的版本信息：
+
+```bash
+SET(CEF_VERSION_MAJOR 76)
+SET(CEF_VERSION_MINOR 1)
+SET(CEF_VERSION_PATCH 13)
+```
 	
-	CEF有两种版本格式，例如：
-	- 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
-	- **73.1.3**+g46cf800+chromium-73.0.3683.75 / Chromium 73.0.3683.75
-	
-	在指定CEF_VERSION_XXX宏时，第一种借用Chromium版本号的前3段（加粗部分），第二种可以直接使用CEF的版本（加粗部分）。
+CEF有两种版本格式，例如：
+- 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
+- **73.1.3**+g46cf800+chromium-73.0.3683.75 / Chromium 73.0.3683.75
 
+在指定CEF_VERSION_XXX宏时，第一种借用Chromium版本号的前3段（加粗部分），第二种可以直接使用CEF的版本（加粗部分）。
 
-	在代码中将会使用这些预定义宏进行CEF版本适配，如：
-	```c++
-	#if CEF_VERSION_MAJOR == 72
-	  virtual bool
-	  OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-							   CefProcessId source_process,
-							   CefRefPtr<CefProcessMessage> message) override;
-	#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
-	  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-									CefRefPtr<CefFrame> frame,
-									CefProcessId source_process,
-									CefRefPtr<CefProcessMessage> message) override;
-	#endif
-	```
+在代码中将会使用这些预定义宏进行CEF版本适配，如：
 
-- 使用`CMake`命令生成项目文件并构建:
-    ``` bash
-    mkdir build && cd build
-    cmake .. && cmake --build .
-    ```
+```c++
+#if CEF_VERSION_MAJOR == 72
+	virtual bool
+	OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+							CefProcessId source_process,
+							CefRefPtr<CefProcessMessage> message) override;
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
+	bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+								CefRefPtr<CefFrame> frame,
+								CefProcessId source_process,
+								CefRefPtr<CefProcessMessage> message) override;
+#endif
+```
+
+## 2.5 使用`CMake`命令生成项目文件并构建
+
+``` bash
+mkdir build && cd build
+cmake .. && cmake --build .
+```
 
 # 三、测试
 已经针对下面版本的Qt和CEF组合进行了测试：

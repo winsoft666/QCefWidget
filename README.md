@@ -28,69 +28,85 @@ Support:
 
 
 # 2. Build Instruction
-- Download and install [CMake](https://cmake.org/).
-- Download and install Qt SDK from [Qt Downloads](https://download.qt.io/archive/qt/).
-- Download CEF binary distribution [Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html) and extract it to ***dep***   (Optional) directory.
-  For example:
-	```
-	root
-	├─dep
-	│  └─cef_binary_80.1.15+g7b802c9+chromium-80.0.3987.163_windows32
-	├─src
-	└─test
-	```
-- Update the [config.cmake](config.cmake) to set the required build configurations.
-- 
-  **QCefWidget SDK Version**
-	```bash
-	SET(QCEF_VERSION_MAJOR 1)
-	SET(QCEF_VERSION_MINOR 0)
-	SET(QCEF_VERSION_PATCH 3)
-	```
+## 2.1 CMake
+
+Download and install [CMake](https://cmake.org/).
+
+## 2.2 Qt SDK
+
+Download and install Qt SDK from [Qt Downloads](https://download.qt.io/archive/qt/).
+
+## 2.3 CEF binary distribution.
+
+Download CEF binary distribution from [Chromium Embedded Framework (CEF) Automated Builds](https://cef-builds.spotifycdn.com/index.html) and extract it to ***dep***   (Optional) directory.
+
+For example:
+
+```txt
+root
+├─dep
+│  └─cef_binary_80.1.15+g7b802c9+chromium-80.0.3987.163_windows32
+├─src
+└─test
+```
+
+## 2.4 config.cmake
+Update the [config.cmake](config.cmake) to set the required build configurations.
+
+### 2.4.1 QCefWidget SDK Version
+
+```bash
+SET(QCEF_VERSION_MAJOR 1)
+SET(QCEF_VERSION_MINOR 0)
+SET(QCEF_VERSION_PATCH 3)
+```
 
 
-  **CEF SDK** 
-  
-  Special CEF SDK folder (**Important**):
-	```bash
-	set(CEF_SDK_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
-	```
+### 2.4.2 CEF SDK
+#### Special CEF SDK folder:
 
-  Special CEF SDK version (**Important**):
-	```bash
-	SET(CEF_VERSION_MAJOR 76)
-	SET(CEF_VERSION_MINOR 1)
-	SET(CEF_VERSION_PATCH 13)
-	```
+```bash
+set(CEF_SDK_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
+```
 
-  CEF has two version format:
-	- 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
-	- **73.1.3**+g46cf800+chromium-73.0.3683.75 / Chromium 73.0.3683.75
+#### Special CEF SDK version:
+
+```bash
+SET(CEF_VERSION_MAJOR 76)
+SET(CEF_VERSION_MINOR 1)
+SET(CEF_VERSION_PATCH 13)
+```
+
+CEF has two version format:
+- 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
+- **73.1.3**+g46cf800+chromium-73.0.3683.75 / Chromium 73.0.3683.75
 
 For CEF_VERSION_XXX macro, the first format type borrows the first 3 paragraphs of the Chromium's version number, the second format can use CEF's version directly.
 
 QCefWidget library will use these version macro to support different CEF version, such as:
+
 ``` c++
 #if CEF_VERSION_MAJOR == 72
-  virtual bool
-  OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-			   CefProcessId source_process,
-			   CefRefPtr<CefProcessMessage> message) override;
+virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+			CefProcessId source_process,
+			CefRefPtr<CefProcessMessage> message) override;
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
-  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-				CefRefPtr<CefFrame> frame,
-				CefProcessId source_process,
-				CefRefPtr<CefProcessMessage> message) override;
+virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+			CefRefPtr<CefFrame> frame,
+			CefProcessId source_process,
+			CefRefPtr<CefProcessMessage> message) override;
 #endif
 ```
 
 
-- Using CMake to build the project
-  For example:
-	```bash
-	mkdir build && cd build
-	cmake .. && cmake --build .
-	```
+## 2.5 Using CMake to build the project.
+For example:
+
+```bash
+mkdir build && cd build
+cmake .. && cmake --build .
+```
+
 # 3. Test
 QCefWidget has been tested with follow Qt and CEF version:
 
