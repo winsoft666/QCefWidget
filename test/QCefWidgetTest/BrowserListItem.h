@@ -3,16 +3,16 @@
 
 class CefWnd;
 class BrowserListItem : public QWidget {
-public:
+ public:
   BrowserListItem(CefWnd* pCefWnd, QWidget* parent = nullptr);
   ~BrowserListItem();
 
   CefWnd* cefWnd();
 
-protected slots:
+ protected slots:
   void onCefWndVisibleChanged(bool bVisible);
 
-protected:
+ protected:
   void setupUi();
 
   QComboBox* comboBoxUrl_;

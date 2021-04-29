@@ -5,7 +5,7 @@
 #include <QColor>
 
 class QCefBrowserSetting {
-public:
+ public:
   QCefBrowserSetting();
   ~QCefBrowserSetting();
 
@@ -20,4 +20,4 @@ public:
   QColor backgroundColor;
   QString consoleLogPath;
 };
-#endif // !QCEF_BROWSER_SETTING_H_
+#endif  // !QCEF_BROWSER_SETTING_H_

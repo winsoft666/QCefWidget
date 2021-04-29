@@ -14,8 +14,11 @@ class QCefWidgetImpl;
 class QCefDevToolsWnd;
 class QCefManager : public QObject {
   Q_OBJECT
-public:
-  enum BrowserStatus { BS_NOT_CREATE = 0, BS_CREATED, BS_CLOSING, BS_CLOSED };
+ public:
+  enum BrowserStatus { BS_NOT_CREATE = 0,
+                       BS_CREATED,
+                       BS_CLOSING,
+                       BS_CLOSED };
   static QCefManager& getInstance();
   void initializeCef();
   void uninitializeCef();
@@ -23,7 +26,7 @@ public:
   QWidget* addBrowser(QWidget* pCefWidget,
                       QCefWidgetImpl* impl,
                       CefRefPtr<CefBrowser> browser,
-                      bool osrMode); // return top-level widget
+                      bool osrMode);  // return top-level widget
 
   void removeCefWidget(QWidget* pCefWidget);
 
@@ -37,7 +40,7 @@ public:
   void closeDevTools(QWidget* pCefWidget);
   void devToolsClosedNotify(QCefDevToolsWnd* pWnd);
 
-protected:
+ protected:
   QCefManager();
   ~QCefManager();
 
@@ -46,7 +49,7 @@ protected:
   void tryCloseAllBrowsers(HWND hTopWidget);
   void tryCloseAllBrowsers(QWidget* pTopLevelWidget);
 
-private:
+ private:
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   static LRESULT CALLBACK newWndProc(HWND hWnd,
                                      UINT uMsg,
@@ -87,4 +90,4 @@ private:
   std::recursive_mutex cefsMutex_;
   std::list<CefInfo> cefs_;
 };
-#endif // !QCEF_MANAGER_H_
+#endif  // !QCEF_MANAGER_H_

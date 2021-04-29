@@ -10,7 +10,8 @@ QCefBrowserApp::QCefBrowserApp() {}
 QCefBrowserApp::~QCefBrowserApp() {}
 
 void QCefBrowserApp::OnBeforeCommandLineProcessing(
-  const CefString& process_type, CefRefPtr<CefCommandLine> command_line) {
+    const CefString& process_type,
+    CefRefPtr<CefCommandLine> command_line) {
   // All of switch can find from these:
   //   base/base_switches.cc
   //   cef/libcef/common/cef_switches.cc
@@ -46,17 +47,13 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(
 
   command_line->AppendSwitch("enable-begin-frame-scheduling");
 
-  if (QCefGlobalSetting::flush_plugin_path.length() > 0 &&
-      QCefGlobalSetting::flush_plugin_ver.length() > 0) {
-    command_line->AppendSwitchWithValue("ppapi-flash-path",
-                                        QCefGlobalSetting::flush_plugin_path);
-    command_line->AppendSwitchWithValue("ppapi-flash-version",
-                                        QCefGlobalSetting::flush_plugin_ver);
+  if (QCefGlobalSetting::flush_plugin_path.length() > 0 && QCefGlobalSetting::flush_plugin_ver.length() > 0) {
+    command_line->AppendSwitchWithValue("ppapi-flash-path", QCefGlobalSetting::flush_plugin_path);
+    command_line->AppendSwitchWithValue("ppapi-flash-version", QCefGlobalSetting::flush_plugin_ver);
   }
 }
 
-void QCefBrowserApp::OnRegisterCustomSchemes(
-  CefRawPtr<CefSchemeRegistrar> registrar) {}
+void QCefBrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {}
 
 CefRefPtr<CefResourceBundleHandler> QCefBrowserApp::GetResourceBundleHandler() {
   return nullptr;
@@ -76,7 +73,7 @@ void QCefBrowserApp::OnContextInitialized() {
 
   // Register cookieable schemes with the global cookie manager.
   CefRefPtr<CefCookieManager> manager =
-    CefCookieManager::GetGlobalManager(nullptr);
+      CefCookieManager::GetGlobalManager(nullptr);
   DCHECK(manager.get());
 #if CEF_VERSION_MAJOR == 72
   manager->SetSupportedSchemes(cookieable_schemes_, nullptr);
@@ -85,8 +82,7 @@ void QCefBrowserApp::OnContextInitialized() {
 #endif
 }
 
-void QCefBrowserApp::OnBeforeChildProcessLaunch(
-  CefRefPtr<CefCommandLine> command_line) {}
+void QCefBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) {}
 
 CefRefPtr<CefPrintHandler> QCefBrowserApp::GetPrintHandler() {
   return nullptr;

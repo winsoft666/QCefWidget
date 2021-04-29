@@ -8,16 +8,16 @@
 class QCefWidget;
 class QCefDevToolsWnd : public QMainWindow {
   Q_OBJECT
-public:
+ public:
   QCefDevToolsWnd(CefRefPtr<CefBrowser> targetBrowser,
                   QWidget* parent = nullptr);
   ~QCefDevToolsWnd();
 
-protected:
+ protected:
   void closeEvent(QCloseEvent* event) override;
   void setupUi();
 
   QCefWidget* cefWidget_;
   CefRefPtr<CefBrowser> targetBrowser_;
 };
-#endif // !QCEF_DEVTOOLS_WND_H_
+#endif  // !QCEF_DEVTOOLS_WND_H_

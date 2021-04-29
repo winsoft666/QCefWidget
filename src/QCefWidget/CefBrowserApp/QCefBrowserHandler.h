@@ -54,7 +54,7 @@ class QCefBrowserHandler : public CefClient,
 #endif
                            //public CefResourceHandler,
                            public CefRenderHandler {
-public:
+ public:
   QCefBrowserHandler(QCefWidgetImpl* pImpl);
   ~QCefBrowserHandler();
 
@@ -153,13 +153,13 @@ public:
 
 #if CEF_VERSION_MAJOR == 72
   virtual void OnDraggableRegionsChanged(
-    CefRefPtr<CefBrowser> browser,
-    const std::vector<CefDraggableRegion>& regions) override;
+      CefRefPtr<CefBrowser> browser,
+      const std::vector<CefDraggableRegion>& regions) override;
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
   void OnDraggableRegionsChanged(
-    CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    const std::vector<CefDraggableRegion>& regions) override;
+      CefRefPtr<CefBrowser> browser,
+      CefRefPtr<CefFrame> frame,
+      const std::vector<CefDraggableRegion>& regions) override;
 #endif
 
 #pragma endregion CefDragHandler
@@ -175,8 +175,7 @@ public:
                           CefRefPtr<CefJSDialogCallback> callback,
                           bool& suppress_message) override;
 
-  virtual bool
-  OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
+  virtual bool OnBeforeUnloadDialog(CefRefPtr<CefBrowser> browser,
                        const CefString& message_text,
                        bool is_reload,
                        CefRefPtr<CefJSDialogCallback> callback) override;
@@ -198,8 +197,7 @@ public:
 
   // CefLifeSpanHandler methods:
 #if CEF_VERSION_MAJOR == 72
-  virtual bool
-  OnBeforePopup(CefRefPtr<CefBrowser> browser,
+  virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                 CefRefPtr<CefFrame> frame,
                 const CefString& target_url,
                 const CefString& target_frame_name,
@@ -211,8 +209,7 @@ public:
                 CefBrowserSettings& settings,
                 bool* no_javascript_access) override;
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
-  bool
-  OnBeforePopup(CefRefPtr<CefBrowser> browser,
+  bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                 CefRefPtr<CefFrame> frame,
                 const CefString& target_url,
                 const CefString& target_frame_name,
@@ -262,16 +259,14 @@ public:
                               bool user_gesture,
                               bool is_redirect) override;
 
-  virtual bool
-  OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
+  virtual bool OnOpenURLFromTab(CefRefPtr<CefBrowser> browser,
                    CefRefPtr<CefFrame> frame,
                    const CefString& target_url,
                    CefRequestHandler::WindowOpenDisposition target_disposition,
                    bool user_gesture) override;
 
 #if CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
-  virtual CefRefPtr<CefResourceRequestHandler>
-  GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
+  virtual CefRefPtr<CefResourceRequestHandler> GetResourceRequestHandler(CefRefPtr<CefBrowser> browser,
                             CefRefPtr<CefFrame> frame,
                             CefRefPtr<CefRequest> request,
                             bool is_navigation,
@@ -292,14 +287,12 @@ public:
 
 #pragma region CefRequestHandler
 #if CEF_VERSION_MAJOR == 72
-  virtual CefRequestHandler::ReturnValue
-  OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+  virtual CefRequestHandler::ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                        CefRefPtr<CefFrame> frame,
                        CefRefPtr<CefRequest> request,
                        CefRefPtr<CefRequestCallback> callback) override;
 
-  virtual CefRefPtr<CefResourceHandler>
-  GetResourceHandler(CefRefPtr<CefBrowser> browser,
+  virtual CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
                      CefRefPtr<CefFrame> frame,
                      CefRefPtr<CefRequest> request) override;
 
@@ -307,14 +300,12 @@ public:
                                    const CefString& url,
                                    bool& allow_os_execution) override;
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
-  virtual CefResourceRequestHandler::ReturnValue
-  OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
+  virtual CefResourceRequestHandler::ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                        CefRefPtr<CefFrame> frame,
                        CefRefPtr<CefRequest> request,
                        CefRefPtr<CefRequestCallback> callback) override;
 
-  virtual CefRefPtr<CefResourceHandler>
-  GetResourceHandler(CefRefPtr<CefBrowser> browser,
+  virtual CefRefPtr<CefResourceHandler> GetResourceHandler(CefRefPtr<CefBrowser> browser,
                      CefRefPtr<CefFrame> frame,
                      CefRefPtr<CefRequest> request) override;
 
@@ -356,9 +347,9 @@ public:
                       const CefCursorInfo& custom_cursor_info) OVERRIDE;
 #endif
   void OnImeCompositionRangeChanged(
-    CefRefPtr<CefBrowser> browser,
-    const CefRange& selection_range,
-    const CefRenderHandler::RectList& character_bounds) OVERRIDE;
+      CefRefPtr<CefBrowser> browser,
+      const CefRange& selection_range,
+      const CefRenderHandler::RectList& character_bounds) OVERRIDE;
 #pragma endregion CefRenderHandler
 
   /////////////////////////////////////////////////////////////////////////
@@ -367,10 +358,7 @@ public:
 
   bool triggerEvent(const CefRefPtr<CefProcessMessage> msg);
 
-  bool responseQuery(const int64_t query,
-                     bool success,
-                     const CefString& response,
-                     int error);
+  bool responseQuery(const int64_t query, bool success, const CefString& response, int error);
 
   bool dispatchNotifyRequest(CefRefPtr<CefBrowser> browser,
                              CefProcessId source_process,
@@ -392,10 +380,10 @@ public:
   bool removeResourceProvider(const QString& identifier);
   bool removeAllResourceProvider();
 
-protected:
+ protected:
   CefRect getPopupRectInWebView(const CefRect& original_rect) const;
 
-private:
+ private:
   QCefWidgetImpl* pImpl_;
 
   int browserCount_;

@@ -19,20 +19,20 @@
 
 class QCEFWIDGET_EXPORT QCefEvent : public QObject {
   Q_OBJECT
-public:
+ public:
   QCefEvent();
 
-  QCefEvent(const QString &name);
+  QCefEvent(const QString& name);
 
-  void setEventName(const QString &name);
+  void setEventName(const QString& name);
 
-  void setIntProperty(const QString &key, int value);
+  void setIntProperty(const QString& key, int value);
 
-  void setDoubleProperty(const QString &key, double value);
+  void setDoubleProperty(const QString& key, double value);
 
-  void setStringProperty(const QString &key, const QString& value);
+  void setStringProperty(const QString& key, const QString& value);
 
-  void setBoolProperty(const QString &key, bool value);
+  void setBoolProperty(const QString& key, bool value);
 };
 
-#endif // QCEFEVENT_H
+#endif  // QCEFEVENT_H

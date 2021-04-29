@@ -4,8 +4,8 @@
 #include "Include/QCefOpenGLWidget.h"
 #include "QCefWidgetImpl.h"
 
-QCefQueryHandler::QCefQueryHandler(QCefWidgetImpl* pImpl)
-  : pCefImpl_(pImpl) {}
+QCefQueryHandler::QCefQueryHandler(QCefWidgetImpl* pImpl) :
+    pCefImpl_(pImpl) {}
 
 QCefQueryHandler::~QCefQueryHandler() {}
 

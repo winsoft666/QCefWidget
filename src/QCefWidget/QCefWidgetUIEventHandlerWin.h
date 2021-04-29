@@ -9,7 +9,7 @@
 #include "QCefIMEHandlerWin.h"
 
 class QCefWidgetUIEventHandlerWin {
-public:
+ public:
   QCefWidgetUIEventHandlerWin(HWND h,
                               CefRefPtr<CefBrowser> pCefBrowser,
                               CefRefPtr<QCefBrowserHandler> pBrowserHandler);
@@ -26,9 +26,9 @@ public:
   OnCaptureLostEvent(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   void OnImeCompositionRangeChanged(
-    CefRefPtr<CefBrowser> browser,
-    const CefRange& selection_range,
-    const CefRenderHandler::RectList& character_bounds);
+      CefRefPtr<CefBrowser> browser,
+      const CefRange& selection_range,
+      const CefRenderHandler::RectList& character_bounds);
 
   void setDeviceScaleFactor(float factor);
   bool IsOverPopupWidget(int x, int y) const;
@@ -36,7 +36,7 @@ public:
   int GetPopupYOffset() const;
   void ApplyPopupOffset(int& x, int& y) const;
 
-private:
+ private:
   bool IsKeyDown(WPARAM wParam);
   int GetCefMouseModifiers(WPARAM wParam);
   int GetCefKeyboardModifiers(WPARAM wParam, LPARAM lParam);
@@ -45,7 +45,7 @@ private:
 
   CefRefPtr<CefBrowserHost> browserHost();
 
-private:
+ private:
   HWND hwnd_;
   CefRefPtr<CefBrowser> pCefBrowser_;
   CefRefPtr<QCefBrowserHandler> pBrowserHandler_;
@@ -67,4 +67,4 @@ private:
 };
 
 #endif
-#endif // !UI_EVENT_HANDLER_WIN_H_
+#endif  // !UI_EVENT_HANDLER_WIN_H_

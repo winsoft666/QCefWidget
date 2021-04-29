@@ -24,26 +24,26 @@ void DeviceToLogical(CefMouseEvent& value, float device_scale_factor) {
   value.x = DeviceToLogical(value.x, device_scale_factor);
   value.y = DeviceToLogical(value.y, device_scale_factor);
 }
-} // namespace
+}  // namespace
 
 QCefWidgetUIEventHandlerWin::QCefWidgetUIEventHandlerWin(
-  HWND h,
-  CefRefPtr<CefBrowser> pCefBrowser,
-  CefRefPtr<QCefBrowserHandler> pBrowserHandler)
-  : deviceScaleFactor_(1.0f)
-  , hwnd_(h)
-  , pCefBrowser_(pCefBrowser)
-  , pBrowserHandler_(pBrowserHandler)
-  , lastMousePos_()
-  , currentMousePos_()
-  , mouseRotation_(false)
-  , mouseTracking_(false)
-  , lastClickX_(0)
-  , lastClickY_(0)
-  , lastClickButton_(MBT_LEFT)
-  , lastClickCount_(0)
-  , lastClickTime_(0)
-  , lastMouseDownOnView_(false) {
+    HWND h,
+    CefRefPtr<CefBrowser> pCefBrowser,
+    CefRefPtr<QCefBrowserHandler> pBrowserHandler) :
+    deviceScaleFactor_(1.0f),
+    hwnd_(h),
+    pCefBrowser_(pCefBrowser),
+    pBrowserHandler_(pBrowserHandler),
+    lastMousePos_(),
+    currentMousePos_(),
+    mouseRotation_(false),
+    mouseTracking_(false),
+    lastClickX_(0),
+    lastClickY_(0),
+    lastClickButton_(MBT_LEFT),
+    lastClickCount_(0),
+    lastClickTime_(0),
+    lastMouseDownOnView_(false) {
   // TODO: Qt widget's hwnd maybe change
   imeHandler_ = std::make_unique<QCefIMEHandlerWin>(hwnd_);
 }
@@ -106,66 +106,66 @@ int QCefWidgetUIEventHandlerWin::GetCefKeyboardModifiers(WPARAM wparam,
     modifiers |= EVENTFLAG_CAPS_LOCK_ON;
 
   switch (wparam) {
-  case VK_RETURN:
-    if ((lparam >> 16) & KF_EXTENDED)
+    case VK_RETURN:
+      if ((lparam >> 16) & KF_EXTENDED)
+        modifiers |= EVENTFLAG_IS_KEY_PAD;
+      break;
+    case VK_INSERT:
+    case VK_DELETE:
+    case VK_HOME:
+    case VK_END:
+    case VK_PRIOR:
+    case VK_NEXT:
+    case VK_UP:
+    case VK_DOWN:
+    case VK_LEFT:
+    case VK_RIGHT:
+      if (!((lparam >> 16) & KF_EXTENDED))
+        modifiers |= EVENTFLAG_IS_KEY_PAD;
+      break;
+    case VK_NUMLOCK:
+    case VK_NUMPAD0:
+    case VK_NUMPAD1:
+    case VK_NUMPAD2:
+    case VK_NUMPAD3:
+    case VK_NUMPAD4:
+    case VK_NUMPAD5:
+    case VK_NUMPAD6:
+    case VK_NUMPAD7:
+    case VK_NUMPAD8:
+    case VK_NUMPAD9:
+    case VK_DIVIDE:
+    case VK_MULTIPLY:
+    case VK_SUBTRACT:
+    case VK_ADD:
+    case VK_DECIMAL:
+    case VK_CLEAR:
       modifiers |= EVENTFLAG_IS_KEY_PAD;
-    break;
-  case VK_INSERT:
-  case VK_DELETE:
-  case VK_HOME:
-  case VK_END:
-  case VK_PRIOR:
-  case VK_NEXT:
-  case VK_UP:
-  case VK_DOWN:
-  case VK_LEFT:
-  case VK_RIGHT:
-    if (!((lparam >> 16) & KF_EXTENDED))
-      modifiers |= EVENTFLAG_IS_KEY_PAD;
-    break;
-  case VK_NUMLOCK:
-  case VK_NUMPAD0:
-  case VK_NUMPAD1:
-  case VK_NUMPAD2:
-  case VK_NUMPAD3:
-  case VK_NUMPAD4:
-  case VK_NUMPAD5:
-  case VK_NUMPAD6:
-  case VK_NUMPAD7:
-  case VK_NUMPAD8:
-  case VK_NUMPAD9:
-  case VK_DIVIDE:
-  case VK_MULTIPLY:
-  case VK_SUBTRACT:
-  case VK_ADD:
-  case VK_DECIMAL:
-  case VK_CLEAR:
-    modifiers |= EVENTFLAG_IS_KEY_PAD;
-    break;
-  case VK_SHIFT:
-    if (IsKeyDown(VK_LSHIFT))
+      break;
+    case VK_SHIFT:
+      if (IsKeyDown(VK_LSHIFT))
+        modifiers |= EVENTFLAG_IS_LEFT;
+      else if (IsKeyDown(VK_RSHIFT))
+        modifiers |= EVENTFLAG_IS_RIGHT;
+      break;
+    case VK_CONTROL:
+      if (IsKeyDown(VK_LCONTROL))
+        modifiers |= EVENTFLAG_IS_LEFT;
+      else if (IsKeyDown(VK_RCONTROL))
+        modifiers |= EVENTFLAG_IS_RIGHT;
+      break;
+    case VK_MENU:
+      if (IsKeyDown(VK_LMENU))
+        modifiers |= EVENTFLAG_IS_LEFT;
+      else if (IsKeyDown(VK_RMENU))
+        modifiers |= EVENTFLAG_IS_RIGHT;
+      break;
+    case VK_LWIN:
       modifiers |= EVENTFLAG_IS_LEFT;
-    else if (IsKeyDown(VK_RSHIFT))
+      break;
+    case VK_RWIN:
       modifiers |= EVENTFLAG_IS_RIGHT;
-    break;
-  case VK_CONTROL:
-    if (IsKeyDown(VK_LCONTROL))
-      modifiers |= EVENTFLAG_IS_LEFT;
-    else if (IsKeyDown(VK_RCONTROL))
-      modifiers |= EVENTFLAG_IS_RIGHT;
-    break;
-  case VK_MENU:
-    if (IsKeyDown(VK_LMENU))
-      modifiers |= EVENTFLAG_IS_LEFT;
-    else if (IsKeyDown(VK_RMENU))
-      modifiers |= EVENTFLAG_IS_RIGHT;
-    break;
-  case VK_LWIN:
-    modifiers |= EVENTFLAG_IS_LEFT;
-    break;
-  case VK_RWIN:
-    modifiers |= EVENTFLAG_IS_RIGHT;
-    break;
+      break;
   }
   return modifiers;
 }
@@ -187,13 +187,13 @@ void QCefWidgetUIEventHandlerWin::OnIMEComposition(HWND hWnd,
     int composition_start = 0;
 
     if (imeHandler_->GetComposition(
-          lParam, cTextStr, underlines, composition_start)) {
+            lParam, cTextStr, underlines, composition_start)) {
       host->ImeSetComposition(
-        cTextStr,
-        underlines,
-        CefRange(UINT32_MAX, UINT32_MAX),
-        CefRange(composition_start,
-                 static_cast<int>(composition_start + cTextStr.length())));
+          cTextStr,
+          underlines,
+          CefRange(UINT32_MAX, UINT32_MAX),
+          CefRange(composition_start,
+                   static_cast<int>(composition_start + cTextStr.length())));
       imeHandler_->UpdateCaretPosition(composition_start - 1);
     }
     else {
@@ -231,7 +231,7 @@ void QCefWidgetUIEventHandlerWin::OnKeyboardEvent(HWND hWnd,
   event.windows_key_code = wparam;
   event.native_key_code = lparam;
   event.is_system_key =
-    message == WM_SYSCHAR || message == WM_SYSKEYDOWN || message == WM_SYSKEYUP;
+      message == WM_SYSCHAR || message == WM_SYSKEYDOWN || message == WM_SYSKEYUP;
 
   if (message == WM_KEYDOWN || message == WM_SYSKEYDOWN)
     event.type = KEYEVENT_RAWKEYDOWN;
@@ -255,7 +255,7 @@ inline BOOL IsWindows_8_Or_Newer() {
   VER_SET_CONDITION(dwlConditionMask, VER_MAJORVERSION, VER_GREATER_EQUAL);
   VER_SET_CONDITION(dwlConditionMask, VER_MINORVERSION, VER_GREATER_EQUAL);
   return ::VerifyVersionInfo(
-    &osvi, VER_MAJORVERSION | VER_MINORVERSION, dwlConditionMask);
+      &osvi, VER_MAJORVERSION | VER_MINORVERSION, dwlConditionMask);
 }
 
 // Helper function to detect mouse messages coming from emulation of touch
@@ -264,7 +264,7 @@ static bool IsMouseEventFromTouch(UINT message) {
 #define MOUSEEVENTF_FROMTOUCH 0xFF515700
   return (message >= WM_MOUSEFIRST) && (message <= WM_MOUSELAST) &&
          (GetMessageExtraInfo() & MOUSEEVENTF_FROMTOUCH) ==
-           MOUSEEVENTF_FROMTOUCH;
+             MOUSEEVENTF_FROMTOUCH;
 }
 
 bool QCefWidgetUIEventHandlerWin::IsOverPopupWidget(int x, int y) const {
@@ -311,9 +311,9 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(HWND hWnd,
     int x = GET_X_LPARAM(lParam);
     int y = GET_Y_LPARAM(lParam);
     cancelPreviousClick =
-      (abs(lastClickX_ - x) > (GetSystemMetrics(SM_CXDOUBLECLK) / 2)) ||
-      (abs(lastClickY_ - y) > (GetSystemMetrics(SM_CYDOUBLECLK) / 2)) ||
-      ((currentTime - lastClickTime_) > GetDoubleClickTime());
+        (abs(lastClickX_ - x) > (GetSystemMetrics(SM_CXDOUBLECLK) / 2)) ||
+        (abs(lastClickY_ - y) > (GetSystemMetrics(SM_CYDOUBLECLK) / 2)) ||
+        ((currentTime - lastClickTime_) > GetDoubleClickTime());
     if (cancelPreviousClick &&
         (message == WM_MOUSEMOVE || message == WM_MOUSELEAVE)) {
       lastClickCount_ = 0;
@@ -324,162 +324,162 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(HWND hWnd,
   }
 
   switch (message) {
-  case WM_LBUTTONDOWN:
-  case WM_RBUTTONDOWN:
-  case WM_MBUTTONDOWN: {
-    ::SetCapture(hWnd);
-    ::SetFocus(hWnd);
-    int x = GET_X_LPARAM(lParam);
-    int y = GET_Y_LPARAM(lParam);
-    if (wParam & MK_SHIFT) {
-      lastMousePos_.x = currentMousePos_.x = x;
-      lastMousePos_.y = currentMousePos_.y = y;
-      mouseRotation_ = true;
-    }
-    else {
-      CefBrowserHost::MouseButtonType btnType =
-        (message == WM_LBUTTONDOWN
-           ? MBT_LEFT
-           : (message == WM_RBUTTONDOWN ? MBT_RIGHT : MBT_MIDDLE));
-      if (!cancelPreviousClick && (btnType == lastClickButton_)) {
-        ++lastClickCount_;
-      }
-      else {
-        lastClickCount_ = 1;
-        lastClickX_ = x;
-        lastClickY_ = y;
-      }
-      lastClickTime_ = currentTime;
-      lastClickButton_ = btnType;
-
-      CefMouseEvent mouse_event;
-      mouse_event.x = x;
-      mouse_event.y = y;
-
-      lastMouseDownOnView_ = !IsOverPopupWidget(x, y);
-      ApplyPopupOffset(mouse_event.x, mouse_event.y);
-      DeviceToLogical(mouse_event, deviceScaleFactor_);
-      mouse_event.modifiers = GetCefMouseModifiers(wParam);
-      host->SendMouseClickEvent(mouse_event, btnType, false, lastClickCount_);
-    }
-  } break;
-
-  case WM_LBUTTONUP:
-  case WM_RBUTTONUP:
-  case WM_MBUTTONUP:
-    if (GetCapture() == hWnd)
-      ReleaseCapture();
-    if (mouseRotation_) {
-      mouseRotation_ = false;
-      //render_handler_->SetSpin(0, 0);
-    }
-    else {
-      if (lastClickTime_ == 0) {
-        // winsoft666:
-        // window title will only receive a WM_MBUTTONUP message but not WM_MBUTTONDOWN when double-click.
-        break;
-      }
+    case WM_LBUTTONDOWN:
+    case WM_RBUTTONDOWN:
+    case WM_MBUTTONDOWN: {
+      ::SetCapture(hWnd);
+      ::SetFocus(hWnd);
       int x = GET_X_LPARAM(lParam);
       int y = GET_Y_LPARAM(lParam);
-      CefBrowserHost::MouseButtonType btnType =
-        (message == WM_LBUTTONUP
-           ? MBT_LEFT
-           : (message == WM_RBUTTONUP ? MBT_RIGHT : MBT_MIDDLE));
-      CefMouseEvent mouse_event;
-      mouse_event.x = x;
-      mouse_event.y = y;
-
-      if (lastMouseDownOnView_ && IsOverPopupWidget(x, y) &&
-          (GetPopupXOffset() || GetPopupYOffset())) {
-        break;
+      if (wParam & MK_SHIFT) {
+        lastMousePos_.x = currentMousePos_.x = x;
+        lastMousePos_.y = currentMousePos_.y = y;
+        mouseRotation_ = true;
       }
-      ApplyPopupOffset(mouse_event.x, mouse_event.y);
-      DeviceToLogical(mouse_event, deviceScaleFactor_);
-      mouse_event.modifiers = GetCefMouseModifiers(wParam);
-      host->SendMouseClickEvent(mouse_event, btnType, true, lastClickCount_);
-    }
-    break;
+      else {
+        CefBrowserHost::MouseButtonType btnType =
+            (message == WM_LBUTTONDOWN
+                 ? MBT_LEFT
+                 : (message == WM_RBUTTONDOWN ? MBT_RIGHT : MBT_MIDDLE));
+        if (!cancelPreviousClick && (btnType == lastClickButton_)) {
+          ++lastClickCount_;
+        }
+        else {
+          lastClickCount_ = 1;
+          lastClickX_ = x;
+          lastClickY_ = y;
+        }
+        lastClickTime_ = currentTime;
+        lastClickButton_ = btnType;
 
-  case WM_MOUSEMOVE: {
-    int x = GET_X_LPARAM(lParam);
-    int y = GET_Y_LPARAM(lParam);
-    if (mouseRotation_) {
-      // Apply rotation effect.
-      currentMousePos_.x = x;
-      currentMousePos_.y = y;
-      //render_handler_->IncrementSpin(
-      //    current_mouse_pos_.x - last_mouse_pos_.x,
-      //    current_mouse_pos_.y - last_mouse_pos_.y);
-      lastMousePos_.x = currentMousePos_.x;
-      lastMousePos_.y = currentMousePos_.y;
-    }
-    else {
-      if (!mouseTracking_) {
-        TRACKMOUSEEVENT tme;
-        tme.cbSize = sizeof(TRACKMOUSEEVENT);
-        tme.dwFlags = TME_LEAVE;
-        tme.hwndTrack = hWnd;
-        TrackMouseEvent(&tme);
-        mouseTracking_ = true;
+        CefMouseEvent mouse_event;
+        mouse_event.x = x;
+        mouse_event.y = y;
+
+        lastMouseDownOnView_ = !IsOverPopupWidget(x, y);
+        ApplyPopupOffset(mouse_event.x, mouse_event.y);
+        DeviceToLogical(mouse_event, deviceScaleFactor_);
+        mouse_event.modifiers = GetCefMouseModifiers(wParam);
+        host->SendMouseClickEvent(mouse_event, btnType, false, lastClickCount_);
       }
+    } break;
 
-      CefMouseEvent mouse_event;
-      mouse_event.x = x;
-      mouse_event.y = y;
-      ApplyPopupOffset(mouse_event.x, mouse_event.y);
-      DeviceToLogical(mouse_event, deviceScaleFactor_);
-      mouse_event.modifiers = GetCefMouseModifiers(wParam);
-      host->SendMouseMoveEvent(mouse_event, false);
-    }
-    break;
-  }
+    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
+    case WM_MBUTTONUP:
+      if (GetCapture() == hWnd)
+        ReleaseCapture();
+      if (mouseRotation_) {
+        mouseRotation_ = false;
+        //render_handler_->SetSpin(0, 0);
+      }
+      else {
+        if (lastClickTime_ == 0) {
+          // winsoft666:
+          // window title will only receive a WM_MBUTTONUP message but not WM_MBUTTONDOWN when double-click.
+          break;
+        }
+        int x = GET_X_LPARAM(lParam);
+        int y = GET_Y_LPARAM(lParam);
+        CefBrowserHost::MouseButtonType btnType =
+            (message == WM_LBUTTONUP
+                 ? MBT_LEFT
+                 : (message == WM_RBUTTONUP ? MBT_RIGHT : MBT_MIDDLE));
+        CefMouseEvent mouse_event;
+        mouse_event.x = x;
+        mouse_event.y = y;
 
-  case WM_MOUSELEAVE: {
-    int x = GET_X_LPARAM(lParam);
-    int y = GET_Y_LPARAM(lParam);
-
-    if (mouseTracking_) {
-      // Stop tracking mouse leave.
-      TRACKMOUSEEVENT tme;
-      tme.cbSize = sizeof(TRACKMOUSEEVENT);
-      tme.dwFlags = TME_LEAVE & TME_CANCEL;
-      tme.hwndTrack = hWnd;
-      TrackMouseEvent(&tme);
-      mouseTracking_ = false;
-    }
-
-    POINT p;
-    ::GetCursorPos(&p);
-    ::ScreenToClient(hWnd, &p);
-
-    CefMouseEvent mouse_event;
-    mouse_event.x = p.x;
-    mouse_event.y = p.y;
-
-    DeviceToLogical(mouse_event, deviceScaleFactor_);
-    mouse_event.modifiers = GetCefMouseModifiers(wParam);
-    host->SendMouseMoveEvent(mouse_event, true);
-  } break;
-
-  case WM_MOUSEWHEEL:
-    POINT screen_point = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-    HWND scrolled_wnd = ::WindowFromPoint(screen_point);
-    if (scrolled_wnd != hWnd)
+        if (lastMouseDownOnView_ && IsOverPopupWidget(x, y) &&
+            (GetPopupXOffset() || GetPopupYOffset())) {
+          break;
+        }
+        ApplyPopupOffset(mouse_event.x, mouse_event.y);
+        DeviceToLogical(mouse_event, deviceScaleFactor_);
+        mouse_event.modifiers = GetCefMouseModifiers(wParam);
+        host->SendMouseClickEvent(mouse_event, btnType, true, lastClickCount_);
+      }
       break;
 
-    ScreenToClient(hWnd, &screen_point);
-    int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+    case WM_MOUSEMOVE: {
+      int x = GET_X_LPARAM(lParam);
+      int y = GET_Y_LPARAM(lParam);
+      if (mouseRotation_) {
+        // Apply rotation effect.
+        currentMousePos_.x = x;
+        currentMousePos_.y = y;
+        //render_handler_->IncrementSpin(
+        //    current_mouse_pos_.x - last_mouse_pos_.x,
+        //    current_mouse_pos_.y - last_mouse_pos_.y);
+        lastMousePos_.x = currentMousePos_.x;
+        lastMousePos_.y = currentMousePos_.y;
+      }
+      else {
+        if (!mouseTracking_) {
+          TRACKMOUSEEVENT tme;
+          tme.cbSize = sizeof(TRACKMOUSEEVENT);
+          tme.dwFlags = TME_LEAVE;
+          tme.hwndTrack = hWnd;
+          TrackMouseEvent(&tme);
+          mouseTracking_ = true;
+        }
 
-    CefMouseEvent mouse_event;
-    mouse_event.x = screen_point.x;
-    mouse_event.y = screen_point.y;
-    ApplyPopupOffset(mouse_event.x, mouse_event.y);
-    DeviceToLogical(mouse_event, deviceScaleFactor_);
-    mouse_event.modifiers = GetCefMouseModifiers(wParam);
-    host->SendMouseWheelEvent(mouse_event,
-                              IsKeyDown(VK_SHIFT) ? delta : 0,
-                              !IsKeyDown(VK_SHIFT) ? delta : 0);
-    break;
+        CefMouseEvent mouse_event;
+        mouse_event.x = x;
+        mouse_event.y = y;
+        ApplyPopupOffset(mouse_event.x, mouse_event.y);
+        DeviceToLogical(mouse_event, deviceScaleFactor_);
+        mouse_event.modifiers = GetCefMouseModifiers(wParam);
+        host->SendMouseMoveEvent(mouse_event, false);
+      }
+      break;
+    }
+
+    case WM_MOUSELEAVE: {
+      int x = GET_X_LPARAM(lParam);
+      int y = GET_Y_LPARAM(lParam);
+
+      if (mouseTracking_) {
+        // Stop tracking mouse leave.
+        TRACKMOUSEEVENT tme;
+        tme.cbSize = sizeof(TRACKMOUSEEVENT);
+        tme.dwFlags = TME_LEAVE & TME_CANCEL;
+        tme.hwndTrack = hWnd;
+        TrackMouseEvent(&tme);
+        mouseTracking_ = false;
+      }
+
+      POINT p;
+      ::GetCursorPos(&p);
+      ::ScreenToClient(hWnd, &p);
+
+      CefMouseEvent mouse_event;
+      mouse_event.x = p.x;
+      mouse_event.y = p.y;
+
+      DeviceToLogical(mouse_event, deviceScaleFactor_);
+      mouse_event.modifiers = GetCefMouseModifiers(wParam);
+      host->SendMouseMoveEvent(mouse_event, true);
+    } break;
+
+    case WM_MOUSEWHEEL:
+      POINT screen_point = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+      HWND scrolled_wnd = ::WindowFromPoint(screen_point);
+      if (scrolled_wnd != hWnd)
+        break;
+
+      ScreenToClient(hWnd, &screen_point);
+      int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+
+      CefMouseEvent mouse_event;
+      mouse_event.x = screen_point.x;
+      mouse_event.y = screen_point.y;
+      ApplyPopupOffset(mouse_event.x, mouse_event.y);
+      DeviceToLogical(mouse_event, deviceScaleFactor_);
+      mouse_event.modifiers = GetCefMouseModifiers(wParam);
+      host->SendMouseWheelEvent(mouse_event,
+                                IsKeyDown(VK_SHIFT) ? delta : 0,
+                                !IsKeyDown(VK_SHIFT) ? delta : 0);
+      break;
   }
 }
 
@@ -606,9 +606,9 @@ void QCefWidgetUIEventHandlerWin::OnCaptureLostEvent(HWND hWnd,
 }
 
 void QCefWidgetUIEventHandlerWin::OnImeCompositionRangeChanged(
-  CefRefPtr<CefBrowser> browser,
-  const CefRange& selection_range,
-  const CefRenderHandler::RectList& character_bounds) {
+    CefRefPtr<CefBrowser> browser,
+    const CefRange& selection_range,
+    const CefRenderHandler::RectList& character_bounds) {
   if (imeHandler_) {
     // Convert from view coordinates to device coordinates.
     CefRenderHandler::RectList device_bounds;

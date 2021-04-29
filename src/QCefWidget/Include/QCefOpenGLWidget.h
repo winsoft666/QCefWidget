@@ -29,7 +29,7 @@ class QCefDevToolsWnd;
 
 class QCEFWIDGET_EXPORT QCefOpenGLWidget : public QOpenGLWidget {
   Q_OBJECT
-public:
+ public:
   QCefOpenGLWidget(const QString& url = "", QWidget* parent = nullptr);
   virtual ~QCefOpenGLWidget();
 
@@ -81,7 +81,7 @@ public:
                                    const QString& identifier);
   virtual bool removeResourceProvider(const QString& identifier);
   virtual bool removeAllResourceProvider();
-signals:
+ signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);
   void urlChanged(bool isMainFrame, const QString& url);
@@ -98,7 +98,7 @@ signals:
                           const QString& method,
                           const QVariantList& arguments);
 
-protected:
+ protected:
   bool event(QEvent* event) override;
   void showEvent(QShowEvent* event) override;
   void hideEvent(QHideEvent* event) override;
@@ -110,4 +110,4 @@ protected:
   friend QCefDevToolsWnd;
 };
 #endif
-#endif // QCEF_OPENGLWIDGET_H_
+#endif  // QCEF_OPENGLWIDGET_H_

@@ -3,11 +3,11 @@
 #include <include/cef_app.h>
 #include <include/wrapper/cef_message_router.h>
 
-QCefEvent::QCefEvent()
-  : QObject(nullptr) {}
+QCefEvent::QCefEvent() :
+    QObject(nullptr) {}
 
-QCefEvent::QCefEvent(const QString& name)
-  : QObject() {
+QCefEvent::QCefEvent(const QString& name) :
+    QObject() {
   setObjectName(name);
 }
 

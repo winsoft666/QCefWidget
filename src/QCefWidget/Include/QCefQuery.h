@@ -19,16 +19,15 @@
 #endif
 #endif
 
-
 class QCEFWIDGET_EXPORT QCefQuery {
-public:
+ public:
   QCefQuery();
 
   QCefQuery(QString req, int64_t query);
 
-  QCefQuery(const QCefQuery &other);
+  QCefQuery(const QCefQuery& other);
 
-  QCefQuery &operator=(const QCefQuery &other);
+  QCefQuery& operator=(const QCefQuery& other);
 
   ~QCefQuery();
 
@@ -42,9 +41,9 @@ public:
 
   const int error() const;
 
-  void setResponseResult(bool success, const QString &response, int error = 0) const;
+  void setResponseResult(bool success, const QString& response, int error = 0) const;
 
-private:
+ private:
   int64_t id_;
 
   QString reqeust_;
@@ -58,4 +57,4 @@ private:
   static int TYPEID;
 };
 Q_DECLARE_METATYPE(QCefQuery);
-#endif // QCEFQUERY_H
+#endif  // QCEFQUERY_H

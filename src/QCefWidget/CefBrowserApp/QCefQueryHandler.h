@@ -12,7 +12,7 @@ class QCefWidgetImpl;
 
 class QCefQueryHandler : public CefBaseRefCounted,
                          public CefMessageRouterBrowserSide::Handler {
-public:
+ public:
   QCefQueryHandler(QCefWidgetImpl* pImpl);
   ~QCefQueryHandler();
 
@@ -30,12 +30,12 @@ public:
   bool
   Response(int64_t query, bool success, const CefString& response, int error);
 
-private:
+ private:
   QCefWidgetImpl* pCefImpl_;
   std::map<int64, CefRefPtr<Callback>> mapCallback_;
   std::mutex mtxCallbackMap_;
 
-private:
+ private:
   IMPLEMENT_REFCOUNTING(QCefQueryHandler);
 };
-#endif // !QCEF_BROWSER_HANDLER_H_
+#endif  // !QCEF_BROWSER_HANDLER_H_

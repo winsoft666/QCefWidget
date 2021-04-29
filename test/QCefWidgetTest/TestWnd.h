@@ -9,25 +9,25 @@
 class QDashboardWidget;
 class TestWnd : public QWidget {
   Q_OBJECT
-public:
+ public:
   TestWnd(QWidget* parent = 0);
   ~TestWnd();
 
-protected:
+ protected:
   void setupUi();
   void closeEvent(QCloseEvent* event) override;
   QSize sizeHint() const override;
-private slots:
+ private slots:
   void onPushButtonNewBrowserClicked();
   void onPushButtonQuickSettingForIrregularWndClicked();
   void onPushButtonQuickSettingForElectronClicked();
   void onCefWndDestroyed(QObject* obj);
 
-private:
+ private:
   bool stringToColor(QString s, QColor& c);
   void systemPerformanceMonitor();
 
-private:
+ private:
   QLineEdit* lineEditInitSize_;
   QLineEdit* lineEditFPS_;
   QLineEdit* lineEditWindowBkColor_;
@@ -51,7 +51,6 @@ private:
   QPushButton* pushButtonQuickSettingForIrregularWnd_;
   QPushButton* pushButtonQuickSettingForElectron_;
 
-
   QListWidget* listBrowser_;
 
   QDashboardWidget* dashboardWidgetMainProcCPU_;
@@ -67,7 +66,7 @@ private:
   HCOUNTER renderProcessMemCounter_;
   int cpuProcessorCount_;
 
-  QLabel * labelVersion_;
+  QLabel* labelVersion_;
 };
 
-#endif // TEST_WND_H__
+#endif  // TEST_WND_H__

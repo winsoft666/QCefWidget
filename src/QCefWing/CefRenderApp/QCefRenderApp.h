@@ -7,26 +7,23 @@
 #include "../../QCefWidget/Include/QCefVersion.h"
 
 class QCefRenderApp : public CefApp, public CefRenderProcessHandler {
-public:
+ public:
   QCefRenderApp();
 
   ~QCefRenderApp();
 
   class RenderDelegate : public virtual CefBaseRefCounted {
-  public:
+   public:
     virtual void OnRenderThreadCreated(CefRefPtr<QCefRenderApp> app,
                                        CefRefPtr<CefListValue> extra_info) {}
 
     virtual void OnWebKitInitialized(CefRefPtr<QCefRenderApp> app) {}
 
-    virtual void OnBrowserCreated(CefRefPtr<QCefRenderApp> app,
-                                  CefRefPtr<CefBrowser> browser) {}
+    virtual void OnBrowserCreated(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser) {}
 
-    virtual void OnBrowserDestroyed(CefRefPtr<QCefRenderApp> app,
-                                    CefRefPtr<CefBrowser> browser) {}
+    virtual void OnBrowserDestroyed(CefRefPtr<QCefRenderApp> app, CefRefPtr<CefBrowser> browser) {}
 
-    virtual CefRefPtr<CefLoadHandler>
-    GetLoadHandler(CefRefPtr<QCefRenderApp> app) {
+    virtual CefRefPtr<CefLoadHandler> GetLoadHandler(CefRefPtr<QCefRenderApp> app) {
       return nullptr;
     }
 
@@ -55,37 +52,31 @@ public:
     // Called when a process message is received. Return true if the message was
     // handled and should not be passed on to other handlers. RenderDelegates
     // should check for unique message names to avoid interfering with each other.
-    virtual bool
-    OnProcessMessageReceived(CefRefPtr<QCefRenderApp> app,
-                             CefRefPtr<CefBrowser> browser,
-                             CefRefPtr<CefFrame> frame,
-                             CefProcessId source_process,
-                             CefRefPtr<CefProcessMessage> message) {
+    virtual bool OnProcessMessageReceived(CefRefPtr<QCefRenderApp> app,
+                                          CefRefPtr<CefBrowser> browser,
+                                          CefRefPtr<CefFrame> frame,
+                                          CefProcessId source_process,
+                                          CefRefPtr<CefProcessMessage> message) {
       return false;
     }
   };
 
   typedef std::set<CefRefPtr<RenderDelegate>> RenderDelegateSet;
 
-private:
+ private:
   static void CreateRenderDelegates(RenderDelegateSet& delegates);
 
 #pragma region CefApp
 
   //////////////////////////////////////////////////////////////////////////
   // CefApp methods:
-  virtual void OnBeforeCommandLineProcessing(
-    const CefString& process_type,
-    CefRefPtr<CefCommandLine> command_line) override;
+  virtual void OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) override;
 
-  virtual void
-  OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
+  virtual void OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) override;
 
-  virtual CefRefPtr<CefResourceBundleHandler>
-  GetResourceBundleHandler() override;
+  virtual CefRefPtr<CefResourceBundleHandler> GetResourceBundleHandler() override;
 
-  virtual CefRefPtr<CefBrowserProcessHandler>
-  GetBrowserProcessHandler() override;
+  virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() override;
 
   virtual CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler() override;
 
@@ -118,32 +109,30 @@ private:
                                  CefRefPtr<CefFrame> frame,
                                  CefRefPtr<CefV8Context> context) override;
 
-  virtual void
-  OnUncaughtException(CefRefPtr<CefBrowser> browser,
-                      CefRefPtr<CefFrame> frame,
-                      CefRefPtr<CefV8Context> context,
-                      CefRefPtr<CefV8Exception> exception,
-                      CefRefPtr<CefV8StackTrace> stackTrace) override;
+  virtual void OnUncaughtException(CefRefPtr<CefBrowser> browser,
+                                   CefRefPtr<CefFrame> frame,
+                                   CefRefPtr<CefV8Context> context,
+                                   CefRefPtr<CefV8Exception> exception,
+                                   CefRefPtr<CefV8StackTrace> stackTrace) override;
 
   virtual void OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
                                     CefRefPtr<CefFrame> frame,
                                     CefRefPtr<CefDOMNode> node) override;
 
 #if CEF_VERSION_MAJOR == 72
-  virtual bool
-  OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-                           CefProcessId source_process,
-                           CefRefPtr<CefProcessMessage> message) override;
+  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                        CefProcessId source_process,
+                                        CefRefPtr<CefProcessMessage> message) override;
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
-  bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
-    CefRefPtr<CefFrame> frame,
-    CefProcessId source_process,
-    CefRefPtr<CefProcessMessage> message) override;
+  virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
+                                        CefRefPtr<CefFrame> frame,
+                                        CefProcessId source_process,
+                                        CefRefPtr<CefProcessMessage> message) override;
 #endif
 
 #pragma endregion CefRenderProcessHandler
 
-private:
+ private:
   // Set of supported RenderDelegates. Only used in the renderer process.
   RenderDelegateSet render_delegates_;
 
@@ -151,4 +140,4 @@ private:
   IMPLEMENT_REFCOUNTING(QCefRenderApp);
 };
 
-#endif // QCEFWIDGET_RENDERAPP_H_
+#endif  // QCEFWIDGET_RENDERAPP_H_

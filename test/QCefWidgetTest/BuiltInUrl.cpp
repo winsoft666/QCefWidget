@@ -11,10 +11,6 @@ QStringList getBuiltInUrl() {
                        << "https://www.google.com"
                        << "https://map.baidu.com"
                        << "https://ant.design/components/overview"
-                       << QString("file:///%1")
-                            .arg(QCoreApplication::applicationDirPath() +
-                                 u8"/TestResource/pdf.html")
-                       << QString("file:///%1")
-                            .arg(QCoreApplication::applicationDirPath() +
-                                 u8"/TestResource/clock.html");
+                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/pdf.html")
+                       << QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/TestResource/clock.html");
 }

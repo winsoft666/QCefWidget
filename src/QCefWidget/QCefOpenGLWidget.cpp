@@ -13,8 +13,8 @@
 #include "QCefManager.h"
 
 QCefOpenGLWidget::QCefOpenGLWidget(const QString& url,
-                                   QWidget* parent /*= nullptr*/)
-  : QOpenGLWidget(parent) {
+                                   QWidget* parent /*= nullptr*/) :
+    QOpenGLWidget(parent) {
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
   setAttribute(Qt::WA_StyledBackground, true);
@@ -26,7 +26,7 @@ QCefOpenGLWidget::QCefOpenGLWidget(const QString& url,
 }
 
 QCefOpenGLWidget::~QCefOpenGLWidget() {
-  qDebug() << "QCefOpenGLWidget::~QCefOpenGLWidget";
+  qDebug().noquote() << "QCefOpenGLWidget::~QCefOpenGLWidget";
 }
 
 void QCefOpenGLWidget::navigateToUrl(const QString& url) {

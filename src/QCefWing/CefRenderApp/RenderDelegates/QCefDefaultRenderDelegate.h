@@ -10,9 +10,9 @@ void CreateBrowserDelegate(QCefRenderApp::RenderDelegateSet& delegates);
 
 class RenderDelegate : public QCefRenderApp::RenderDelegate {
   typedef std::unordered_map<int64, CefRefPtr<QCefClient>>
-    FrameID2QCefClientMap;
+      FrameID2QCefClientMap;
 
-public:
+ public:
   RenderDelegate();
 
   virtual void OnWebKitInitialized(CefRefPtr<QCefRenderApp> app);
@@ -33,7 +33,7 @@ public:
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message);
 
-protected:
+ protected:
   bool OnTriggerEventNotifyMessage(CefRefPtr<CefBrowser> browser,
                                    CefRefPtr<CefFrame> frame,
                                    CefProcessId source_process,
@@ -44,13 +44,13 @@ protected:
                             const CefString& name,
                             CefRefPtr<CefDictionaryValue> dict);
 
-private:
+ private:
   CefRefPtr<CefMessageRouterRendererSide> render_message_router_;
 
   FrameID2QCefClientMap frame_id_to_client_map_;
 
-private:
+ private:
   IMPLEMENT_REFCOUNTING(RenderDelegate);
 };
 
-} // namespace QCefDefaultRenderDelegate
+}  // namespace QCefDefaultRenderDelegate

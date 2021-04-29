@@ -13,8 +13,8 @@
 #include <include/cef_sandbox_win.h>
 #include "QCefManager.h"
 
-QCefWidget::QCefWidget(const QString& url, QWidget* parent)
-  : QWidget(parent) {
+QCefWidget::QCefWidget(const QString& url, QWidget* parent) :
+    QWidget(parent) {
   setAttribute(Qt::WA_NativeWindow, true);
   setAttribute(Qt::WA_InputMethodEnabled, true);
   setAttribute(Qt::WA_StyledBackground, true);
@@ -180,16 +180,16 @@ bool QCefWidget::removeAllResourceProvider() {
 
 QString QCefWidget::QCefWidgetVersion() {
   return QString("%1.%2.%3")
-    .arg(QCEF_VERSION_MAJOR)
-    .arg(QCEF_VERSION_MINOR)
-    .arg(QCEF_VERSION_PATCH);
+      .arg(QCEF_VERSION_MAJOR)
+      .arg(QCEF_VERSION_MINOR)
+      .arg(QCEF_VERSION_PATCH);
 }
 
 QString QCefWidget::CefVersion() {
   return QString("%1.%2.%3")
-    .arg(CEF_VERSION_MAJOR)
-    .arg(CEF_VERSION_MINOR)
-    .arg(CEF_VERSION_PATCH);
+      .arg(CEF_VERSION_MAJOR)
+      .arg(CEF_VERSION_MINOR)
+      .arg(CEF_VERSION_PATCH);
 }
 
 bool QCefWidget::nativeEvent(const QByteArray& eventType,

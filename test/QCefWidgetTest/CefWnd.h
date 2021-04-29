@@ -10,7 +10,7 @@ class QCefOpenGLWidget;
 
 class CefWnd : public QWidget {
   Q_OBJECT
-public:
+ public:
   CefWnd(QWidget* parent = nullptr);
   virtual ~CefWnd();
 
@@ -52,14 +52,14 @@ public:
   QColor browserBkColor();
   void setBrowserBkColor(QColor c);
 
-signals:
+ signals:
   void cefWndVisibleChange(bool bVisible);
 
-protected:
+ protected:
   QSize sizeHint() const override;
   void showEvent(QShowEvent* event) override;
   void hideEvent(QHideEvent* event) override;
-public slots:
+ public slots:
   virtual void onNavigateToUrl(QString url);
   virtual void onReload();
   virtual void onShowDevTools();
@@ -71,7 +71,7 @@ public slots:
   virtual void onTriggerEvent();
   virtual void onCefQueryRequest(const QCefQuery& query);
 
-protected:
+ protected:
   bool usingGLWidget_;
   bool framelessWindow_;
   bool translucentWindowBackground_;

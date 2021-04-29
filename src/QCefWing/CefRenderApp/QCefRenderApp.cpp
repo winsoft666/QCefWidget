@@ -14,11 +14,9 @@ void QCefRenderApp::CreateRenderDelegates(RenderDelegateSet& delegates) {
 }
 
 //////////////////////////////////////////////////////////////////////////
-void QCefRenderApp::OnBeforeCommandLineProcessing(
-  const CefString& process_type, CefRefPtr<CefCommandLine> command_line) {}
+void QCefRenderApp::OnBeforeCommandLineProcessing(const CefString& process_type, CefRefPtr<CefCommandLine> command_line) {}
 
-void QCefRenderApp::OnRegisterCustomSchemes(
-  CefRawPtr<CefSchemeRegistrar> registrar) {}
+void QCefRenderApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {}
 
 CefRefPtr<CefRenderProcessHandler> QCefRenderApp::GetRenderProcessHandler() {
   return this;
@@ -74,7 +72,6 @@ void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser,
 }
 #endif
 
-
 void QCefRenderApp::OnBrowserDestroyed(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_RENDERER_THREAD();
   RenderDelegateSet::iterator it = render_delegates_.begin();
@@ -95,7 +92,6 @@ void QCefRenderApp::OnContextCreated(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefFrame> frame,
                                      CefRefPtr<CefV8Context> context) {
   CEF_REQUIRE_RENDERER_THREAD();
-  OutputDebugStringA("[CEF] OnContextCreated\n");
 
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end(); ++it)
@@ -120,7 +116,7 @@ void QCefRenderApp::OnUncaughtException(CefRefPtr<CefBrowser> browser,
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end(); ++it)
     (*it)->OnUncaughtException(
-      this, browser, frame, context, exception, stackTrace);
+        this, browser, frame, context, exception, stackTrace);
 }
 
 void QCefRenderApp::OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
@@ -134,9 +130,9 @@ void QCefRenderApp::OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
 
 #if CEF_VERSION_MAJOR == 72
 bool QCefRenderApp::OnProcessMessageReceived(
-  CefRefPtr<CefBrowser> browser,
-  CefProcessId source_process,
-  CefRefPtr<CefProcessMessage> message) {
+    CefRefPtr<CefBrowser> browser,
+    CefProcessId source_process,
+    CefRefPtr<CefProcessMessage> message) {
   CEF_REQUIRE_RENDERER_THREAD();
   DCHECK_EQ(source_process, PID_BROWSER);
 
@@ -145,16 +141,16 @@ bool QCefRenderApp::OnProcessMessageReceived(
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end() && !handled; ++it)
     handled = (*it)->OnProcessMessageReceived(
-      this, browser, browser->GetMainFrame(), source_process, message);
+        this, browser, browser->GetMainFrame(), source_process, message);
 
   return handled;
 }
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 bool QCefRenderApp::OnProcessMessageReceived(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  CefProcessId source_process,
-  CefRefPtr<CefProcessMessage> message) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefProcessId source_process,
+    CefRefPtr<CefProcessMessage> message) {
   CEF_REQUIRE_RENDERER_THREAD();
   DCHECK_EQ(source_process, PID_BROWSER);
 
@@ -163,7 +159,7 @@ bool QCefRenderApp::OnProcessMessageReceived(
   RenderDelegateSet::iterator it = render_delegates_.begin();
   for (; it != render_delegates_.end() && !handled; ++it)
     handled = (*it)->OnProcessMessageReceived(
-      this, browser, frame, source_process, message);
+        this, browser, frame, source_process, message);
 
   return handled;
 }

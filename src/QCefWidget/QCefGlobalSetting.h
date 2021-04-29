@@ -6,10 +6,10 @@
 #include <QMap>
 
 class QCefGlobalSetting {
-public:
+ public:
   static void initializeInstance();
 
-public:
+ public:
   static CefString browser_sub_process_path;
   static CefString resource_directory_path;
   static CefString locales_directory_path;
@@ -28,7 +28,7 @@ public:
   static bool osr_enabled;
   static QMap<QString, QPair<int, QString>> resource_map;
 
-protected:
+ protected:
   QCefGlobalSetting();
   ~QCefGlobalSetting();
 };

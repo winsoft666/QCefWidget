@@ -5,19 +5,19 @@ namespace {
 int kBiggestDividingWidth = 13;
 int kBiggerDividingWidth = 10;
 int kDividingWidth = 5;
-} // namespace
+}  // namespace
 
-QDashboardWidget::QDashboardWidget(QWidget* parent)
-  : QWidget(parent)
-  , maxValue_(100)
-  , minValue_(0)
-  , curValue_(0)
-  , startAngle_(150)
-  , endAngle_(30)
-  , dividingStep_(1)
-  , frameWidth_(10)
-  , biggerDividingMulriple_(5)
-  , biggestDividingMulriple_(10) {}
+QDashboardWidget::QDashboardWidget(QWidget* parent) :
+    QWidget(parent),
+    maxValue_(100),
+    minValue_(0),
+    curValue_(0),
+    startAngle_(150),
+    endAngle_(30),
+    dividingStep_(1),
+    frameWidth_(10),
+    biggerDividingMulriple_(5),
+    biggestDividingMulriple_(10) {}
 
 QDashboardWidget::~QDashboardWidget() {}
 
@@ -199,7 +199,7 @@ void QDashboardWidget::drawFrame(QPainter& painter, int radius, int refSize) {
       painter.setBrush(plateBackground_);
     }
     painter.drawEllipse(
-      QPoint(0, 0), radius - frameWidth_, radius - frameWidth_);
+        QPoint(0, 0), radius - frameWidth_, radius - frameWidth_);
 
     painter.restore();
   }
@@ -209,7 +209,7 @@ void QDashboardWidget::drawDividing(QPainter& painter,
                                     int radius,
                                     int refSize) {
   painter.save();
-  painter.rotate(startAngle_); //将坐标系顺时针旋转，到达起始位置
+  painter.rotate(startAngle_);  //将坐标系顺时针旋转，到达起始位置
 
   QPen pen(Qt::white);
   painter.setPen(pen);
@@ -263,19 +263,19 @@ void QDashboardWidget::drawDividingNumber(QPainter& painter,
   QFontMetricsF fm(this->font());
 
   double anglePerVel =
-    (360.f - (startAngle_ - endAngle_)) / (maxValue_ - minValue_);
+      (360.f - (startAngle_ - endAngle_)) / (maxValue_ - minValue_);
   double indicatorRadius =
-    radius - frameWidth_ - 2 - kBiggestDividingWidth - 12;
+      radius - frameWidth_ - 2 - kBiggestDividingWidth - 12;
 
   for (int i = minValue_; i <= maxValue_; i += dividingStep_) {
     if (biggestDividingMulriple_ != 0) {
       if (i % (biggestDividingMulriple_ * dividingStep_) == 0) {
-        angle = 360.f - (startAngle_ + (i - minValue_) * anglePerVel); //角度
-        angleArc = angle * 3.14f / 180.f; //转换为弧度
+        angle = 360.f - (startAngle_ + (i - minValue_) * anglePerVel);  //角度
+        angleArc = angle * 3.14f / 180.f;                               //转换为弧度
 
         x = indicatorRadius * cos(angleArc);
         y = -indicatorRadius *
-            sin(angleArc); // 取负是因为Qt坐标系Y轴和数学坐标系Y轴方向相反
+            sin(angleArc);  // 取负是因为Qt坐标系Y轴和数学坐标系Y轴方向相反
 
         QString speed = QString::number(i);
 
@@ -286,12 +286,12 @@ void QDashboardWidget::drawDividingNumber(QPainter& painter,
     }
     else if (biggerDividingMulriple_ != 0) {
       if (i % (biggerDividingMulriple_ * dividingStep_) == 0) {
-        angle = 360.f - (startAngle_ + (i - minValue_) * anglePerVel); //角度
-        angleArc = angle * 3.14f / 180.f; //转换为弧度
+        angle = 360.f - (startAngle_ + (i - minValue_) * anglePerVel);  //角度
+        angleArc = angle * 3.14f / 180.f;                               //转换为弧度
 
         x = indicatorRadius * cos(angleArc);
         y = -indicatorRadius *
-            sin(angleArc); // 取负是因为Qt坐标系Y轴和数学坐标系Y轴方向相反
+            sin(angleArc);  // 取负是因为Qt坐标系Y轴和数学坐标系Y轴方向相反
 
         QString speed = QString::number(i);
 
@@ -311,7 +311,7 @@ void QDashboardWidget::drawNumberValue(QPainter& painter,
   painter.save();
   painter.setPen(Qt::white);
   QString speed =
-    QString("%1%2%3").arg(valuePrefix_).arg(curValue_).arg(valueSuffix_);
+      QString("%1%2%3").arg(valuePrefix_).arg(curValue_).arg(valueSuffix_);
   QFontMetricsF fm(this->font());
   qreal w = fm.size(Qt::TextSingleLine, speed).width();
   painter.drawText(-w / 2, -20, speed);
@@ -323,22 +323,22 @@ void QDashboardWidget::drawNeedle(QPainter& painter, int radius, int refSize) {
   painter.save();
 
   double anglePerVel =
-    (360.f - (startAngle_ - endAngle_)) / (maxValue_ - minValue_);
+      (360.f - (startAngle_ - endAngle_)) / (maxValue_ - minValue_);
   double curAngle = startAngle_ + curValue_ * anglePerVel;
-  painter.rotate(curAngle); //旋转坐标系
+  painter.rotate(curAngle);  //旋转坐标系
 
-  QRadialGradient haloGradient(0, 0, 60, 0, 0); //辐射渐变
+  QRadialGradient haloGradient(0, 0, 60, 0, 0);  //辐射渐变
   haloGradient.setColorAt(0, QColor(60, 60, 60));
-  haloGradient.setColorAt(1, QColor(160, 160, 160)); //灰
-  painter.setPen(Qt::white); //定义线条文本颜色  设置线条的颜色
-  painter.setBrush(haloGradient); //刷子定义形状如何填满 填充后的颜色
+  haloGradient.setColorAt(1, QColor(160, 160, 160));  //灰
+  painter.setPen(Qt::white);                          //定义线条文本颜色  设置线条的颜色
+  painter.setBrush(haloGradient);                     //刷子定义形状如何填满 填充后的颜色
 
   static const QPointF points[3] = {
-    QPointF(0.0, 2),
-    QPointF(0.0, -2),
-    QPointF(70.0, 0),
+      QPointF(0.0, 2),
+      QPointF(0.0, -2),
+      QPointF(70.0, 0),
   };
-  painter.drawPolygon(points, 3); //绘制指针
+  painter.drawPolygon(points, 3);  //绘制指针
   painter.restore();
 
   painter.save();

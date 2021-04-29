@@ -28,7 +28,7 @@ static ProcessType GetProcessType(CefRefPtr<CefCommandLine> command_line) {
 
   return OtherProcess;
 }
-} // namespace
+}  // namespace
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
@@ -45,7 +45,7 @@ int APIENTRY _tWinMain(_In_ HINSTANCE hInstance,
   void* sandboxInfo = nullptr;
   return CefExecuteProcess(main_args, app, sandboxInfo);
 }
-#else  // _WIN32
+#else   // _WIN32
 int main(int argc, char* argv[]) {
   CefEnableHighDPISupport();
 
@@ -54,4 +54,4 @@ int main(int argc, char* argv[]) {
   void* sandboxInfo = nullptr;
   return CefExecuteProcess(main_args, app.get(), sandboxInfo);
 }
-#endif // _WIN32
+#endif  // _WIN32

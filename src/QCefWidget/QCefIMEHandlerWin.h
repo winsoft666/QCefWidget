@@ -14,7 +14,7 @@
 // Handles IME for the native parent window that hosts an off-screen browser.
 // This object is only accessed on the CEF UI thread.
 class QCefIMEHandlerWin {
-public:
+ public:
   explicit QCefIMEHandlerWin(HWND hwnd);
   virtual ~QCefIMEHandlerWin();
 
@@ -71,7 +71,7 @@ public:
   // Updates the position of the IME windows.
   void MoveImeWindow();
 
-private:
+ private:
   // Retrieves the composition information.
   void GetCompositionInfo(HIMC imm_context,
                           LPARAM lparam,

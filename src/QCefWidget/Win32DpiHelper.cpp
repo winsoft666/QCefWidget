@@ -37,10 +37,10 @@ bool IsProcessPerMonitorDpiAware() {
     HMODULE shcore_dll = ::LoadLibrary(L"shcore.dll");
     if (shcore_dll) {
       typedef HRESULT(WINAPI * GetProcessDpiAwarenessPtr)(
-        HANDLE, PROCESS_DPI_AWARENESS*);
+          HANDLE, PROCESS_DPI_AWARENESS*);
       GetProcessDpiAwarenessPtr func_ptr =
-        reinterpret_cast<GetProcessDpiAwarenessPtr>(
-          ::GetProcAddress(shcore_dll, "GetProcessDpiAwareness"));
+          reinterpret_cast<GetProcessDpiAwarenessPtr>(
+              ::GetProcAddress(shcore_dll, "GetProcessDpiAwareness"));
       if (func_ptr) {
         PROCESS_DPI_AWARENESS awareness;
         if (SUCCEEDED(func_ptr(nullptr, &awareness)) &&
@@ -56,11 +56,11 @@ float GetWindowScaleFactor(HWND hwnd) {
   if (hwnd && IsProcessPerMonitorDpiAware()) {
     typedef UINT(WINAPI * GetDpiForWindowPtr)(HWND);
     static GetDpiForWindowPtr func_ptr = reinterpret_cast<GetDpiForWindowPtr>(
-      GetProcAddress(GetModuleHandle(L"user32.dll"), "GetDpiForWindow"));
+        GetProcAddress(GetModuleHandle(L"user32.dll"), "GetDpiForWindow"));
     if (func_ptr)
       return static_cast<float>(func_ptr(hwnd)) / DPI_1X;
   }
 
   return GetDeviceScaleFactor();
 }
-} // namespace Win32DpiHelper
+}  // namespace Win32DpiHelper

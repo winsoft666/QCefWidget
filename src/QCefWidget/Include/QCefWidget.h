@@ -26,7 +26,7 @@ class QCefWidgetImpl;
 class QCefDevToolsWnd;
 class QCEFWIDGET_EXPORT QCefWidget : public QWidget {
   Q_OBJECT
-public:
+ public:
   QCefWidget(const QString& url = "", QWidget* parent = nullptr);
   virtual ~QCefWidget();
 
@@ -85,7 +85,7 @@ public:
 
   static QString QCefWidgetVersion();
   static QString CefVersion();
-signals:
+ signals:
   void loadingStateChanged(bool isLoading, bool canGoBack, bool canGoForward);
   void titleChanged(QString title);
   void urlChanged(bool isMainFrame, const QString& url);
@@ -102,7 +102,7 @@ signals:
                           const QString& method,
                           const QVariantList& arguments);
 
-protected:
+ protected:
   bool nativeEvent(const QByteArray& eventType,
                    void* message,
                    long* result) override;
@@ -115,4 +115,4 @@ protected:
   friend QCefDevToolsWnd;
 };
 
-#endif // QCEF_WIDGET_H_
+#endif  // QCEF_WIDGET_H_

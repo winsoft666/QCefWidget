@@ -3,20 +3,20 @@
 #include "QCefOpenGLWidget.h"
 #include <QtWidgets>
 
-CefWnd::CefWnd(QWidget* parent /*= nullptr*/)
-  : QWidget(parent)
-  , framelessWindow_(false)
-  , translucentWindowBackground_(false)
-  , usingGLWidget_(false)
-  , contextMenuEnabled_(false)
-  , autoAddDevToolsContextMenu_(false)
-  , allowExecuteUnknownProtocolViaOS_(false)
-  , osrEnabled_(false)
-  , maximumFps_(25)
-  , windowBkColor_(255, 255, 255, 255)
-  , browserBkColor_(255, 255, 255, 255)
-  , pCefWidget_(nullptr)
-  , pCefGLWidget_(nullptr) {
+CefWnd::CefWnd(QWidget* parent /*= nullptr*/) :
+    QWidget(parent),
+    framelessWindow_(false),
+    translucentWindowBackground_(false),
+    usingGLWidget_(false),
+    contextMenuEnabled_(false),
+    autoAddDevToolsContextMenu_(false),
+    allowExecuteUnknownProtocolViaOS_(false),
+    osrEnabled_(false),
+    maximumFps_(25),
+    windowBkColor_(255, 255, 255, 255),
+    browserBkColor_(255, 255, 255, 255),
+    pCefWidget_(nullptr),
+    pCefGLWidget_(nullptr) {
   setAttribute(Qt::WA_DeleteOnClose, true);
 }
 
@@ -34,14 +34,14 @@ void CefWnd::setupUi() {
 
   this->setObjectName("CefWnd");
   this->setWindowTitle(
-    QString("%1").arg(initUrl_.isEmpty() ? "Not Created" : initUrl_));
+      QString("%1").arg(initUrl_.isEmpty() ? "Not Created" : initUrl_));
   this->setWindowIcon(QIcon(":/QCefWidgetTest/images/logo.svg"));
 
   QString windowQss = QString("background-color: rgba(%1,%2,%3,%4);")
-                        .arg(windowBkColor_.red())
-                        .arg(windowBkColor_.green())
-                        .arg(windowBkColor_.blue())
-                        .arg(windowBkColor_.alpha());
+                          .arg(windowBkColor_.red())
+                          .arg(windowBkColor_.green())
+                          .arg(windowBkColor_.blue())
+                          .arg(windowBkColor_.alpha());
   this->setStyleSheet(windowQss);
 
   if (usingGLWidget_) {
@@ -52,10 +52,10 @@ void CefWnd::setupUi() {
     pCefGLWidget_->setAutoShowDevToolsContextMenu(autoAddDevToolsContextMenu_);
     pCefGLWidget_->setBrowserBackgroundColor(browserBkColor_);
     pCefGLWidget_->setAllowExecuteUnknownProtocolViaOS(
-      allowExecuteUnknownProtocolViaOS_);
+        allowExecuteUnknownProtocolViaOS_);
     if (!translucentWindowBackground_)
       pCefGLWidget_->setStyleSheet(
-        "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
+          "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefGLWidget_,
             &QCefOpenGLWidget::invokeMethodNotify,
@@ -74,10 +74,10 @@ void CefWnd::setupUi() {
     pCefWidget_->setAutoShowDevToolsContextMenu(autoAddDevToolsContextMenu_);
     pCefWidget_->setBrowserBackgroundColor(browserBkColor_);
     pCefWidget_->setAllowExecuteUnknownProtocolViaOS(
-      allowExecuteUnknownProtocolViaOS_);
+        allowExecuteUnknownProtocolViaOS_);
     if (!translucentWindowBackground_)
       pCefWidget_->setStyleSheet(
-        "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
+          "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
 
     connect(pCefWidget_,
             &QCefWidget::invokeMethodNotify,
@@ -265,10 +265,10 @@ void CefWnd::onInvokeMethodNotify(int browserId,
                                   const QString& method,
                                   const QVariantList& arguments) {
   QString str =
-    QString("[InvokeMethodNotify] browserId: %1, frameId: %2, method: %3\r\n")
-      .arg(browserId)
-      .arg(frameId)
-      .arg(method);
+      QString("[InvokeMethodNotify] browserId: %1, frameId: %2, method: %3\r\n")
+          .arg(browserId)
+          .arg(frameId)
+          .arg(method);
   QString strArgs;
   for (int i = 0; i < arguments.size(); i++) {
     strArgs += QString("[%1]: %2\r\n").arg(i).arg(arguments[i].toString());
@@ -295,13 +295,13 @@ void CefWnd::onTriggerEvent() {
 
 void CefWnd::onCefQueryRequest(const QCefQuery& query) {
   QString str = QString("[CefQueryRequest] id: %1, reqeust: %2\r\n")
-                  .arg(query.id())
-                  .arg(query.reqeust());
+                    .arg(query.id())
+                    .arg(query.reqeust());
   qDebug().noquote() << str;
 
   QCefQuery rsp = query;
   rsp.setResponseResult(
-    true, "This is a query response message from C++.", 123);
+      true, "This is a query response message from C++.", 123);
 
   if (usingGLWidget_)
     pCefGLWidget_->responseCefQuery(rsp);

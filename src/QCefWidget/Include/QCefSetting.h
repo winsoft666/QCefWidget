@@ -22,7 +22,7 @@ namespace QCefSetting {
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setBrowserSubProcessPath(const QString &path);
+void QCEFWIDGET_EXPORT setBrowserSubProcessPath(const QString& path);
 
 /// <summary>
 ///
@@ -32,7 +32,7 @@ const QCEFWIDGET_EXPORT QString browserSubProcessPath();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setResourceDirectoryPath(const QString &path);
+void QCEFWIDGET_EXPORT setResourceDirectoryPath(const QString& path);
 
 /// <summary>
 ///
@@ -42,7 +42,7 @@ const QCEFWIDGET_EXPORT QString resourceDirectoryPath();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setLocalesDirectoryPath(const QString &path);
+void QCEFWIDGET_EXPORT setLocalesDirectoryPath(const QString& path);
 
 /// <summary>
 ///
@@ -52,7 +52,7 @@ const QCEFWIDGET_EXPORT QString localesDirectoryPath();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setUserAgent(const QString &agent);
+void QCEFWIDGET_EXPORT setUserAgent(const QString& agent);
 
 /// <summary>
 ///
@@ -62,7 +62,7 @@ const QCEFWIDGET_EXPORT QString userAgent();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setCachePath(const QString &path);
+void QCEFWIDGET_EXPORT setCachePath(const QString& path);
 
 /// <summary>
 ///
@@ -72,7 +72,7 @@ const QCEFWIDGET_EXPORT QString cachePath();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setUserDataPath(const QString &path);
+void QCEFWIDGET_EXPORT setUserDataPath(const QString& path);
 
 /// <summary>
 ///
@@ -80,7 +80,7 @@ void QCEFWIDGET_EXPORT setUserDataPath(const QString &path);
 const QCEFWIDGET_EXPORT QString userDataPath();
 
 /// <summary>
-/// To persist session cookies (cookies without an expiry date or validity interval) by default when using the global cookie manager set this value to true. 
+/// To persist session cookies (cookies without an expiry date or validity interval) by default when using the global cookie manager set this value to true.
 /// Session cookies are generally intended to be transient and most Web browsers do not persist them.
 /// A cachePath value must also be specified to enable this feature.
 /// </summary>
@@ -104,7 +104,7 @@ const QCEFWIDGET_EXPORT bool persistUserPreferences();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setLocale(const QString &locale);
+void QCEFWIDGET_EXPORT setLocale(const QString& locale);
 
 /// <summary>
 ///
@@ -124,7 +124,7 @@ const QCEFWIDGET_EXPORT int remoteDebuggingPort();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setAcceptLanguageList(const QString &languages);
+void QCEFWIDGET_EXPORT setAcceptLanguageList(const QString& languages);
 
 /// <summary>
 ///
@@ -144,8 +144,7 @@ const QCEFWIDGET_EXPORT bool gpuEnabled();
 /// <summary>
 ///
 /// </summary>
-QCEFWIDGET_EXPORT void setFlashPlugin(const QString& path, const QString &ver);
-
+QCEFWIDGET_EXPORT void setFlashPlugin(const QString& path, const QString& ver);
 
 const QCEFWIDGET_EXPORT QString flashPluginPath();
 
@@ -167,7 +166,7 @@ const QCEFWIDGET_EXPORT bool osrEnabled();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setDebugLogPath(const QString &path);
+void QCEFWIDGET_EXPORT setDebugLogPath(const QString& path);
 
 /// <summary>
 ///
@@ -177,13 +176,13 @@ const QCEFWIDGET_EXPORT QString debugLogPath();
 /// <summary>
 ///
 /// </summary>
-void QCEFWIDGET_EXPORT setResourceMap(const QMap<QString, QPair<int, QString>> & resourceMap);
+void QCEFWIDGET_EXPORT setResourceMap(const QMap<QString, QPair<int, QString>>& resourceMap);
 
 /// <summary>
 ///
 /// </summary>
 const QCEFWIDGET_EXPORT QMap<QString, QPair<int, QString>> resourceMap();
 
-}; // namespace QCefSetting
+};  // namespace QCefSetting
 
 #endif

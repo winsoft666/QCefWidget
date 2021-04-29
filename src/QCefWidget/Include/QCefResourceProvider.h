@@ -18,8 +18,8 @@
 #endif
 
 class QCEFWIDGET_EXPORT QCefResourceProvider {
-public:
-  virtual bool onRequest(const QString& resourceUrl, QByteArray &buffer) = 0;
+ public:
+  virtual bool onRequest(const QString& resourceUrl, QByteArray& buffer) = 0;
 };
 
 #endif

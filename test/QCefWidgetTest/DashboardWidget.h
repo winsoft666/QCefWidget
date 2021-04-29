@@ -3,7 +3,7 @@
 
 class QDashboardWidget : public QWidget {
   Q_OBJECT
-public:
+ public:
   QDashboardWidget(QWidget* parent = nullptr);
   virtual ~QDashboardWidget();
 
@@ -44,7 +44,7 @@ public:
   void setPlateBackground(QBrush& brush);
   QBrush plateBackground() const;
 
-protected:
+ protected:
   void paintEvent(QPaintEvent* event) override;
   void drawFrame(QPainter& painter, int radius, int refSize);
   void drawDividing(QPainter& painter, int radius, int refSize);
@@ -54,7 +54,7 @@ protected:
 
   void drawNeedle(QPainter& painter, int radius, int refSize);
 
-protected:
+ protected:
   int maxValue_;
   int minValue_;
   int curValue_;

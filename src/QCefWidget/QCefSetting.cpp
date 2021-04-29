@@ -4,38 +4,32 @@
 
 void QCefSetting::setBrowserSubProcessPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::browser_sub_process_path.FromWString(
-    QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::browser_sub_process_path.FromWString( QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::browserSubProcessPath() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(
-    QCefGlobalSetting::browser_sub_process_path.ToWString());
+  return QString::fromStdWString( QCefGlobalSetting::browser_sub_process_path.ToWString());
 }
 
 void QCefSetting::setResourceDirectoryPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::resource_directory_path.FromWString(
-    QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::resource_directory_path.FromWString( QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::resourceDirectoryPath() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(
-    QCefGlobalSetting::resource_directory_path.ToWString());
+  return QString::fromStdWString( QCefGlobalSetting::resource_directory_path.ToWString());
 }
 
 void QCefSetting::setLocalesDirectoryPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::locales_directory_path.FromWString(
-    QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::locales_directory_path.FromWString( QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::localesDirectoryPath() {
   QCefGlobalSetting::initializeInstance();
-  return QString::fromStdWString(
-    QCefGlobalSetting::locales_directory_path.ToWString());
+  return QString::fromStdWString( QCefGlobalSetting::locales_directory_path.ToWString());
 }
 
 void QCefSetting::setUserAgent(const QString& agent) {
@@ -50,8 +44,7 @@ const QString QCefSetting::userAgent() {
 
 void QCefSetting::setCachePath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::cache_path.FromWString(
-    QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::cache_path.FromWString( QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::cachePath() {
@@ -117,7 +110,7 @@ void QCefSetting::setAcceptLanguageList(const QString& languages) {
 const QString QCefSetting::acceptLanguageList() {
   QCefGlobalSetting::initializeInstance();
   return QString::fromStdWString(
-    QCefGlobalSetting::accept_language_list.ToWString());
+      QCefGlobalSetting::accept_language_list.ToWString());
 }
 
 const void QCefSetting::setGpuEnabled(bool b) {
@@ -140,13 +133,13 @@ void QCefSetting::setFlashPlugin(const QString& path, const QString& ver) {
 const QString QCefSetting::flashPluginPath() {
   QCefGlobalSetting::initializeInstance();
   return QString::fromStdWString(
-    QCefGlobalSetting::flush_plugin_path.ToWString());
+      QCefGlobalSetting::flush_plugin_path.ToWString());
 }
 
 const QString QCefSetting::flashPluginVersion() {
   QCefGlobalSetting::initializeInstance();
   return QString::fromStdWString(
-    QCefGlobalSetting::flush_plugin_ver.ToWString());
+      QCefGlobalSetting::flush_plugin_ver.ToWString());
 }
 
 const void QCefSetting::setOsrEnabled(bool b) {
@@ -161,8 +154,7 @@ const bool QCefSetting::osrEnabled() {
 
 void QCefSetting::setDebugLogPath(const QString& path) {
   QCefGlobalSetting::initializeInstance();
-  QCefGlobalSetting::debug_log_path.FromWString(
-    QDir::toNativeSeparators(path).toStdWString());
+  QCefGlobalSetting::debug_log_path.FromWString( QDir::toNativeSeparators(path).toStdWString());
 }
 
 const QString QCefSetting::debugLogPath() {
@@ -171,7 +163,7 @@ const QString QCefSetting::debugLogPath() {
 }
 
 void QCefSetting::setResourceMap(
-  const QMap<QString, QPair<int, QString>>& resourceMap) {
+    const QMap<QString, QPair<int, QString>>& resourceMap) {
   QCefGlobalSetting::initializeInstance();
   QCefGlobalSetting::resource_map = resourceMap;
 }

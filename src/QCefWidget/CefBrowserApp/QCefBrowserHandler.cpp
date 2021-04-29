@@ -24,16 +24,16 @@ enum InternalMenuId {
 };
 }
 
-QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl* pImpl)
-  : isClosing_(false)
-  , pCefqueryHandler_(new QCefQueryHandler(pImpl))
-  , pResourceManager_(new CefResourceManager())
-  , pMessageRouter_(nullptr)
-  , browserCount_(0)
-  , viewWidth_(0)
-  , viewHeight_(0)
-  , isPaintingPopup_(false)
-  , pImpl_(pImpl) {
+QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl* pImpl) :
+    isClosing_(false),
+    pCefqueryHandler_(new QCefQueryHandler(pImpl)),
+    pResourceManager_(new CefResourceManager()),
+    pMessageRouter_(nullptr),
+    browserCount_(0),
+    viewWidth_(0),
+    viewHeight_(0),
+    isPaintingPopup_(false),
+    pImpl_(pImpl) {
   QString consoleLogPath = pImpl_->browserSetting().consoleLogPath;
   if (!consoleLogPath.isEmpty()) {
     consoleLog_.setFileName(consoleLogPath);
@@ -46,9 +46,9 @@ QCefBrowserHandler::QCefBrowserHandler(QCefWidgetImpl* pImpl)
   }
   const std::string& internalOrigin = "http://qcefwidget/";
   pResourceManager_->AddProvider(
-    CreateBinaryResourceProvider(internalOrigin, std::string()),
-    100,
-    std::string());
+      CreateBinaryResourceProvider(internalOrigin, std::string()),
+      100,
+      std::string());
 }
 
 QCefBrowserHandler::~QCefBrowserHandler() {
@@ -60,12 +60,12 @@ QCefBrowserHandler::~QCefBrowserHandler() {
 
 #if CEF_VERSION_MAJOR == 72
 bool QCefBrowserHandler::OnProcessMessageReceived(
-  CefRefPtr<CefBrowser> browser,
-  CefProcessId source_process,
-  CefRefPtr<CefProcessMessage> message) {
+    CefRefPtr<CefBrowser> browser,
+    CefProcessId source_process,
+    CefRefPtr<CefProcessMessage> message) {
   CEF_REQUIRE_UI_THREAD();
   if (pMessageRouter_ && pMessageRouter_->OnProcessMessageReceived(
-                           browser, source_process, message))
+                             browser, source_process, message))
     return true;
 
   if (dispatchNotifyRequest(browser, source_process, message))
@@ -75,13 +75,13 @@ bool QCefBrowserHandler::OnProcessMessageReceived(
 }
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 bool QCefBrowserHandler::OnProcessMessageReceived(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  CefProcessId source_process,
-  CefRefPtr<CefProcessMessage> message) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefProcessId source_process,
+    CefRefPtr<CefProcessMessage> message) {
   CEF_REQUIRE_UI_THREAD();
   if (pMessageRouter_ && pMessageRouter_->OnProcessMessageReceived(
-                           browser, frame, source_process, message))
+                             browser, frame, source_process, message))
     return true;
 
   if (dispatchNotifyRequest(browser, source_process, message))
@@ -92,10 +92,10 @@ bool QCefBrowserHandler::OnProcessMessageReceived(
 #endif
 
 void QCefBrowserHandler::OnBeforeContextMenu(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  CefRefPtr<CefContextMenuParams> params,
-  CefRefPtr<CefMenuModel> model) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefContextMenuParams> params,
+    CefRefPtr<CefMenuModel> model) {
   CEF_REQUIRE_UI_THREAD();
 
   if (pImpl_) {
@@ -119,28 +119,26 @@ void QCefBrowserHandler::OnBeforeContextMenu(
 }
 
 bool QCefBrowserHandler::OnContextMenuCommand(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  CefRefPtr<CefContextMenuParams> params,
-  int command_id,
-  EventFlags event_flags) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefContextMenuParams> params,
+    int command_id,
+    EventFlags event_flags) {
   CEF_REQUIRE_UI_THREAD();
 
   switch (command_id) {
-  case CLIENT_ID_SHOW_DEVTOOLS:
-    QCefManager::getInstance().showDevTools(pImpl_->getWidget());
-    return true;
-  case CLIENT_ID_CLOSE_DEVTOOLS:
-    QCefManager::getInstance().closeDevTools(pImpl_->getWidget());
-    return true;
-  default:
-    return false;
+    case CLIENT_ID_SHOW_DEVTOOLS:
+      QCefManager::getInstance().showDevTools(pImpl_->getWidget());
+      return true;
+    case CLIENT_ID_CLOSE_DEVTOOLS:
+      QCefManager::getInstance().closeDevTools(pImpl_->getWidget());
+      return true;
+    default:
+      return false;
   }
 }
 
-void QCefBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
-                                         CefRefPtr<CefFrame> frame,
-                                         const CefString& url) {
+void QCefBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, const CefString& url) {
   CEF_REQUIRE_UI_THREAD();
 
   if (pImpl_->getWidgetType() == WT_Widget) {
@@ -159,8 +157,7 @@ void QCefBrowserHandler::OnAddressChange(CefRefPtr<CefBrowser> browser,
 #endif
 }
 
-void QCefBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
-                                       const CefString& title) {
+void QCefBrowserHandler::OnTitleChange(CefRefPtr<CefBrowser> browser, const CefString& title) {
   CEF_REQUIRE_UI_THREAD();
 
   if (pImpl_->getWidgetType() == WT_Widget) {
@@ -187,9 +184,9 @@ bool QCefBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
     return false;
 
   QString result = QString("[%1] [%2] %3\r\n")
-                     .arg(source.ToWString())
-                     .arg(line)
-                     .arg(message.ToWString());
+                       .arg(source.ToWString())
+                       .arg(line)
+                       .arg(message.ToWString());
   if (consoleLog_.isOpen()) {
     consoleLogSteam_ << result;
   }
@@ -202,8 +199,7 @@ bool QCefBrowserHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-void QCefBrowserHandler::OnFaviconURLChange(
-  CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) {
+void QCefBrowserHandler::OnFaviconURLChange( CefRefPtr<CefBrowser> browser, const std::vector<CefString>& icon_urls) {
   CEF_REQUIRE_UI_THREAD();
 
   if (!icon_urls.empty()) {
@@ -211,16 +207,13 @@ void QCefBrowserHandler::OnFaviconURLChange(
   }
 }
 
-void QCefBrowserHandler::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser,
-                                                bool fullscreen) {
+void QCefBrowserHandler::OnFullscreenModeChange(CefRefPtr<CefBrowser> browser, bool fullscreen) {
   CEF_REQUIRE_UI_THREAD();
 
   // TODO
 }
 
-bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
-                                     CefRefPtr<CefDragData> dragData,
-                                     CefDragHandler::DragOperationsMask mask) {
+bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDragData> dragData, CefDragHandler::DragOperationsMask mask) {
   CEF_REQUIRE_UI_THREAD();
 
   return false;
@@ -228,8 +221,8 @@ bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser,
 
 #if CEF_VERSION_MAJOR == 72
 void QCefBrowserHandler::OnDraggableRegionsChanged(
-  CefRefPtr<CefBrowser> browser,
-  const std::vector<CefDraggableRegion>& regions) {
+    CefRefPtr<CefBrowser> browser,
+    const std::vector<CefDraggableRegion>& regions) {
   CEF_REQUIRE_UI_THREAD();
   if (pImpl_) {
     pImpl_->draggableRegionsChangedNotify(browser, regions);
@@ -237,9 +230,9 @@ void QCefBrowserHandler::OnDraggableRegionsChanged(
 }
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 void QCefBrowserHandler::OnDraggableRegionsChanged(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  const std::vector<CefDraggableRegion>& regions) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    const std::vector<CefDraggableRegion>& regions) {
   CEF_REQUIRE_UI_THREAD();
   if (pImpl_) {
     pImpl_->draggableRegionsChangedNotify(browser, regions);
@@ -260,10 +253,10 @@ bool QCefBrowserHandler::OnJSDialog(CefRefPtr<CefBrowser> browser,
 }
 
 bool QCefBrowserHandler::OnBeforeUnloadDialog(
-  CefRefPtr<CefBrowser> browser,
-  const CefString& message_text,
-  bool is_reload,
-  CefRefPtr<CefJSDialogCallback> callback) {
+    CefRefPtr<CefBrowser> browser,
+    const CefString& message_text,
+    bool is_reload,
+    CefRefPtr<CefJSDialogCallback> callback) {
   CEF_REQUIRE_UI_THREAD();
 
   return false;
@@ -284,17 +277,17 @@ bool QCefBrowserHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
 
 #if CEF_VERSION_MAJOR == 72
 bool QCefBrowserHandler::OnBeforePopup(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  const CefString& target_url,
-  const CefString& target_frame_name,
-  CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-  bool user_gesture,
-  const CefPopupFeatures& popupFeatures,
-  CefWindowInfo& windowInfo,
-  CefRefPtr<CefClient>& client,
-  CefBrowserSettings& settings,
-  bool* no_javascript_access) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    const CefString& target_url,
+    const CefString& target_frame_name,
+    CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+    bool user_gesture,
+    const CefPopupFeatures& popupFeatures,
+    CefWindowInfo& windowInfo,
+    CefRefPtr<CefClient>& client,
+    CefBrowserSettings& settings,
+    bool* no_javascript_access) {
   CEF_REQUIRE_UI_THREAD();
 
   if (isClosing_)
@@ -305,18 +298,18 @@ bool QCefBrowserHandler::OnBeforePopup(
 }
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 bool QCefBrowserHandler::OnBeforePopup(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  const CefString& target_url,
-  const CefString& target_frame_name,
-  CefLifeSpanHandler::WindowOpenDisposition target_disposition,
-  bool user_gesture,
-  const CefPopupFeatures& popupFeatures,
-  CefWindowInfo& windowInfo,
-  CefRefPtr<CefClient>& client,
-  CefBrowserSettings& settings,
-  CefRefPtr<CefDictionaryValue>& extra_info,
-  bool* no_javascript_access) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    const CefString& target_url,
+    const CefString& target_frame_name,
+    CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+    bool user_gesture,
+    const CefPopupFeatures& popupFeatures,
+    CefWindowInfo& windowInfo,
+    CefRefPtr<CefClient>& client,
+    CefBrowserSettings& settings,
+    CefRefPtr<CefDictionaryValue>& extra_info,
+    bool* no_javascript_access) {
   CEF_REQUIRE_UI_THREAD();
 
   if (isClosing_)
@@ -355,7 +348,7 @@ void QCefBrowserHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser) {
     popupBrowserList_.push_back(browser);
     CefPostTask(TID_UI,
                 CefCreateClosureTask(base::Bind(
-                  &CefBrowserHost::SetFocus, browser->GetHost().get(), true)));
+                    &CefBrowserHost::SetFocus, browser->GetHost().get(), true)));
   }
 
   do {
@@ -449,9 +442,7 @@ void QCefBrowserHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
 #endif
 }
 
-void QCefBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
-                                     CefRefPtr<CefFrame> frame,
-                                     TransitionType transition_type) {
+void QCefBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, TransitionType transition_type) {
   CEF_REQUIRE_UI_THREAD();
 
   if (pImpl_->getWidgetType() == WT_Widget) {
@@ -468,9 +459,7 @@ void QCefBrowserHandler::OnLoadStart(CefRefPtr<CefBrowser> browser,
 #endif
 }
 
-void QCefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
-                                   CefRefPtr<CefFrame> frame,
-                                   int httpStatusCode) {
+void QCefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser, CefRefPtr<CefFrame> frame, int httpStatusCode) {
   CEF_REQUIRE_UI_THREAD();
 
   if (pImpl_) {
@@ -482,7 +471,7 @@ void QCefBrowserHandler::OnLoadEnd(CefRefPtr<CefBrowser> browser,
 #ifndef QT_NO_OPENGL
     else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
       QCefOpenGLWidget* p =
-        qobject_cast<QCefOpenGLWidget*>(pImpl_->getWidget());
+          qobject_cast<QCefOpenGLWidget*>(pImpl_->getWidget());
       if (p)
         emit p->loadEnd(frame->IsMain(), httpStatusCode);
     }
@@ -540,35 +529,34 @@ bool QCefBrowserHandler::OnBeforeBrowse(CefRefPtr<CefBrowser> browser,
 }
 
 bool QCefBrowserHandler::OnOpenURLFromTab(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  const CefString& target_url,
-  CefRequestHandler::WindowOpenDisposition target_disposition,
-  bool user_gesture) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    const CefString& target_url,
+    CefRequestHandler::WindowOpenDisposition target_disposition,
+    bool user_gesture) {
   CEF_REQUIRE_UI_THREAD();
 
-  return false; // return true to cancel this navigation.
+  return false;  // return true to cancel this navigation.
 }
 
 #if CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
-CefRefPtr<CefResourceRequestHandler>
-QCefBrowserHandler::GetResourceRequestHandler(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  CefRefPtr<CefRequest> request,
-  bool is_navigation,
-  bool is_download,
-  const CefString& request_initiator,
-  bool& disable_default_handling) {
+CefRefPtr<CefResourceRequestHandler> QCefBrowserHandler::GetResourceRequestHandler(
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    bool is_navigation,
+    bool is_download,
+    const CefString& request_initiator,
+    bool& disable_default_handling) {
   return this;
 }
 #endif
 
 bool QCefBrowserHandler::OnQuotaRequest(
-  CefRefPtr<CefBrowser> browser,
-  const CefString& origin_url,
-  int64 new_size,
-  CefRefPtr<CefRequestCallback> callback) {
+    CefRefPtr<CefBrowser> browser,
+    const CefString& origin_url,
+    int64 new_size,
+    CefRefPtr<CefRequestCallback> callback) {
   CEF_REQUIRE_IO_THREAD();
   static const int maxSize = 10 * 1024 * 1024;
   callback->Continue(new_size <= maxSize);
@@ -576,7 +564,8 @@ bool QCefBrowserHandler::OnQuotaRequest(
 }
 
 void QCefBrowserHandler::OnRenderProcessTerminated(
-  CefRefPtr<CefBrowser> browser, TerminationStatus status) {
+    CefRefPtr<CefBrowser> browser,
+    TerminationStatus status) {
   CEF_REQUIRE_UI_THREAD();
 
   if (pMessageRouter_)
@@ -605,12 +594,12 @@ void QCefBrowserHandler::OnRenderProcessTerminated(
 
 #if CEF_VERSION_MAJOR == 72
 CefRequestHandler::ReturnValue QCefBrowserHandler::OnBeforeResourceLoad(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  CefRefPtr<CefRequest> request,
-  CefRefPtr<CefRequestCallback> callback) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    CefRefPtr<CefRequestCallback> callback) {
   return pResourceManager_->OnBeforeResourceLoad(
-    browser, frame, request, callback);
+      browser, frame, request, callback);
 }
 
 CefRefPtr<CefResourceHandler>
@@ -628,14 +617,14 @@ void QCefBrowserHandler::OnProtocolExecution(CefRefPtr<CefBrowser> browser,
   }
 }
 
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89 
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
 CefResourceRequestHandler::ReturnValue QCefBrowserHandler::OnBeforeResourceLoad(
-  CefRefPtr<CefBrowser> browser,
-  CefRefPtr<CefFrame> frame,
-  CefRefPtr<CefRequest> request,
-  CefRefPtr<CefRequestCallback> callback) {
+    CefRefPtr<CefBrowser> browser,
+    CefRefPtr<CefFrame> frame,
+    CefRefPtr<CefRequest> request,
+    CefRefPtr<CefRequestCallback> callback) {
   return pResourceManager_->OnBeforeResourceLoad(
-    browser, frame, request, callback);
+      browser, frame, request, callback);
 }
 
 CefRefPtr<CefResourceHandler>
@@ -686,8 +675,7 @@ bool QCefBrowserHandler::GetScreenPoint(CefRefPtr<CefBrowser> browser,
   return true;
 }
 
-void QCefBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> browser,
-                                     CefRect& rect) {
+void QCefBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) {
   CEF_REQUIRE_UI_THREAD();
   QWidget* pWidget = pImpl_->getWidget();
 
@@ -707,8 +695,7 @@ void QCefBrowserHandler::GetViewRect(CefRefPtr<CefBrowser> browser,
     rect.height = 1;
 }
 
-bool QCefBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser,
-                                       CefScreenInfo& screen_info) {
+bool QCefBrowserHandler::GetScreenInfo(CefRefPtr<CefBrowser> browser, CefScreenInfo& screen_info) {
   CEF_REQUIRE_UI_THREAD();
   DCHECK(pImpl_);
   if (!pImpl_)
@@ -732,8 +719,7 @@ void QCefBrowserHandler::OnPopupShow(CefRefPtr<CefBrowser> browser, bool show) {
   }
 }
 
-void QCefBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> browser,
-                                     const CefRect& rect) {
+void QCefBrowserHandler::OnPopupSize(CefRefPtr<CefBrowser> browser, const CefRect& rect) {
   CEF_REQUIRE_UI_THREAD();
   if (rect.width <= 0 || rect.height <= 0)
     return;
@@ -840,10 +826,10 @@ void QCefBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser,
 
 #if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 76
 void QCefBrowserHandler::OnCursorChange(
-  CefRefPtr<CefBrowser> browser,
-  CefCursorHandle cursor,
-  CursorType type,
-  const CefCursorInfo& custom_cursor_info) {
+    CefRefPtr<CefBrowser> browser,
+    CefCursorHandle cursor,
+    CursorType type,
+    const CefCursorInfo& custom_cursor_info) {
   CEF_REQUIRE_UI_THREAD();
   QWidget* pWidget = pImpl_->getWidget();
   if (pWidget) {
@@ -855,10 +841,10 @@ void QCefBrowserHandler::OnCursorChange(
 }
 #elif CEF_VERSION_MAJOR == 89
 bool QCefBrowserHandler::OnCursorChange(
-  CefRefPtr<CefBrowser> browser,
-  CefCursorHandle cursor,
-  cef_cursor_type_t type,
-  const CefCursorInfo& custom_cursor_info) {
+    CefRefPtr<CefBrowser> browser,
+    CefCursorHandle cursor,
+    cef_cursor_type_t type,
+    const CefCursorInfo& custom_cursor_info) {
   CEF_REQUIRE_UI_THREAD();
   QWidget* pWidget = pImpl_->getWidget();
   if (pWidget) {
@@ -873,12 +859,12 @@ bool QCefBrowserHandler::OnCursorChange(
 #endif
 
 void QCefBrowserHandler::OnImeCompositionRangeChanged(
-  CefRefPtr<CefBrowser> browser,
-  const CefRange& selection_range,
-  const CefRenderHandler::RectList& character_bounds) {
+    CefRefPtr<CefBrowser> browser,
+    const CefRange& selection_range,
+    const CefRenderHandler::RectList& character_bounds) {
   if (pImpl_)
     pImpl_->imeCompositionRangeChangedNotify(
-      browser, selection_range, character_bounds);
+        browser, selection_range, character_bounds);
 }
 
 CefRefPtr<CefBrowser> QCefBrowserHandler::browser() const {
@@ -918,9 +904,9 @@ bool QCefBrowserHandler::responseQuery(const int64_t query,
 }
 
 bool QCefBrowserHandler::dispatchNotifyRequest(
-  CefRefPtr<CefBrowser> browser,
-  CefProcessId source_process,
-  CefRefPtr<CefProcessMessage> message) {
+    CefRefPtr<CefBrowser> browser,
+    CefProcessId source_process,
+    CefRefPtr<CefProcessMessage> message) {
   if (message->GetName() == INVOKEMETHOD_NOTIFY_MESSAGE) {
     CefRefPtr<CefListValue> messageArguments = message->GetArgumentList();
     if (messageArguments && (messageArguments->GetSize() >= 2)) {
@@ -936,13 +922,13 @@ bool QCefBrowserHandler::dispatchNotifyRequest(
             if (CefValueType::VTYPE_STRING == messageArguments->GetType(idx)) {
 #if defined(CEF_STRING_TYPE_UTF16)
               method = QString::fromWCharArray(
-                messageArguments->GetString(idx++).c_str());
+                  messageArguments->GetString(idx++).c_str());
 #elif defined(CEF_STRING_TYPE_UTF8)
               method =
-                QString::fromUtf8(messageArguments->GetString(idx++).c_str());
+                  QString::fromUtf8(messageArguments->GetString(idx++).c_str());
 #elif defined(CEF_STRING_TYPE_WIDE)
               method = QString::fromWCharArray(
-                messageArguments->GetString(idx++).c_str());
+                  messageArguments->GetString(idx++).c_str());
 #endif
             }
 
@@ -954,26 +940,26 @@ bool QCefBrowserHandler::dispatchNotifyRequest(
               else if (CefValueType::VTYPE_BOOL ==
                        messageArguments->GetType(idx))
                 arguments.push_back(
-                  QVariant::fromValue(messageArguments->GetBool(idx)));
+                    QVariant::fromValue(messageArguments->GetBool(idx)));
               else if (CefValueType::VTYPE_INT ==
                        messageArguments->GetType(idx))
                 arguments.push_back(
-                  QVariant::fromValue(messageArguments->GetInt(idx)));
+                    QVariant::fromValue(messageArguments->GetInt(idx)));
               else if (CefValueType::VTYPE_DOUBLE ==
                        messageArguments->GetType(idx))
                 arguments.push_back(
-                  QVariant::fromValue(messageArguments->GetDouble(idx)));
+                    QVariant::fromValue(messageArguments->GetDouble(idx)));
               else if (CefValueType::VTYPE_STRING ==
                        messageArguments->GetType(idx)) {
 #if defined(CEF_STRING_TYPE_UTF16)
                 qStr = QString::fromWCharArray(
-                  messageArguments->GetString(idx).c_str());
+                    messageArguments->GetString(idx).c_str());
 #elif defined(CEF_STRING_TYPE_UTF8)
                 qStr =
-                  QString::fromUtf8(messageArguments->GetString(idx).c_str());
+                    QString::fromUtf8(messageArguments->GetString(idx).c_str());
 #elif defined(CEF_STRING_TYPE_WIDE)
                 qStr = QString::fromWCharArray(
-                  messageArguments->GetString(idx).c_str());
+                    messageArguments->GetString(idx).c_str());
 #endif
                 arguments.push_back(qStr);
               }
@@ -986,14 +972,14 @@ bool QCefBrowserHandler::dispatchNotifyRequest(
               QCefWidget* p = (QCefWidget*)pImpl_->getWidget();
               if (p)
                 emit p->invokeMethodNotify(
-                  browserId, frameId, method, arguments);
+                    browserId, frameId, method, arguments);
             }
 #ifndef QT_NO_OPENGL
             else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
               QCefOpenGLWidget* p = (QCefOpenGLWidget*)pImpl_->getWidget();
               if (p)
                 emit p->invokeMethodNotify(
-                  browserId, frameId, method, arguments);
+                    browserId, frameId, method, arguments);
             }
 #endif
             return true;
@@ -1043,14 +1029,13 @@ int QCefBrowserHandler::getPopupYOffset() const {
   return originalPopupRect_.y - popupRect_.y;
 }
 
-bool QCefBrowserHandler::addResourceProvider(QCefResourceProvider* provider,
-                                             const QString& identifier) {
+bool QCefBrowserHandler::addResourceProvider(QCefResourceProvider* provider, const QString& identifier) {
   if (!pResourceManager_)
     return false;
   CustomResourceProvider* pCustomProvider =
-    new CustomResourceProvider(provider);
+      new CustomResourceProvider(provider);
   pResourceManager_->AddProvider(
-    pCustomProvider, 101, identifier.toStdString());
+      pCustomProvider, 101, identifier.toStdString());
   return true;
 }
 
@@ -1070,8 +1055,7 @@ bool QCefBrowserHandler::removeAllResourceProvider() {
   return false;
 }
 
-CefRect
-QCefBrowserHandler::getPopupRectInWebView(const CefRect& original_rect) const {
+CefRect QCefBrowserHandler::getPopupRectInWebView(const CefRect& original_rect) const {
   CefRect rc(original_rect);
   // if x or y are negative, move them to 0.
   if (rc.x < 0)
