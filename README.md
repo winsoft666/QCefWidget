@@ -40,6 +40,7 @@ Support:
 	└─test
 	```
 - Update the [config.cmake](config.cmake) to set the required build configurations.
+- 
   **QCefWidget SDK Version**
 	```bash
 	SET(QCEF_VERSION_MAJOR 1)
@@ -47,7 +48,9 @@ Support:
 	SET(QCEF_VERSION_PATCH 3)
 	```
 
+
   **CEF SDK** 
+  
   Special CEF SDK folder (**Important**):
 	```bash
 	set(CEF_SDK_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/dep/cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32")
@@ -60,9 +63,9 @@ Support:
 	SET(CEF_VERSION_PATCH 13)
 	```
 
-CEF has two version format:
-- 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
-- **73.1.3**+g46cf800+chromium-73.0.3683.75 / Chromium 73.0.3683.75
+  CEF has two version format:
+	- 3.3683.1920.g9f41a27 / Chromium **73.0.3683**.75
+	- **73.1.3**+g46cf800+chromium-73.0.3683.75 / Chromium 73.0.3683.75
 
 For CEF_VERSION_XXX macro, the first format type borrows the first 3 paragraphs of the Chromium's version number, the second format can use CEF's version directly.
 
