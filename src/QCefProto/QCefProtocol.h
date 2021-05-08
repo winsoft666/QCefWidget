@@ -4,6 +4,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 
+#include "..\QCefWidget\Include\QCefUserDefined.h"
 
 #define QCEF_SCHEMA "qcefwidget"
 
@@ -45,7 +46,7 @@
 #define TRIGGEREVENT_NOTIFY_MESSAGE "QCefWidget891201ZJ0228#TriggerEventNotify"
 
 
-#define RENDER_PROCESS_NAME "QCefWing.exe"
+#define RENDER_PROCESS_NAME QCEF_WING_EXE_NAME
 
 #define RESOURCE_DIRECTORY_NAME "resources"
 

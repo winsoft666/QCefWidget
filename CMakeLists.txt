@@ -16,6 +16,10 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/src/QCefWidget/Include/QCefVersion.h.in"
   "${PROJECT_SOURCE_DIR}/src/QCefWidget/Include/QCefVersion.h"
   )
+configure_file (
+  "${PROJECT_SOURCE_DIR}/src/QCefWidget/Include/QCefUserDefined.h.in"
+  "${PROJECT_SOURCE_DIR}/src/QCefWidget/Include/QCefUserDefined.h"
+  )
 
 # Determine the platform.
 if("${CMAKE_SYSTEM_NAME}" STREQUAL "Darwin")
@@ -49,10 +53,10 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CXX_STANDARD_REQUIRED)
 set(CMAKE_CONFIGURATION_TYPES Debug Release)
-set(QCEF_WIDGET_SDK_OUT ${CMAKE_SOURCE_DIR}/out/${PROJECT_NAME})
-set(QCEF_WIDGET_SDK_BIN_OUT ${CMAKE_SOURCE_DIR}/out/${PROJECT_NAME}/bin)
-set(QCEF_WIDGET_SDK_LIB_OUT ${CMAKE_SOURCE_DIR}/out/${PROJECT_NAME}/lib)
-set(QCEF_WIDGET_SDK_INC_OUT ${CMAKE_SOURCE_DIR}/out/${PROJECT_NAME}/include)
+set(QCEF_WIDGET_SDK_OUT ${QCEF_WIDGET_SDK_OUT_DIR}/${QCEF_WIDGET_DLL})
+set(QCEF_WIDGET_SDK_BIN_OUT ${QCEF_WIDGET_SDK_OUT_DIR}/${QCEF_WIDGET_DLL}/bin)
+set(QCEF_WIDGET_SDK_LIB_OUT ${QCEF_WIDGET_SDK_OUT_DIR}/${QCEF_WIDGET_DLL}/lib)
+set(QCEF_WIDGET_SDK_INC_OUT ${QCEF_WIDGET_SDK_OUT_DIR}/${QCEF_WIDGET_DLL}/include)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${QCEF_WIDGET_SDK_BIN_OUT})
 ###############################################################
 
@@ -105,10 +109,8 @@ include_directories(
   ${CEF_ROOT}
 )
 
-set(QCEF_WING_EXE "QCefWing")
 add_subdirectory(src/QCefWing)
 
-set(QCEF_WIDGET_DLL "QCefWidget")
 add_subdirectory(src/QCefWidget)
 ###############################################################
 

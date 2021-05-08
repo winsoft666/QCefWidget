@@ -1,0 +1,11 @@
+#ifndef QCEF_USER_DEFINED_H_
+#define QCEF_USER_DEFINED_H_
+#pragma once
+
+#define QCEF_WING_EXE "${QCEF_WING_EXE}"
+#define QCEF_WING_EXE_NAME "${QCEF_WING_EXE}.exe"
+
+#define QCEF_WIDGET_DLL "${QCEF_WIDGET_DLL}"
+#define QCEF_WIDGET_DLL_LIB_NAME "${QCEF_WIDGET_DLL}.lib"
+
+#endif  // QCEF_USER_DEFINED_H_
