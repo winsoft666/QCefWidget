@@ -170,7 +170,7 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   if (!hwnd)
     return false;
 
-  qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
+  qDebug().noquote() << "deviceScaleFactor:" << deviceScaleFactor_;
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
@@ -254,7 +254,7 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
 }
 
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
-  qDebug().noquote() << "QCefWidgetImpl::browserClosingNotify" << this;
+  qDebug().noquote() << "QCefWidgetImpl::browserClosingNotify:" << this;
   browserCreated_ = false;
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();

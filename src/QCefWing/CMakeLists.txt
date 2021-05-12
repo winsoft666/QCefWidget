@@ -39,17 +39,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
 if (MSVC)
   if (CMAKE_MAJOR_VERSION LESS 3)
 		message(WARNING "CMake version 3.0 or newer is required use build variable TARGET_FILE")
-    else()
-
-    if ("QCefWing" STREQUAL "${PROJECT_NAME}")
-    else()
+  else()
+    if (NOT "QCefWing" STREQUAL "${PROJECT_NAME}")
        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/QCefWing.manifest ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.manifest
-       )
+			  COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/QCefWing.manifest ${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.manifest)
     endif()
     
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-			COMMAND mt.exe -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\${PROJECT_NAME}.manifest\" -inputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\" -outputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\"
-    )
+			COMMAND mt.exe -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\${PROJECT_NAME}.manifest\" -inputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\" -outputresource:\"$<TARGET_FILE:${PROJECT_NAME}>\")
   endif()
 endif(MSVC)
