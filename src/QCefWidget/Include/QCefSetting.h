@@ -6,6 +6,7 @@
 #include <QString>
 #include <QMap>
 #include <QMetaType>
+#include "QCefUserDefined.h"
 
 #ifndef QCEFWIDGET_EXPORT
 #ifdef QCEFWIDGET_LIB
@@ -13,7 +14,7 @@
 #else
 #define QCEFWIDGET_EXPORT Q_DECL_IMPORT
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
-#pragma comment(lib, "QCefWidget.lib")
+#pragma comment(lib, QCEF_WIDGET_DLL_LIB_NAME)
 #endif
 #endif
 #endif
