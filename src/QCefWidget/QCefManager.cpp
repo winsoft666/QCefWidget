@@ -125,19 +125,36 @@ QWidget* QCefManager::addBrowser(QWidget* pCefWidget,
   return pTopWidget;
 }
 
-void QCefManager::removeCefWidget(QWidget* pCefWidget) {
-  Q_ASSERT(pCefWidget);
-  if (!pCefWidget)
+void QCefManager::removeAllCefWidgets(QWidget* pTopWidget) {
+  Q_ASSERT(pTopWidget);
+  if (!pTopWidget)
     return;
 
   std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
 
   for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end();) {
-    if (it->cefWidget == pCefWidget) {
+    if (it->cefWidgetTopWidget == pTopWidget) {
       it = cefs_.erase(it);
     }
     else {
       it++;
+    }
+  }
+}
+
+void QCefManager::unhookTopWidget(QWidget* pTopWidget) {
+  Q_ASSERT(pTopWidget);
+  if (!pTopWidget)
+    return;
+
+  std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
+
+  for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
+    if (it->cefWidgetTopWidget == pTopWidget) {
+      if (it->cefWidgetTopWidgetPrevWndProc && it->cefWidgetTopWidgetHwnd)
+        it->cefWidgetTopWidgetPrevWndProc =
+            (WNDPROC)::SetWindowLongPtr(it->cefWidgetTopWidgetHwnd, GWLP_WNDPROC, (LONG_PTR)it->cefWidgetTopWidgetPrevWndProc);
+      return;
     }
   }
 }
@@ -322,17 +339,17 @@ WNDPROC QCefManager::hookWidget(HWND hTopWidget) {
   if (!hTopWidget)
     return nullptr;
   ::SetWindowLongPtr(hTopWidget, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
-  return (WNDPROC)SetWindowLongPtr(
-      hTopWidget, GWLP_WNDPROC, (LONG_PTR)&newWndProc);
+  return (WNDPROC)SetWindowLongPtr(hTopWidget, GWLP_WNDPROC, (LONG_PTR)&newWndProc);
 }
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
-LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd,
-                                         UINT uMsg,
-                                         WPARAM wParam,
-                                         LPARAM lParam) {
-  QCefManager* pThis =
-      reinterpret_cast<QCefManager*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
+LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+#if (defined _DEBUG) || (defined DEBUG)
+  if (uMsg == WM_CLOSE)
+    qDebug().noquote() << "QCefManager::newWndProc WM_CLOSE, HWND:" << hWnd;
+#endif
+
+  QCefManager* pThis = reinterpret_cast<QCefManager*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
   if (!pThis)
     return 0;
 
@@ -340,9 +357,7 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd,
   QCefWidgetImpl* pCefWidgetImpl = nullptr;
   do {
     std::lock_guard<std::recursive_mutex> lg(pThis->cefsMutex_);
-    for (std::list<CefInfo>::iterator it = pThis->cefs_.begin();
-         it != pThis->cefs_.end();
-         it++) {
+    for (std::list<CefInfo>::iterator it = pThis->cefs_.begin(); it != pThis->cefs_.end(); it++) {
       if (it->cefWidgetTopWidgetHwnd == hWnd) {
         preWndProc = it->cefWidgetTopWidgetPrevWndProc;
         pCefWidgetImpl = it->cefWidgetImpl;
@@ -351,13 +366,13 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd,
     }
   } while (false);
 
-  Q_ASSERT(preWndProc);
-  if (!preWndProc)
+  if (!preWndProc) {
+    qDebug().noquote() << "Not found cefWidgetTopWidgetHwnd";
     return 0;
+  }
 
   if (uMsg == WM_CLOSE) {
     Q_ASSERT(pCefWidgetImpl);
-    qDebug().noquote() << "QCefManager::newWndProc WM_CLOSE, HWND: " << hWnd;
     if (pCefWidgetImpl) {
       if (!pCefWidgetImpl->browserSetting().autoDestroyCefWhenCloseEvent) {
         qDebug().noquote() << "Not Destroy CEF";
@@ -368,7 +383,7 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd,
 
     if (pThis->aliveBrowserCount(hWnd) == 0) {
       ::SetWindowLongPtr(hWnd, GWLP_USERDATA, 0L);
-      SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)preWndProc);
+      ::SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)preWndProc);
       // allow close
       qDebug().noquote() << "Accept WM_CLOSE";
       return ::CallWindowProc(preWndProc, hWnd, uMsg, wParam, lParam);
@@ -389,32 +404,28 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd,
 
 bool QCefManager::eventFilter(QObject* obj, QEvent* event) {
   if (event->type() == QEvent::Close) {
-    qDebug().noquote() << "QCefManager::eventFilter QEvent::Close, obj: " << obj;
+    qDebug().noquote() << "QCefManager::eventFilter QEvent::Close, obj:" << obj;
     std::lock_guard<std::recursive_mutex> lg(cefsMutex_);
     for (std::list<CefInfo>::iterator it = cefs_.begin(); it != cefs_.end(); it++) {
-      if (it->cefWidgetTopWidget == obj) {
-        QCefWidgetImpl* pImp = it->cefWidgetImpl;
-        Q_ASSERT(pImp);
-        if (pImp) {
-          if (!pImp->browserSetting().autoDestroyCefWhenCloseEvent) {
-            qDebug().noquote() << "Not Destroy CEF";
-            return QObject::eventFilter(obj, event);
-          }
-        }
-        this->tryCloseAllBrowsers(it->cefWidgetTopWidget);
+      if (it->cefWidgetTopWidget != obj)
+        continue;
+      QCefWidgetImpl* pImp = it->cefWidgetImpl;
+      Q_ASSERT(pImp);
+      if (pImp && !pImp->browserSetting().autoDestroyCefWhenCloseEvent) {
+        qDebug().noquote() << "Not Destroy CEF";
 
-        if (this->aliveBrowserCount(it->cefWidgetTopWidget) == 0) {
-          qDebug().noquote() << "Accept close event";
-          event->accept();
-          return false;
-        }
-        else {
-          it->cefWidgetTopWidget->removeEventFilter(this);
-          event->ignore();
-          qDebug().noquote() << "Ignore close event";
-          return true;
-        }
+        // Not return false
+        // pass control to the caller, caller's closeEvent(...) will be called.
+        return QObject::eventFilter(obj, event);
       }
+      this->tryCloseAllBrowsers(it->cefWidgetTopWidget);
+
+      Q_ASSERT(this->aliveBrowserCount(it->cefWidgetTopWidget) > 0);
+
+      it->cefWidgetTopWidget->removeEventFilter(this);
+      event->ignore();
+      qDebug().noquote() << "Ignore close event";
+      return true;
     }
   }
 

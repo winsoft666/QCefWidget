@@ -28,7 +28,8 @@ class QCefManager : public QObject {
                       CefRefPtr<CefBrowser> browser,
                       bool osrMode);  // return top-level widget
 
-  void removeCefWidget(QWidget* pCefWidget);
+  void removeAllCefWidgets(QWidget* pTopWidget);
+  void unhookTopWidget(QWidget* pTopWidget);
 
   int aliveBrowserCount(HWND hTopWidget);
   int aliveBrowserCount(QWidget* pTopWidget);
@@ -51,10 +52,7 @@ class QCefManager : public QObject {
 
  private:
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
-  static LRESULT CALLBACK newWndProc(HWND hWnd,
-                                     UINT uMsg,
-                                     WPARAM wParam,
-                                     LPARAM lParam);
+  static LRESULT CALLBACK newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 #endif
   bool eventFilter(QObject* obj, QEvent* event) override;
 

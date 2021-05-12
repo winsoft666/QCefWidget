@@ -268,6 +268,8 @@ void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
   QCefManager::getInstance().setBrowserClosed(pWidget_);
 
   if (QCefManager::getInstance().aliveBrowserCount(pTopWidget_) == 0) {
+    QCefManager::getInstance().unhookTopWidget(pTopWidget_);
+    QCefManager::getInstance().removeAllCefWidgets(pTopWidget_);
     if (pTopWidget_) {
       QMetaObject::invokeMethod(
           pTopWidget_, [this]() { pTopWidget_->close(); }, Qt::QueuedConnection);
