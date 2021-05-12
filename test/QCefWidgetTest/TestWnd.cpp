@@ -158,6 +158,9 @@ void TestWnd::setupUi() {
       new QCheckBox("Browser with DevTools Context Menu");
   checkboxAutoShowDevToolsContextMenu_->setChecked(true);
 
+  checkboxUsingHideInsteadCloseWhenClickCloseButton_ = new QCheckBox("Using hide instead close when cef window's close button clicked");
+  checkboxUsingHideInsteadCloseWhenClickCloseButton_->setChecked(false);
+
   checkboxAllowExecuteUnknownProtocolViaOS_ =
       new QCheckBox("Allow Execute Unknown Protocol via OS");
   checkboxAllowExecuteUnknownProtocolViaOS_->setChecked(true);
@@ -206,6 +209,7 @@ void TestWnd::setupUi() {
   vlOption->addWidget(checkboxOsrEnabled_);
   vlOption->addWidget(checkboxContextMenuEnabled_);
   vlOption->addWidget(checkboxAutoShowDevToolsContextMenu_);
+  vlOption->addWidget(checkboxUsingHideInsteadCloseWhenClickCloseButton_);
   vlOption->addWidget(checkboxAllowExecuteUnknownProtocolViaOS_);
   vlOption->addWidget(checkboxPerformanceMonitor_);
   vlOption->addLayout(hlFPS);
@@ -322,6 +326,7 @@ void TestWnd::onPushButtonNewBrowserClicked() {
       checkboxTranslucentWindowBackground_->isChecked());
   pCefWnd->setOsrEnabled(checkboxOsrEnabled_->isChecked());
   pCefWnd->setContextMenuEnabled(checkboxContextMenuEnabled_->isChecked());
+  pCefWnd->setUsingHideInsteadClose(checkboxUsingHideInsteadCloseWhenClickCloseButton_->isChecked());
   pCefWnd->setAutoAddDevToolsContextMenu(
       checkboxAutoShowDevToolsContextMenu_->isChecked());
   pCefWnd->setAllowExecuteUnknownProtocolViaOS(

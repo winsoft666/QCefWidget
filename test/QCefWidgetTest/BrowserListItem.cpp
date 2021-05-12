@@ -84,7 +84,7 @@ void BrowserListItem::setupUi() {
 
   this->setLayout(hlMain);
 
-  connect(pushButtonClose_, &QPushButton::clicked, pCefWnd_, &CefWnd::close);
+  connect(pushButtonClose_, &QPushButton::clicked, pCefWnd_, &CefWnd::forceClose);
   connect(pushButtonDevTools_,
           &QPushButton::clicked,
           pCefWnd_,

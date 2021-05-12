@@ -37,6 +37,9 @@ class CefWnd : public QWidget {
   bool autoAddDevToolsContextMenu();
   void setAutoAddDevToolsContextMenu(bool b);
 
+  bool usingHideInsteadClose();
+  void setUsingHideInsteadClose(bool b);
+
   QSize initSize();
   void setInitSize(QSize s);
 
@@ -52,6 +55,8 @@ class CefWnd : public QWidget {
   QColor browserBkColor();
   void setBrowserBkColor(QColor c);
 
+  void forceClose();
+
  signals:
   void cefWndVisibleChange(bool bVisible);
 
@@ -59,6 +64,7 @@ class CefWnd : public QWidget {
   QSize sizeHint() const override;
   void showEvent(QShowEvent* event) override;
   void hideEvent(QHideEvent* event) override;
+  void closeEvent(QCloseEvent *event) override;
  public slots:
   virtual void onNavigateToUrl(QString url);
   virtual void onReload();
@@ -76,6 +82,8 @@ class CefWnd : public QWidget {
   bool framelessWindow_;
   bool translucentWindowBackground_;
   bool allowExecuteUnknownProtocolViaOS_;
+  bool usingHideInsteadClose_;
+  bool forceClose_;
   QSize initSize_;
   QString initUrl_;
   QColor windowBkColor_;

@@ -39,6 +39,7 @@ class TestWnd : public QWidget {
   QCheckBox* checkboxOsrEnabled_;
   QCheckBox* checkboxContextMenuEnabled_;
   QCheckBox* checkboxAutoShowDevToolsContextMenu_;
+  QCheckBox* checkboxUsingHideInsteadCloseWhenClickCloseButton_;
   QCheckBox* checkboxAllowExecuteUnknownProtocolViaOS_;
   QCheckBox* checkboxPerformanceMonitor_;
 

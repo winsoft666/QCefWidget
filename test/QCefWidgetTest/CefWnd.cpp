@@ -11,6 +11,8 @@ CefWnd::CefWnd(QWidget* parent /*= nullptr*/) :
     contextMenuEnabled_(false),
     autoAddDevToolsContextMenu_(false),
     allowExecuteUnknownProtocolViaOS_(false),
+    usingHideInsteadClose_(false),
+    forceClose_(false),
     osrEnabled_(false),
     maximumFps_(25),
     windowBkColor_(255, 255, 255, 255),
@@ -56,6 +58,7 @@ void CefWnd::setupUi() {
     if (!translucentWindowBackground_)
       pCefGLWidget_->setStyleSheet(
           "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
+    pCefGLWidget_->setAutoDestoryCefWhenCloseEvent(!usingHideInsteadClose_);
 
     connect(pCefGLWidget_,
             &QCefOpenGLWidget::invokeMethodNotify,
@@ -78,6 +81,7 @@ void CefWnd::setupUi() {
     if (!translucentWindowBackground_)
       pCefWidget_->setStyleSheet(
           "image: url(:/QCefWidgetTest/images/logo_blue.svg);");
+    pCefWidget_->setAutoDestoryCefWhenCloseEvent(!usingHideInsteadClose_);
 
     connect(pCefWidget_,
             &QCefWidget::invokeMethodNotify,
@@ -158,6 +162,14 @@ void CefWnd::setAutoAddDevToolsContextMenu(bool b) {
   autoAddDevToolsContextMenu_ = b;
 }
 
+bool CefWnd::usingHideInsteadClose() {
+  return usingHideInsteadClose_;
+}
+
+void CefWnd::setUsingHideInsteadClose(bool b) {
+  usingHideInsteadClose_ = b;
+}
+
 QSize CefWnd::initSize() {
   return initSize_;
 }
@@ -198,6 +210,16 @@ void CefWnd::setBrowserBkColor(QColor c) {
   browserBkColor_ = c;
 }
 
+void CefWnd::forceClose() {
+  if (pCefWidget_)
+    pCefWidget_->setAutoDestoryCefWhenCloseEvent(true);
+  else if (pCefGLWidget_)
+    pCefGLWidget_->setAutoDestoryCefWhenCloseEvent(true);
+
+  forceClose_ = true;
+  close();
+}
+
 QSize CefWnd::sizeHint() const {
   return initSize_;
 }
@@ -212,6 +234,16 @@ void CefWnd::hideEvent(QHideEvent* event) {
   QWidget::hideEvent(event);
 
   emit cefWndVisibleChange(false);
+}
+
+void CefWnd::closeEvent(QCloseEvent* event) {
+  if (!usingHideInsteadClose_ || forceClose_) {
+    event->accept();
+  }
+  else {
+    event->ignore();
+    this->hide();
+  }
 }
 
 void CefWnd::onNavigateToUrl(QString url) {
