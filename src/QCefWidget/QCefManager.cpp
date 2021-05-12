@@ -323,7 +323,7 @@ WNDPROC QCefManager::hookWidget(HWND hTopWidget) {
     return nullptr;
   ::SetWindowLongPtr(hTopWidget, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
   return (WNDPROC)SetWindowLongPtr(
-      hTopWidget, GWL_WNDPROC, (LONG_PTR)&newWndProc);
+      hTopWidget, GWLP_WNDPROC, (LONG_PTR)&newWndProc);
 }
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
@@ -368,7 +368,7 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd,
 
     if (pThis->aliveBrowserCount(hWnd) == 0) {
       ::SetWindowLongPtr(hWnd, GWLP_USERDATA, 0L);
-      SetWindowLongPtr(hWnd, GWL_WNDPROC, (LONG_PTR)preWndProc);
+      SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LONG_PTR)preWndProc);
       // allow close
       qDebug().noquote() << "Accept WM_CLOSE";
       return ::CallWindowProc(preWndProc, hWnd, uMsg, wParam, lParam);
