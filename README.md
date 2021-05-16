@@ -123,3 +123,11 @@ QCefWidgetTest is a perfect demo about how to use QCefWidget in `test` folder.
 ![screenshot1 on windows](test/Screenshot/screenshot1.png)
 
 ![screenshot2 on windows](test/Screenshot/screenshot2.png)
+
+
+# 5. Code structure
+The following figure shows about how to destroy the QCefWidget and window when user clicked the X button (or sends a WM_CLOSE message to the window):
+
+![user clieck x button](x-button-close.png)
+
+> When the window closed by `QWidget::close()`, the process of QCefWidget and window destruction is slightly different from the above picture, but it is roughly similar.

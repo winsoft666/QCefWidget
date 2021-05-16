@@ -120,3 +120,10 @@ test目录中的QCefWidgetTest是一个示例程序，演示了如何使用QCefW
 ![screenshot1 on windows](test/Screenshot/screenshot1.png)
 
 ![screenshot2 on windows](test/Screenshot/screenshot2.png)
+
+# 五、代码结构
+下图是用户点击窗口右上角关闭按钮（或者向窗口发送WM_CLOSE消息）后，QCefWidget控件和窗口销毁的过程：
+
+![user clieck x button](x-button-close.png)
+
+> 通过`QWidget::close()`方法关闭窗口时，QCefWidget控件和窗口销毁的过程与上图稍有不同，但大体类似。
