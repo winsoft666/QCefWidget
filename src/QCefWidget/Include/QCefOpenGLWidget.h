@@ -98,7 +98,7 @@ class QCEFWIDGET_EXPORT QCefOpenGLWidget : public QOpenGLWidget {
                           int frameId,
                           const QString& method,
                           const QVariantList& arguments);
-
+  void popupWindow(const QString& url);
  protected:
   bool event(QEvent* event) override;
   void showEvent(QShowEvent* event) override;

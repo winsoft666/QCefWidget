@@ -10,7 +10,7 @@ SET(QCEF_VERSION_PATCH 3)
 
 
 # The Qt SDK path
-set(QT_SDK_DIR "C:/Qt/Qt5.12.10/5.12.10/msvc2017/")
+set(QT_SDK_DIR "C:/Qt/Qt5.15.2-MSVC2017-x86-Shared")
 
 
 # The root dir of the CEF SDK

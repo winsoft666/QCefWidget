@@ -293,7 +293,18 @@ bool QCefBrowserHandler::OnBeforePopup(
   if (isClosing_)
     return true;
 
-  frame->LoadURL(target_url);
+  if (pImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget* p = qobject_cast<QCefWidget*>(pImpl_->getWidget());
+    if (p)
+      emit p->popupWindow(QString::fromStdWString(target_url.ToWString()));
+  }
+#ifndef QT_NO_OPENGL
+  else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget* p = qobject_cast<QCefOpenGLWidget*>(pImpl_->getWidget());
+    if (p)
+      emit p->popupWindow(QString::fromStdWString(target_url.ToWString()));
+  }
+#endif
   return true;
 }
 #elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
@@ -315,7 +326,18 @@ bool QCefBrowserHandler::OnBeforePopup(
   if (isClosing_)
     return true;
 
-  frame->LoadURL(target_url);
+  if (pImpl_->getWidgetType() == WT_Widget) {
+    QCefWidget* p = qobject_cast<QCefWidget*>(pImpl_->getWidget());
+    if (p)
+      emit p->popupWindow(QString::fromStdWString(target_url.ToWString()));
+  }
+#ifndef QT_NO_OPENGL
+  else if (pImpl_->getWidgetType() == WT_OpenGLWidget) {
+    QCefOpenGLWidget* p = qobject_cast<QCefOpenGLWidget*>(pImpl_->getWidget());
+    if (p)
+      emit p->popupWindow(QString::fromStdWString(target_url.ToWString()));
+  }
+#endif
   return true;
 }
 #endif
@@ -831,6 +853,10 @@ void QCefBrowserHandler::OnCursorChange(
     CursorType type,
     const CefCursorInfo& custom_cursor_info) {
   CEF_REQUIRE_UI_THREAD();
+  if (pImpl_ && !pImpl_->isOsrEnabled()) {
+    return;
+  }
+
   QWidget* pWidget = pImpl_->getWidget();
   if (pWidget) {
     SetClassLongPtr((HWND)pWidget->winId(),
@@ -846,6 +872,9 @@ bool QCefBrowserHandler::OnCursorChange(
     cef_cursor_type_t type,
     const CefCursorInfo& custom_cursor_info) {
   CEF_REQUIRE_UI_THREAD();
+  if (pImpl_ && !pImpl_->isOsrEnabled()) {
+    return false;
+  }
   QWidget* pWidget = pImpl_->getWidget();
   if (pWidget) {
     SetClassLongPtr((HWND)pWidget->winId(),

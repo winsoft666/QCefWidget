@@ -102,7 +102,7 @@ class QCEFWIDGET_EXPORT QCefWidget : public QWidget {
                           int frameId,
                           const QString& method,
                           const QVariantList& arguments);
-
+  void popupWindow(const QString& url);
  protected:
   bool nativeEvent(const QByteArray& eventType,
                    void* message,

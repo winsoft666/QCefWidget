@@ -871,6 +871,10 @@ bool QCefWidgetImpl::setOsrEnabled(bool b) {
   return true;
 }
 
+bool QCefWidgetImpl::isOsrEnabled() {
+  return browserSetting_.osrEnabled;
+}
+
 void QCefWidgetImpl::setContextMenuEnabled(bool b) {
   browserSetting_.contextMenuEnabled = b;
 }
