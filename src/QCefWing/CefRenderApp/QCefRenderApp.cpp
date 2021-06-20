@@ -46,7 +46,7 @@ void QCefRenderApp::OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) {
 void QCefRenderApp::OnWebKitInitialized() {
   CEF_REQUIRE_RENDERER_THREAD();
 
-#if CEF_VERSION_MAJOR == 89
+#if CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
   CreateRenderDelegates(render_delegates_);
 #endif
 
@@ -62,7 +62,7 @@ void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
   for (; it != render_delegates_.end(); ++it)
     (*it)->OnBrowserCreated(this, browser);
 }
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
 void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser,
                                      CefRefPtr<CefDictionaryValue> extra_info) {
   CEF_REQUIRE_RENDERER_THREAD();
@@ -145,7 +145,7 @@ bool QCefRenderApp::OnProcessMessageReceived(
 
   return handled;
 }
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
 bool QCefRenderApp::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,

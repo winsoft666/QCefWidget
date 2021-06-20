@@ -143,7 +143,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                                      requestContext)) {
     return false;
   }
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
   if (!CefBrowserHost::CreateBrowser(window_info,
                                      pQCefViewHandler_,
                                      url.toStdWString(),
