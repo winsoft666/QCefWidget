@@ -682,7 +682,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
         }
       }
 
-      if (dpiChanged) {
+      if (dpiChanged && browserSetting_.osrEnabled) {
         CefRefPtr<CefBrowser> browser = this->browser();
         if (browser && browser->GetHost())
           browser->GetHost()->NotifyScreenInfoChanged();
