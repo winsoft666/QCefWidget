@@ -135,7 +135,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                                        new RequestContextHandler);
 
   // This method can be called on any browser process thread and will not block.
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   if (!CefBrowserHost::CreateBrowser(window_info,
                                      pQCefViewHandler_,
                                      url.toStdWString(),

@@ -95,7 +95,7 @@ class QCefBrowserHandler : public CefClient,
   virtual CefRefPtr<CefRenderHandler> GetRenderHandler() override {
     return this;
   }
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   virtual bool
   OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                            CefProcessId source_process,
@@ -151,7 +151,7 @@ class QCefBrowserHandler : public CefClient,
                            CefRefPtr<CefDragData> dragData,
                            CefDragHandler::DragOperationsMask mask) override;
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   virtual void OnDraggableRegionsChanged(
       CefRefPtr<CefBrowser> browser,
       const std::vector<CefDraggableRegion>& regions) override;
@@ -196,7 +196,7 @@ class QCefBrowserHandler : public CefClient,
 #pragma region CefLifeSpanHandler
 
   // CefLifeSpanHandler methods:
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   virtual bool OnBeforePopup(CefRefPtr<CefBrowser> browser,
                 CefRefPtr<CefFrame> frame,
                 const CefString& target_url,
@@ -286,7 +286,7 @@ class QCefBrowserHandler : public CefClient,
 #pragma endregion CefRequestHandler
 
 #pragma region CefRequestHandler
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   virtual CefRequestHandler::ReturnValue OnBeforeResourceLoad(CefRefPtr<CefBrowser> browser,
                        CefRefPtr<CefFrame> frame,
                        CefRefPtr<CefRequest> request,
@@ -335,7 +335,7 @@ class QCefBrowserHandler : public CefClient,
                int width,
                int height) OVERRIDE;
 
-#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74 || CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87
   void OnCursorChange(CefRefPtr<CefBrowser> browser,
                       CefCursorHandle cursor,
                       CursorType type,

@@ -52,7 +52,7 @@ bool RenderDelegate::OnProcessMessageReceived(
     CefRefPtr<CefFrame> frame,
     CefProcessId source_process,
     CefRefPtr<CefProcessMessage> message) {
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   if (render_message_router_->OnProcessMessageReceived(
           browser, source_process, message)) {
     return true;

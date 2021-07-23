@@ -31,7 +31,7 @@ CefRefPtr<CefBrowserProcessHandler> QCefRenderApp::GetBrowserProcessHandler() {
 }
 
 //////////////////////////////////////////////////////////////////////////
-#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 76
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74 || CEF_VERSION_MAJOR == 76
 void QCefRenderApp::OnRenderThreadCreated(CefRefPtr<CefListValue> extra_info) {
   CEF_REQUIRE_RENDERER_THREAD();
 
@@ -55,7 +55,7 @@ void QCefRenderApp::OnWebKitInitialized() {
     (*it)->OnWebKitInitialized(this);
 }
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
 void QCefRenderApp::OnBrowserCreated(CefRefPtr<CefBrowser> browser) {
   CEF_REQUIRE_RENDERER_THREAD();
   RenderDelegateSet::iterator it = render_delegates_.begin();
@@ -128,7 +128,7 @@ void QCefRenderApp::OnFocusedNodeChanged(CefRefPtr<CefBrowser> browser,
     (*it)->OnFocusedNodeChanged(this, browser, frame, node);
 }
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
 bool QCefRenderApp::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
     CefProcessId source_process,

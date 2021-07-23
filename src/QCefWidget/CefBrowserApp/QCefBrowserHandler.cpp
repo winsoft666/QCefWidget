@@ -58,7 +58,7 @@ QCefBrowserHandler::~QCefBrowserHandler() {
     consoleLog_.close();
 }
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72  || CEF_VERSION_MAJOR == 74
 bool QCefBrowserHandler::OnProcessMessageReceived(
     CefRefPtr<CefBrowser> browser,
     CefProcessId source_process,
@@ -219,7 +219,7 @@ bool QCefBrowserHandler::OnDragEnter(CefRefPtr<CefBrowser> browser, CefRefPtr<Ce
   return false;
 }
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
 void QCefBrowserHandler::OnDraggableRegionsChanged(
     CefRefPtr<CefBrowser> browser,
     const std::vector<CefDraggableRegion>& regions) {
@@ -275,7 +275,7 @@ bool QCefBrowserHandler::OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
   return false;
 }
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
 bool QCefBrowserHandler::OnBeforePopup(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
@@ -614,7 +614,7 @@ void QCefBrowserHandler::OnRenderProcessTerminated(
 #endif
 }
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
 CefRequestHandler::ReturnValue QCefBrowserHandler::OnBeforeResourceLoad(
     CefRefPtr<CefBrowser> browser,
     CefRefPtr<CefFrame> frame,
@@ -846,7 +846,7 @@ void QCefBrowserHandler::OnPaint(CefRefPtr<CefBrowser> browser,
     pImpl_->updateCefWidget(updateRegion);
 }
 
-#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 87
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 87
 void QCefBrowserHandler::OnCursorChange(
     CefRefPtr<CefBrowser> browser,
     CefCursorHandle cursor,
@@ -905,7 +905,7 @@ bool QCefBrowserHandler::triggerEvent(const CefRefPtr<CefProcessMessage> msg) {
   if (msg->GetName().empty())
     return false;
 
-#if CEF_VERSION_MAJOR == 72
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   CefRefPtr<CefBrowser> pBrowser = browser();
   if (pBrowser) {
     pBrowser->SendProcessMessage(PID_RENDERER, msg);
