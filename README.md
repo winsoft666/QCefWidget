@@ -116,6 +116,11 @@ QCefWidget has been tested with follow Qt and CEF version:
 |5.12.10|76.1.13|✅|
 |5.12.10|89.0.18|✅|
 |5.14.2|3.3626.1895|✅|
+|5.15.2|74.1.19|✅|
+|5.15.2|76.1.13|✅|
+|5.15.2|89.0.18|✅|
+
+In theory, other `Qt5+` versions and CEF versions are also supported.
 
 # 4. Usage
 QCefWidgetTest is a perfect demo about how to use QCefWidget in `test` folder.
