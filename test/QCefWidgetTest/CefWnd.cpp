@@ -3,10 +3,10 @@
 #include "QCefOpenGLWidget.h"
 #include <QtWidgets>
 
-CefWnd::CefWnd(QWidget* parent /*= nullptr*/) :
-    QWidget(parent),
-    framelessWindow_(false),
-    translucentWindowBackground_(false),
+CefWnd::CefWnd(bool frameless, bool translucentWindowBackground, QWidget* parent /*= nullptr*/) :
+    CefWndBase<QWidget>(frameless, translucentWindowBackground, parent),
+    framelessWindow_(frameless),
+    translucentWindowBackground_(translucentWindowBackground),
     usingGLWidget_(false),
     contextMenuEnabled_(false),
     autoAddDevToolsContextMenu_(false),
@@ -20,20 +20,12 @@ CefWnd::CefWnd(QWidget* parent /*= nullptr*/) :
     pCefWidget_(nullptr),
     pCefGLWidget_(nullptr) {
   setAttribute(Qt::WA_DeleteOnClose, true);
+  this->setResizeable(true);
 }
 
 CefWnd::~CefWnd() {}
 
 void CefWnd::setupUi() {
-  if (framelessWindow_) {
-    Qt::WindowFlags flags = windowFlags();
-    setWindowFlags(flags | Qt::FramelessWindowHint);
-  }
-
-  if (translucentWindowBackground_) {
-    setAttribute(Qt::WA_TranslucentBackground);
-  }
-
   this->setObjectName("CefWnd");
   this->setWindowTitle(
       QString("%1").arg(initUrl_.isEmpty() ? "Not Created" : initUrl_));
@@ -94,7 +86,7 @@ void CefWnd::setupUi() {
   }
 
   QHBoxLayout* hlMain = new QHBoxLayout();
-  hlMain->setContentsMargins(0, 0, 0, 0);
+  hlMain->setContentsMargins(2, 2, 2, 2);
   hlMain->setSpacing(0);
   if (usingGLWidget_)
     hlMain->addWidget(pCefGLWidget_);
@@ -126,16 +118,8 @@ bool CefWnd::framelessWindow() {
   return framelessWindow_;
 }
 
-void CefWnd::setFramelessWindow(bool b) {
-  framelessWindow_ = b;
-}
-
 bool CefWnd::translucentWindowBackground() {
   return translucentWindowBackground_;
-}
-
-void CefWnd::setTranslucentWindowBackground(bool b) {
-  translucentWindowBackground_ = b;
 }
 
 bool CefWnd::osrEnabled() {

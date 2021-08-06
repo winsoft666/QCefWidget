@@ -230,3 +230,23 @@ void QCefClient::ExecuteEventListener(const CefString eventName,
     }
   }
 }
+
+void QCefClient::SendBrowserContextCreatedMessage() {
+  CefRefPtr<CefProcessMessage> msg =
+    CefProcessMessage::Create(INVOKEMETHOD_NOTIFY_MESSAGE);
+
+  CefRefPtr<CefListValue> args = msg->GetArgumentList();
+  int frameId = (int)frame_->GetIdentifier();
+
+  int idx = 0;
+  args->SetInt(idx++, frameId);
+  args->SetString(idx++, QCEF_BROWSER_CONTEXT_CREATED_NOTIFY);
+
+#if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
+  if (browser_)
+    browser_->SendProcessMessage(PID_BROWSER, msg);
+#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
+  if (frame_)
+    frame_->SendProcessMessage(PID_BROWSER, msg);
+#endif
+}

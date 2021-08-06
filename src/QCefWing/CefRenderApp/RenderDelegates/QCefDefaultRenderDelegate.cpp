@@ -30,6 +30,8 @@ void RenderDelegate::OnContextCreated(CefRefPtr<QCefRenderApp> app,
     objWindow->SetValue(
         QCEF_OBJECT_NAME, objClient->GetObject(), V8_PROPERTY_ATTRIBUTE_READONLY);
     frame_id_to_client_map_[frameId] = objClient;
+
+    objClient->SendBrowserContextCreatedMessage();
   }
 }
 

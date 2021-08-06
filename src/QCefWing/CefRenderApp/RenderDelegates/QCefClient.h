@@ -80,7 +80,7 @@ class QCefClient : public CefBaseRefCounted {
   CefRefPtr<CefV8Value> GetObject();
 
   void ExecuteEventListener(const CefString eventName, CefRefPtr<CefDictionaryValue> dict);
-
+  void SendBrowserContextCreatedMessage();
  private:
   CefRefPtr<CefV8Value> object_;
 

@@ -41,6 +41,7 @@ public:
 
   void browserClosingNotify(CefRefPtr<CefBrowser> browser);
   void browserCreatedNotify(CefRefPtr<CefBrowser> browser);
+  void browserContextCreatedNotify(CefRefPtr<CefBrowser> browser);
   void browserDestoryedNotify(CefRefPtr<CefBrowser> browser);
   void draggableRegionsChangedNotify(CefRefPtr<CefBrowser> browser, const std::vector<CefDraggableRegion> &regions);
   void imeCompositionRangeChangedNotify(CefRefPtr<CefBrowser> browser, const CefRange &selection_range, const CefRenderHandler::RectList &character_bounds);
@@ -86,10 +87,10 @@ protected:
   void simulateResizeEvent();
 
   static LRESULT CALLBACK SubclassedWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-  static void subclassWindow(HWND hWnd, HRGN hRegion, HWND hTopLevelWnd);
+  static void subclassWindow(HWND hWnd, HWND hQCefWidgetHwnd, QWidget* pTopLevelWidget);
   static void unSubclassWindow(HWND hWnd);
-  static BOOL CALLBACK SubclassWindowsProc(HWND hwnd, LPARAM lParam);
-  static BOOL CALLBACK UnSubclassWindowsProc(HWND hwnd, LPARAM lParam);
+  static BOOL CALLBACK EnumWindowsProc4Subclass(HWND hwnd, LPARAM lParam);
+  static BOOL CALLBACK EnumWindowsProc4Unsubclass(HWND hwnd, LPARAM lParam);
 
 private slots:
   void onScreenChanged(QScreen *screen);

@@ -1013,6 +1013,10 @@ bool QCefBrowserHandler::dispatchNotifyRequest(
 #endif
             return true;
           }
+          else if (functionName == QCEF_BROWSER_CONTEXT_CREATED_NOTIFY) {
+            if (pImpl_)
+              pImpl_->browserContextCreatedNotify(browser);
+          }
         }
       }
     }

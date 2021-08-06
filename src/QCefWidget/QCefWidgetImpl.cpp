@@ -18,6 +18,8 @@ namespace {
 LPCWSTR kPreWndProc = L"CefPreWndProc";
 LPCWSTR kDraggableRegion = L"CefDraggableRegion";
 LPCWSTR kTopLevelHwnd = L"CefTopLevelHwnd";
+LPCWSTR kTopLevelWidget = L"CefTopLevelWidget";
+LPCWSTR kQCefWidgetHwnd = L"kQCefWidgetHwnd";
 }  // namespace
 
 QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget* pWidget) :
@@ -253,9 +255,44 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
       pWidget_, this, browser, browserSetting_.osrEnabled);
 }
 
+void QCefWidgetImpl::browserContextCreatedNotify(CefRefPtr<CefBrowser> browser) {
+  qDebug().noquote() << "QCefWidgetImpl::browserContextCreatedNotify:" << this;
+  Q_ASSERT(browser && browser->GetHost());
+  Q_ASSERT(pTopWidget_);
+  if (browser && browser->GetHost()) {
+    HWND hwnd = browser->GetHost()->GetWindowHandle();
+    Q_ASSERT(hwnd);
+    if (hwnd) {
+      if (browserSetting_.osrEnabled) {
+        subclassWindow(hwnd,
+                       (HWND)pWidget_->winId(),
+                       pTopWidget_);
+      }
+      else {
+        ::EnumChildWindows(hwnd, EnumWindowsProc4Subclass, reinterpret_cast<LPARAM>(this));
+      }
+    }
+  }
+}
+
 void QCefWidgetImpl::browserClosingNotify(CefRefPtr<CefBrowser> browser) {
   qDebug().noquote() << "QCefWidgetImpl::browserClosingNotify:" << this;
   browserCreated_ = false;
+
+  Q_ASSERT(browser && browser->GetHost());
+  if (browser && browser->GetHost()) {
+    HWND hwnd = browser->GetHost()->GetWindowHandle();
+    Q_ASSERT(hwnd);
+    if (hwnd) {
+      if (browserSetting_.osrEnabled) {
+        unSubclassWindow(hwnd);
+      }
+      else {
+        ::EnumChildWindows(hwnd, EnumWindowsProc4Unsubclass, reinterpret_cast<LPARAM>(this));
+      }
+    }
+  }
+
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
   QCefManager::getInstance().setBrowserClosing(pWidget_);
@@ -281,37 +318,50 @@ LRESULT CALLBACK QCefWidgetImpl::SubclassedWindowProc(HWND hWnd,
                                                       UINT message,
                                                       WPARAM wParam,
                                                       LPARAM lParam) {
-  WNDPROC hPreWndProc =
-      reinterpret_cast<WNDPROC>(::GetPropW(hWnd, kPreWndProc));
-  HRGN hRegion = reinterpret_cast<HRGN>(::GetPropW(hWnd, kDraggableRegion));
+  WNDPROC hPreWndProc = reinterpret_cast<WNDPROC>(::GetPropW(hWnd, kPreWndProc));
+  if (!hPreWndProc)
+    return 0;
+  HWND hQCefWidgetHwnd = reinterpret_cast<HWND>(::GetPropW(hWnd, kQCefWidgetHwnd));
+  HRGN hRegion = reinterpret_cast<HRGN>(::GetPropW(hQCefWidgetHwnd, kDraggableRegion));
   HWND hTopLevelWnd = reinterpret_cast<HWND>(::GetPropW(hWnd, kTopLevelHwnd));
 
   if (message == WM_LBUTTONDOWN) {
-    POINT point = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
-    if (::PtInRegion(hRegion, point.x, point.y)) {
-      ::ClientToScreen(hWnd, &point);
-      ::PostMessage(hTopLevelWnd,
-                    WM_NCLBUTTONDOWN,
-                    HTCAPTION,
-                    MAKELPARAM(point.x, point.y));
-      return 0;
+    if (hRegion) {
+      POINT point = {GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam)};
+      if (::PtInRegion(hRegion, point.x, point.y)) {
+        ::ClientToScreen(hWnd, &point);
+        if (hTopLevelWnd) {
+          ::PostMessage(hTopLevelWnd,
+                        WM_NCLBUTTONDOWN,
+                        HTCAPTION,
+                        MAKELPARAM(point.x, point.y));
+        }
+        return 0;
+      }
     }
   }
+#if 0
+  else if (message == WM_MOUSEMOVE) {
+    QWidget* pTopWidget = reinterpret_cast<QWidget*>(::GetPropW(hWnd, kTopLevelWidget));
+    if (pTopWidget) {
+      QMetaObject::invokeMethod(pTopWidget, [pTopWidget, lParam]() {
+        QPoint pt(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam));
+        QMouseEvent mouseEvent((QEvent::MouseMove), pt, Qt::LeftButton, Qt::NoButton, Qt::NoModifier);
+        QApplication::sendEvent(pTopWidget, &mouseEvent);
+      });
+    }
+  }
+#endif
 
   Q_ASSERT(hPreWndProc);
   return CallWindowProc(hPreWndProc, hWnd, message, wParam, lParam);
 }
 
-void QCefWidgetImpl::subclassWindow(HWND hWnd,
-                                    HRGN hRegion,
-                                    HWND hTopLevelWnd) {
-  HANDLE hParentWndProc = ::GetPropW(hWnd, kPreWndProc);
-  if (hParentWndProc) {
-    ::SetPropW(hWnd, kDraggableRegion, reinterpret_cast<HANDLE>(hRegion));
-    return;
-  }
+void QCefWidgetImpl::subclassWindow(HWND hWnd, HWND hQCefWidgetHwnd, QWidget* pTopLevelWidget) {
+  if (GetWindowLongPtr(hWnd, GWLP_WNDPROC) == reinterpret_cast<LONG_PTR>(SubclassedWindowProc))
+    return; // Has been subclassed
 
-  SetLastError(0);
+  SetLastError(ERROR_SUCCESS);
   LONG_PTR hOldWndProc = SetWindowLongPtr(
       hWnd, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(SubclassedWindowProc));
   if (hOldWndProc == NULL && GetLastError() != ERROR_SUCCESS) {
@@ -319,8 +369,11 @@ void QCefWidgetImpl::subclassWindow(HWND hWnd,
   }
 
   ::SetPropW(hWnd, kPreWndProc, reinterpret_cast<HANDLE>(hOldWndProc));
-  ::SetPropW(hWnd, kDraggableRegion, reinterpret_cast<HANDLE>(hRegion));
-  ::SetPropW(hWnd, kTopLevelHwnd, reinterpret_cast<HANDLE>(hTopLevelWnd));
+  if (pTopLevelWidget) {
+    ::SetPropW(hWnd, kTopLevelHwnd, (HWND)pTopLevelWidget->winId());
+    ::SetPropW(hWnd, kTopLevelWidget, (HANDLE)pTopLevelWidget);
+  }
+  ::SetPropW(hWnd, kQCefWidgetHwnd, hQCefWidgetHwnd);
 }
 
 void QCefWidgetImpl::unSubclassWindow(HWND hWnd) {
@@ -335,19 +388,18 @@ void QCefWidgetImpl::unSubclassWindow(HWND hWnd) {
   }
 
   ::RemovePropW(hWnd, kPreWndProc);
-  ::RemovePropW(hWnd, kDraggableRegion);
   ::RemovePropW(hWnd, kTopLevelHwnd);
+  ::RemovePropW(hWnd, kTopLevelWidget);
+  ::RemovePropW(hWnd, kQCefWidgetHwnd);
 }
 
-BOOL CALLBACK QCefWidgetImpl::SubclassWindowsProc(HWND hwnd, LPARAM lParam) {
+BOOL CALLBACK QCefWidgetImpl::EnumWindowsProc4Subclass(HWND hwnd, LPARAM lParam) {
   QCefWidgetImpl* pImpl = (QCefWidgetImpl*)lParam;
-  subclassWindow(hwnd,
-                 reinterpret_cast<HRGN>(pImpl->draggableRegion_),
-                 (HWND)pImpl->pTopWidget_->winId());
+  subclassWindow(hwnd, (HWND)pImpl->pWidget_->winId(), pImpl->pTopWidget_);
   return TRUE;
 }
 
-BOOL CALLBACK QCefWidgetImpl::UnSubclassWindowsProc(HWND hwnd, LPARAM lParam) {
+BOOL CALLBACK QCefWidgetImpl::EnumWindowsProc4Unsubclass(HWND hwnd, LPARAM lParam) {
   unSubclassWindow(hwnd);
   return TRUE;
 }
@@ -381,23 +433,10 @@ void QCefWidgetImpl::draggableRegionsChangedNotify(
     ::DeleteObject(region);
   }
 
-  Q_ASSERT(browser && browser->GetHost());
-  if (browser && browser->GetHost()) {
-    HWND hwnd = browser->GetHost()->GetWindowHandle();
-    Q_ASSERT(hwnd);
-    if (hwnd) {
-      if (browserSetting_.osrEnabled) {
-        subclassWindow(hwnd,
-                       reinterpret_cast<HRGN>(draggableRegion_),
-                       (HWND)pTopWidget_->winId());
-      }
-      else {
-        WNDENUMPROC proc =
-            !regions.empty() ? SubclassWindowsProc : UnSubclassWindowsProc;
-        ::EnumChildWindows(hwnd, proc, reinterpret_cast<LPARAM>(this));
-      }
-    }
-  }
+  if (regions.empty())
+    ::RemovePropW((HWND)pWidget_->winId(), kDraggableRegion);
+  else
+    ::SetPropW((HWND)pWidget_->winId(), kDraggableRegion, reinterpret_cast<HANDLE>(draggableRegion_));
 }
 
 void QCefWidgetImpl::imeCompositionRangeChangedNotify(

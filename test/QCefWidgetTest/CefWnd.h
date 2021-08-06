@@ -4,14 +4,15 @@
 #include <QSize>
 #include <QDebug>
 #include "QCefQuery.h"
+#include "CefWndBase.hpp"
 
 class QCefWidget;
 class QCefOpenGLWidget;
 
-class CefWnd : public QWidget {
+class CefWnd : public CefWndBase<QWidget> {
   Q_OBJECT
  public:
-  CefWnd(QWidget* parent = nullptr);
+  CefWnd(bool frameless, bool translucentWindowBackground, QWidget* parent = nullptr);
   virtual ~CefWnd();
 
   void setupUi();
@@ -23,10 +24,8 @@ class CefWnd : public QWidget {
   bool allowExecuteUnknownProtocolViaOS();
 
   bool framelessWindow();
-  void setFramelessWindow(bool b);
 
   bool translucentWindowBackground();
-  void setTranslucentWindowBackground(bool b);
 
   bool osrEnabled();
   void setOsrEnabled(bool b);

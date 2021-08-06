@@ -23,6 +23,7 @@
 // QCefWidget.removeEventListener(type, listener)
 #define QCEF_REMOVEEVENTLISTENER "removeEventListener"
 
+#define QCEF_BROWSER_CONTEXT_CREATED_NOTIFY "QCefWidgetBrowserContextCreatedNotify891201#"
 
 // this message is sent from render process to browser process
 // and is processed in the Qt UI thread

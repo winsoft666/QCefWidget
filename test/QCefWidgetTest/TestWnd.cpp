@@ -318,12 +318,9 @@ void TestWnd::setupUi() {
 }
 
 void TestWnd::onPushButtonNewBrowserClicked() {
-  CefWnd* pCefWnd = new CefWnd();
+  CefWnd* pCefWnd = new CefWnd(checkboxFramelessWindow_->isChecked(), checkboxTranslucentWindowBackground_->isChecked());
   connect(pCefWnd, &QWidget::destroyed, this, &TestWnd::onCefWndDestroyed);
   pCefWnd->setUsingGLWidget(radioButtonCefOpenGLWidget_->isChecked());
-  pCefWnd->setFramelessWindow(checkboxFramelessWindow_->isChecked());
-  pCefWnd->setTranslucentWindowBackground(
-      checkboxTranslucentWindowBackground_->isChecked());
   pCefWnd->setOsrEnabled(checkboxOsrEnabled_->isChecked());
   pCefWnd->setContextMenuEnabled(checkboxContextMenuEnabled_->isChecked());
   pCefWnd->setUsingHideInsteadClose(checkboxUsingHideInsteadCloseWhenClickCloseButton_->isChecked());
