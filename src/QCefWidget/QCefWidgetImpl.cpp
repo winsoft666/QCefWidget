@@ -245,6 +245,12 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
       pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
     }
   }
+
+  if (deviceScaleFactor_ != 1.0) {
+    QMetaObject::invokeMethod(pWidget_, [this]() {
+      simulateResizeEvent();
+    });
+  }
 #else
 #error("No implement")
 #endif
@@ -412,13 +418,14 @@ void QCefWidgetImpl::imeCompositionRangeChangedNotify(
 
 void QCefWidgetImpl::navigateToUrl(const QString& url) {
   if (!browserCreated_) {
-    QMetaObject::invokeMethod(pWidget_,
-                              [this, url]() {
-                                if (!createBrowser(url)) {
-                                  Q_ASSERT(false);
-                                }
-                              },
-                              Qt::QueuedConnection);
+    QMetaObject::invokeMethod(
+        pWidget_,
+        [this, url]() {
+          if (!createBrowser(url)) {
+            Q_ASSERT(false);
+          }
+        },
+        Qt::QueuedConnection);
     return;
   }
 
@@ -674,8 +681,8 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
           qDebug().noquote() << "Rect:" << rc << ", DpiScale:" << scale;
           ::SetWindowPos(cefhwnd,
                          NULL,
-                         rc.left() * scale,
-                         rc.top() * scale,
+                         0,
+                         0,
                          rc.width() * scale,
                          rc.height() * scale,
                          SWP_NOZORDER);
@@ -749,8 +756,15 @@ void QCefWidgetImpl::simulateResizeEvent() {
   //
   QSize curSize = pWidget_->size();
   QSize s = curSize;
-  s.setWidth(s.width() - 2);
-  s.setHeight(s.height() - 2);
+  if (curSize.width() - 1 <= 0)
+    s.setWidth(curSize.width() + 1);
+  else
+    s.setWidth(curSize.width() - 1);
+
+  if (curSize.height() - 1 <= 0)
+    s.setHeight(curSize.height() + 1);
+  else
+    s.setHeight(curSize.height() - 1);
 
   pWidget_->resize(s);
   pWidget_->resize(curSize);
