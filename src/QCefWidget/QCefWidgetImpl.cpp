@@ -98,14 +98,11 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                         browserSetting_.backgroundColor.blue());
   }
   else {
-    QRect viewRect = pWidget_->rect();
-    RECT rc;
-    rc.left = 0;
-    rc.top = 0;
-    rc.right = rc.left + viewRect.width() * deviceScaleFactor_;
-    rc.bottom = rc.top + viewRect.height() * deviceScaleFactor_;
+    // Don't use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
+    RECT rc = {0, 0, 0, 0};
+    ::GetWindowRect(hwnd, &rc);
 
-    window_info.SetAsChild(hwnd, rc);
+    window_info.SetAsChild(hwnd, {0, 0, rc.right - rc.left, rc.bottom - rc.left});
 
     if (GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_NOACTIVATE) {
       // Don't activate the browser window on creation.
@@ -199,14 +196,11 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
                         browserSetting_.backgroundColor.blue());
   }
   else {
-    QRect viewRect = pWidget_->rect();
-    RECT rc;
-    rc.left = 0;
-    rc.top = 0;
-    rc.right = rc.left + viewRect.width() * deviceScaleFactor_;
-    rc.bottom = rc.top + viewRect.height() * deviceScaleFactor_;
+    // // Don't use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
+    RECT rc = {0, 0, 0, 0};
+    ::GetWindowRect((HWND)pWidget_->winId(), &rc);
 
-    windowInfo.SetAsChild(hwnd, rc);
+    windowInfo.SetAsChild(hwnd, {0, 0, rc.right - rc.left, rc.bottom - rc.top});
     if (GetWindowLongPtr(hwnd, GWL_EXSTYLE) & WS_EX_NOACTIVATE) {
       // Don't activate the browser window on creation.
       windowInfo.ex_style |= WS_EX_NOACTIVATE;
@@ -676,16 +670,17 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
         if (browser)
           cefhwnd = browser->GetHost()->GetWindowHandle();
         if (cefhwnd) {
-          QRect rc = pWidget_->rect();
-          float scale = deviceScaleFactor_;
-          qDebug().noquote() << "Rect:" << rc << ", DpiScale:" << scale;
-          ::SetWindowPos(cefhwnd,
-                         NULL,
-                         0,
-                         0,
-                         rc.width() * scale,
-                         rc.height() * scale,
-                         SWP_NOZORDER);
+          // Don't use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
+          RECT rc = {0, 0, 0, 0};
+          if (::GetWindowRect((HWND)pWidget_->winId(), &rc)) {
+            ::SetWindowPos(cefhwnd,
+                           NULL,
+                           0,
+                           0,
+                           rc.right - rc.left,
+                           rc.bottom - rc.top,
+                           SWP_NOZORDER);
+          }
         }
       }
 
