@@ -1,7 +1,7 @@
 [ >>> English Version](README.md)
 
 # 一、QCefWidget
-`QCefWidget`项目提供一个Widget来显示网页.
+`QCefWidget`项目提供了一个Widget来显示网页与与之交互.
 
 支持：
 
@@ -22,6 +22,8 @@
 ✅ 支持Adobe Flash, 没有任何警告，如"Control-click to run Adobe Flash Player".
 
 ✅ 只需要设置CSS属性，就可以实现像Electron一样拖拽无边框窗体.
+
+✅ 支持在不同DPI的屏幕间相互移动.
 
 ---
 
