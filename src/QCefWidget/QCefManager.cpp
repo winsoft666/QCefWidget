@@ -394,10 +394,6 @@ LRESULT CALLBACK QCefManager::newWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LP
       return 0;
     }
   }
-  else if (uMsg == WM_DPICHANGED) {
-    if (pCefWidgetImpl)
-      pCefWidgetImpl->dpiChangedNotify();
-  }
 
   return ::CallWindowProc(preWndProc, hWnd, uMsg, wParam, lParam);
 }

@@ -36,7 +36,6 @@ public:
   bool createBrowser(const QString &url);
   bool createDevTools(CefRefPtr<CefBrowser> targetBrowser);
 
-  void dpiChangedNotify();
   void mainFrameLoadFinishedNotify();
 
   void browserClosingNotify(CefRefPtr<CefBrowser> browser);
@@ -51,7 +50,6 @@ public:
   QRect rect();
 
   bool nativeEvent(const QByteArray &eventType, void *message, long *result);
-  bool event(QEvent *event);
   bool paintEventHandle(QPaintEvent *event);
 #ifndef QT_NO_OPENGL
   bool openGLPaintEventHandle(QPaintEvent *event);
@@ -94,13 +92,11 @@ protected:
 
 private slots:
   void onScreenChanged(QScreen *screen);
-
+  void onScreenLogicalDotsPerInchChanged();
 private:
   WidgetType vt_;
   QWidget *pWidget_;
   QWidget *pTopWidget_;
-
-  WId widgetWId_;
 
   CefRefPtr<QCefBrowserHandler> pQCefViewHandler_;
   std::shared_ptr<QCefWidgetUIEventHandlerWin> pCefUIEventWin_;

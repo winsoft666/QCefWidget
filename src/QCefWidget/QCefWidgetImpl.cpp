@@ -27,7 +27,6 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget* pWidget) :
     pTopWidget_(nullptr),
     draggableRegion_(nullptr),
     vt_(vt),
-    widgetWId_(0),
     deviceScaleFactor_(1.f),
     browserCreated_(false),
     browserClosing_(false),
@@ -35,21 +34,16 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget* pWidget) :
   draggableRegion_ = ::CreateRectRgn(0, 0, 0, 0);
   QCefManager::getInstance().initializeCef();
 
-  widgetWId_ = pWidget_->winId();
   deviceScaleFactor_ = pWidget_->devicePixelRatioF();
 
-  connect(pWidget_->window()->windowHandle(),
-          &QWindow::screenChanged,
-          this,
-          &QCefWidgetImpl::onScreenChanged);
+  connect(pWidget_->window()->windowHandle(), &QWindow::screenChanged, this, &QCefWidgetImpl::onScreenChanged);
+  connect(pWidget_->window()->screen(), &QScreen::logicalDotsPerInchChanged, this, &QCefWidgetImpl::onScreenLogicalDotsPerInchChanged);
 }
 
 QCefWidgetImpl::~QCefWidgetImpl() {
   qDebug().noquote() << "QCefWidgetImpl::~QCefWidgetImpl:" << this;
   ::DeleteObject(draggableRegion_);
   draggableRegion_ = nullptr;
-
-  widgetWId_ = 0;
   pQCefViewHandler_ = nullptr;
   if (pCefUIEventWin_)
     pCefUIEventWin_.reset();
@@ -60,13 +54,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
   if (browserCreated_)
     return true;
   Q_ASSERT(pWidget_);
-  CefWindowHandle hwnd = nullptr;
-  if (pWidget_) {
-    if (widgetWId_ == 0)
-      widgetWId_ = pWidget_->winId();
-    Q_ASSERT(widgetWId_);
-    hwnd = (CefWindowHandle)widgetWId_;
-  }
+  CefWindowHandle hwnd = (CefWindowHandle)pWidget_->winId();
   Q_ASSERT(hwnd);
   if (!hwnd)
     return false;
@@ -162,9 +150,8 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
     return true;
   Q_ASSERT(pWidget_);
   CefWindowHandle hwnd = nullptr;
-  if (pWidget_) {
-    hwnd = (CefWindowHandle)widgetWId_;
-  }
+  if (pWidget_)
+    hwnd = (CefWindowHandle)pWidget_->winId();
   Q_ASSERT(hwnd);
   if (!hwnd)
     return false;
@@ -235,17 +222,35 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
   if (browserSetting_.osrEnabled) {
     Q_ASSERT(pQCefViewHandler_);
     pCefUIEventWin_ = std::make_shared<QCefWidgetUIEventHandlerWin>(
-        (HWND)widgetWId_, browser, pQCefViewHandler_);
+        (HWND)pWidget_->winId(), browser, pQCefViewHandler_);
     Q_ASSERT(pCefUIEventWin_);
     if (pCefUIEventWin_) {
       pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
     }
   }
 
-  if (deviceScaleFactor_ != 1.0) {
-    QMetaObject::invokeMethod(pWidget_, [this]() {
-      simulateResizeEvent();
-    });
+  // See QTBUG-89646
+  QSize curSize = pWidget_->size();
+  ::SetWindowPos((HWND)pWidget_->winId(), NULL, 0, 0,
+                 (float)curSize.width() * deviceScaleFactor_,
+                 (float)curSize.height() * deviceScaleFactor_,
+                 SWP_NOZORDER | SWP_NOMOVE);
+
+  CefWindowHandle cefhwnd = NULL;
+  if (browser && browser->GetHost())
+    cefhwnd = browser->GetHost()->GetWindowHandle();
+  if (cefhwnd) {
+    // Don't use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
+    RECT rc = {0, 0, 0, 0};
+    if (::GetWindowRect((HWND)pWidget_->winId(), &rc)) {
+      ::SetWindowPos(cefhwnd,
+                     NULL,
+                     0,
+                     0,
+                     rc.right - rc.left,
+                     rc.bottom - rc.top,
+                     SWP_NOZORDER);
+    }
   }
 #else
 #error("No implement")
@@ -359,7 +364,7 @@ LRESULT CALLBACK QCefWidgetImpl::SubclassedWindowProc(HWND hWnd,
 
 void QCefWidgetImpl::subclassWindow(HWND hWnd, HWND hQCefWidgetHwnd, QWidget* pTopLevelWidget) {
   if (GetWindowLongPtr(hWnd, GWLP_WNDPROC) == reinterpret_cast<LONG_PTR>(SubclassedWindowProc))
-    return; // Has been subclassed
+    return;  // Has been subclassed
 
   SetLastError(ERROR_SUCCESS);
   LONG_PTR hOldWndProc = SetWindowLongPtr(
@@ -404,10 +409,50 @@ BOOL CALLBACK QCefWidgetImpl::EnumWindowsProc4Unsubclass(HWND hwnd, LPARAM lPara
   return TRUE;
 }
 
+void QCefWidgetImpl::onScreenLogicalDotsPerInchChanged() {
+  qDebug().noquote() << "onScreenLogicalDotsPerInchChanged";
+  deviceScaleFactor_ = pWidget_->devicePixelRatioF();
+  if (pCefUIEventWin_)
+    pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
+
+  qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
+
+  if (browserSetting_.osrEnabled) {
+    // For simply, always notify screen info changed thought screen not changed.
+    if (this->browser() && this->browser()->GetHost())
+      this->browser()->GetHost()->NotifyScreenInfoChanged();
+  }
+
+  // See QTBUG-89646
+  QSize curSize = pWidget_->size();
+  ::SetWindowPos((HWND)pWidget_->winId(), NULL, 0, 0,
+                 (float)curSize.width() * deviceScaleFactor_,
+                 (float)curSize.height() * deviceScaleFactor_,
+                 SWP_NOZORDER | SWP_NOMOVE);
+}
+
 void QCefWidgetImpl::onScreenChanged(QScreen* screen) {
   qDebug().noquote() << "onScreenChanged";
+  connect(screen, &QScreen::logicalDotsPerInchChanged, this, &QCefWidgetImpl::onScreenLogicalDotsPerInchChanged);
 
-  simulateResizeEvent();
+  deviceScaleFactor_ = pWidget_->devicePixelRatioF();
+  if (pCefUIEventWin_)
+    pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
+
+  qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
+
+  if (browserSetting_.osrEnabled) {
+    // For simply, always notify screen info changed thought screen not changed.
+    if (this->browser() && this->browser()->GetHost())
+      this->browser()->GetHost()->NotifyScreenInfoChanged();
+  }
+
+  // See QTBUG-89646
+  QSize curSize = pWidget_->size();
+  ::SetWindowPos((HWND)pWidget_->winId(), NULL, 0, 0,
+                 (float)curSize.width() * deviceScaleFactor_,
+                 (float)curSize.height() * deviceScaleFactor_,
+                 SWP_NOZORDER | SWP_NOMOVE);
 }
 
 void QCefWidgetImpl::draggableRegionsChangedNotify(
@@ -544,10 +589,6 @@ void QCefWidgetImpl::executeJavascript(const QString& javascript) {
   }
 }
 
-void QCefWidgetImpl::dpiChangedNotify() {
-  simulateResizeEvent();
-}
-
 void QCefWidgetImpl::mainFrameLoadFinishedNotify() {
   //visibleChangedNotify(pWidget_->isVisible());
 }
@@ -609,27 +650,6 @@ QRect QCefWidgetImpl::rect() {
   return rc;
 }
 
-bool QCefWidgetImpl::event(QEvent* event) {
-  if (event->type() == QEvent::WinIdChange) {
-    widgetWId_ = pWidget_ ? pWidget_->winId() : 0;
-    qDebug().noquote() << "QEvent::WinIdChange to:" << widgetWId_;
-  }
-  //else if (event->type() == QEvent::Resize) {
-  //   qDebug().noquote() << "QEvent::Resize";
-  //  if (initUrl_.length() > 0) {
-  //    QString url = initUrl_;
-  //    initUrl_.clear();
-  //    QMetaObject::invokeMethod(pWidget_, [this, url]() {
-  //      if (!createBrowser(url)) {
-  //        Q_ASSERT(false);
-  //      }
-  //    });
-  //  }
-  //}
-
-  return false;
-}
-
 bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
                                  void* message,
                                  long* result) {
@@ -637,9 +657,6 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
   if (eventType == "windows_generic_MSG") {
     MSG* pMsg = (MSG*)message;
     if (!pMsg || !pWidget_)
-      return false;
-
-    if (pMsg->hwnd != (HWND)widgetWId_)
       return false;
 
     if (pMsg->message == WM_SYSCHAR || pMsg->message == WM_SYSKEYDOWN ||
@@ -672,7 +689,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
 
         // winsoft666:
         //::SetCursor(NULL);
-        SetClassLongPtr((HWND)widgetWId_, GCLP_HCURSOR, NULL);
+        SetClassLongPtr((HWND)pWidget_->winId(), GCLP_HCURSOR, NULL);
       }
 
       if (pWidget_->isActiveWindow()) {
@@ -683,13 +700,6 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
     }
     else if (pMsg->message == WM_SIZE) {
       qDebug().noquote() << "WM_SIZE";
-      float scale = pWidget_->devicePixelRatioF();
-      bool dpiChanged = false;
-      if (scale != deviceScaleFactor_) {
-        dpiChanged = true;
-        deviceScaleFactor_ = scale;
-      }
-
       if (browserSetting_.osrEnabled) {
         // winsoft666:
         // Old cef version maybe has some bugs about resize with dpi scale.
@@ -697,17 +707,13 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
         // https://bitbucket.org/chromiumembedded/cef/issues/2733/viz-osr-might-be-causing-some-graphic
         // https://bitbucket.org/chromiumembedded/cef/issues/2833/osr-gpu-consume-cpu-and-may-not-draw
         if (pCefUIEventWin_) {
-          if (dpiChanged)
-            pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
-          pCefUIEventWin_->OnSize(
-              pMsg->hwnd, pMsg->message, pMsg->wParam, pMsg->lParam);
+          pCefUIEventWin_->OnSize(pMsg->hwnd, pMsg->message, pMsg->wParam, pMsg->lParam);
         }
       }
       else {
         CefWindowHandle cefhwnd = NULL;
-        CefRefPtr<CefBrowser> browser = this->browser();
-        if (browser)
-          cefhwnd = browser->GetHost()->GetWindowHandle();
+        if (this->browser() && this->browser()->GetHost())
+          cefhwnd = this->browser()->GetHost()->GetWindowHandle();
         if (cefhwnd) {
           // Don't use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
           RECT rc = {0, 0, 0, 0};
@@ -721,12 +727,6 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
                            SWP_NOZORDER);
           }
         }
-      }
-
-      if (dpiChanged && browserSetting_.osrEnabled) {
-        CefRefPtr<CefBrowser> browser = this->browser();
-        if (browser && browser->GetHost())
-          browser->GetHost()->NotifyScreenInfoChanged();
       }
     }
     else if (pMsg->message == WM_TOUCH) {
@@ -790,15 +790,16 @@ void QCefWidgetImpl::simulateResizeEvent() {
   //
   QSize curSize = pWidget_->size();
   QSize s = curSize;
-  if (curSize.width() - 1 <= 0)
-    s.setWidth(curSize.width() + 1);
+  int minStep = 2;
+  if (curSize.width() - minStep <= 0)
+    s.setWidth(curSize.width() + minStep);
   else
-    s.setWidth(curSize.width() - 1);
+    s.setWidth(curSize.width() - minStep);
 
-  if (curSize.height() - 1 <= 0)
-    s.setHeight(curSize.height() + 1);
+  if (curSize.height() - minStep <= 0)
+    s.setHeight(curSize.height() + minStep);
   else
-    s.setHeight(curSize.height() - 1);
+    s.setHeight(curSize.height() - minStep);
 
   pWidget_->resize(s);
   pWidget_->resize(curSize);
