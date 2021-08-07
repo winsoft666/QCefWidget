@@ -24,6 +24,8 @@ Support:
 
 ✅ Drag/Drop frameless window like Electron throught setting CSS property.
 
+✅ Move between mixed scale factor monitors.
+
 ---
 
 
