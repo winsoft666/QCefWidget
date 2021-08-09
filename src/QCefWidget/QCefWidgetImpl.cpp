@@ -130,7 +130,7 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
                                      requestContext)) {
     return false;
   }
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR >= 76
   if (!CefBrowserHost::CreateBrowser(window_info,
                                      pQCefViewHandler_,
                                      url.toStdWString(),
@@ -230,27 +230,25 @@ void QCefWidgetImpl::browserCreatedNotify(CefRefPtr<CefBrowser> browser) {
   }
 
   // See QTBUG-89646
-  QSize curSize = pWidget_->size();
-  ::SetWindowPos((HWND)pWidget_->winId(), NULL, 0, 0,
-                 (float)curSize.width() * deviceScaleFactor_,
-                 (float)curSize.height() * deviceScaleFactor_,
-                 SWP_NOZORDER | SWP_NOMOVE);
+  QRect curRc = pWidget_->geometry();
+  ::SetWindowPos((HWND)pWidget_->winId(), NULL,
+                 curRc.x() * deviceScaleFactor_,
+                 curRc.y() * deviceScaleFactor_,
+                 curRc.width() * deviceScaleFactor_,
+                 curRc.height() * deviceScaleFactor_,
+                 SWP_NOZORDER);
 
   CefWindowHandle cefhwnd = NULL;
   if (browser && browser->GetHost())
     cefhwnd = browser->GetHost()->GetWindowHandle();
   if (cefhwnd) {
-    // Don't use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
-    RECT rc = {0, 0, 0, 0};
-    if (::GetWindowRect((HWND)pWidget_->winId(), &rc)) {
-      ::SetWindowPos(cefhwnd,
-                     NULL,
-                     0,
-                     0,
-                     rc.right - rc.left,
-                     rc.bottom - rc.top,
-                     SWP_NOZORDER);
-    }
+    ::SetWindowPos(cefhwnd,
+                   NULL,
+                   0,
+                   0,
+                   curRc.width() * deviceScaleFactor_,
+                   curRc.height() * deviceScaleFactor_,
+                   SWP_NOZORDER);
   }
 #else
 #error("No implement")
@@ -415,20 +413,22 @@ void QCefWidgetImpl::onScreenLogicalDotsPerInchChanged() {
   if (pCefUIEventWin_)
     pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
 
-  qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
+  qDebug().noquote() << "deviceScaleFactor:" << deviceScaleFactor_;
+
+  // See QTBUG-89646
+  QRectF curRc = pWidget_->geometry();
+  ::SetWindowPos((HWND)pWidget_->winId(), NULL,
+                 curRc.x() * deviceScaleFactor_,
+                 curRc.y() * deviceScaleFactor_,
+                 curRc.width() * deviceScaleFactor_,
+                 curRc.height() * deviceScaleFactor_,
+                 SWP_NOZORDER);
 
   if (browserSetting_.osrEnabled) {
     // For simply, always notify screen info changed thought screen not changed.
     if (this->browser() && this->browser()->GetHost())
       this->browser()->GetHost()->NotifyScreenInfoChanged();
   }
-
-  // See QTBUG-89646
-  QSize curSize = pWidget_->size();
-  ::SetWindowPos((HWND)pWidget_->winId(), NULL, 0, 0,
-                 (float)curSize.width() * deviceScaleFactor_,
-                 (float)curSize.height() * deviceScaleFactor_,
-                 SWP_NOZORDER | SWP_NOMOVE);
 }
 
 void QCefWidgetImpl::onScreenChanged(QScreen* screen) {
@@ -439,20 +439,22 @@ void QCefWidgetImpl::onScreenChanged(QScreen* screen) {
   if (pCefUIEventWin_)
     pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
 
-  qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
+  qDebug().noquote() << "deviceScaleFactor:" << deviceScaleFactor_;
+
+  // See QTBUG-89646
+  QRectF curRc = pWidget_->geometry();
+  ::SetWindowPos((HWND)pWidget_->winId(), NULL,
+                 curRc.x() * deviceScaleFactor_,
+                 curRc.y() * deviceScaleFactor_,
+                 curRc.width() * deviceScaleFactor_,
+                 curRc.height() * deviceScaleFactor_,
+                 SWP_NOZORDER);
 
   if (browserSetting_.osrEnabled) {
     // For simply, always notify screen info changed thought screen not changed.
     if (this->browser() && this->browser()->GetHost())
       this->browser()->GetHost()->NotifyScreenInfoChanged();
   }
-
-  // See QTBUG-89646
-  QSize curSize = pWidget_->size();
-  ::SetWindowPos((HWND)pWidget_->winId(), NULL, 0, 0,
-                 (float)curSize.width() * deviceScaleFactor_,
-                 (float)curSize.height() * deviceScaleFactor_,
-                 SWP_NOZORDER | SWP_NOMOVE);
 }
 
 void QCefWidgetImpl::draggableRegionsChangedNotify(
@@ -715,7 +717,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
         if (this->browser() && this->browser()->GetHost())
           cefhwnd = this->browser()->GetHost()->GetWindowHandle();
         if (cefhwnd) {
-          // Don't use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
+          // Don't directly use QWidget:rect() function, since qt's bug: https://bugreports.qt.io/browse/QTBUG-89646
           RECT rc = {0, 0, 0, 0};
           if (::GetWindowRect((HWND)pWidget_->winId(), &rc)) {
             ::SetWindowPos(cefhwnd,
@@ -725,6 +727,7 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
                            rc.right - rc.left,
                            rc.bottom - rc.top,
                            SWP_NOZORDER);
+            qDebug().noquote() << "Cef render:" << cefhwnd << ", size:" << rc.right - rc.left << "," << rc.bottom - rc.top;
           }
         }
       }

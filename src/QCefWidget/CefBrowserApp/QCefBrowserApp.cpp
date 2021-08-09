@@ -19,18 +19,27 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(
   //   content/public/common/content_switches.cc
 
   command_line->AppendSwitch("no-proxy-server");
-  command_line->AppendSwitch("disable-web-security");
   command_line->AppendSwitch("allow-file-access-from-files");
   command_line->AppendSwitch("allow-universal-access-from-files");
   command_line->AppendSwitch("disable-spell-checking");
+
+#if CEF_VERSION_MAJOR >= 90
+  command_line->AppendSwitch("enable-network-service");
+#else
+  command_line->AppendSwitch("disable-web-security");
+  // avoid prompting for plugin upgrades, eg. flash
+  command_line->AppendSwitch("allow-outdated-plugins");
+
+  if (QCefGlobalSetting::flush_plugin_path.length() > 0 && QCefGlobalSetting::flush_plugin_ver.length() > 0) {
+    command_line->AppendSwitchWithValue("ppapi-flash-path", QCefGlobalSetting::flush_plugin_path);
+    command_line->AppendSwitchWithValue("ppapi-flash-version", QCefGlobalSetting::flush_plugin_ver);
+  }
+#endif
 
   /*
   In CEF cef_binary_76.1.13+gf19c584+chromium-76.0.3809.132_windows32, cannot disable extensions, otherwise PDF will not be shown.
   command_line->AppendSwitch("disable-extensions");
   */
-
-  // avoid prompting for plugin upgrades, eg. flash
-  command_line->AppendSwitch("allow-outdated-plugins");
 
   //QCefGlobalSetting::gpu_enabled = false;
   // Can not disable GPU in D3D mode.
@@ -46,11 +55,6 @@ void QCefBrowserApp::OnBeforeCommandLineProcessing(
   }
 
   command_line->AppendSwitch("enable-begin-frame-scheduling");
-
-  if (QCefGlobalSetting::flush_plugin_path.length() > 0 && QCefGlobalSetting::flush_plugin_ver.length() > 0) {
-    command_line->AppendSwitchWithValue("ppapi-flash-path", QCefGlobalSetting::flush_plugin_path);
-    command_line->AppendSwitchWithValue("ppapi-flash-version", QCefGlobalSetting::flush_plugin_ver);
-  }
 }
 
 void QCefBrowserApp::OnRegisterCustomSchemes(CefRawPtr<CefSchemeRegistrar> registrar) {}
@@ -83,9 +87,5 @@ void QCefBrowserApp::OnContextInitialized() {
 }
 
 void QCefBrowserApp::OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) {}
-
-CefRefPtr<CefPrintHandler> QCefBrowserApp::GetPrintHandler() {
-  return nullptr;
-}
 
 void QCefBrowserApp::OnScheduleMessagePumpWork(int64 delay_ms) {}

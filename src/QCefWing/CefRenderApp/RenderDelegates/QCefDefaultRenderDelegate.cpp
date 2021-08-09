@@ -59,7 +59,7 @@ bool RenderDelegate::OnProcessMessageReceived(
           browser, source_process, message)) {
     return true;
   }
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR >= 76
   if (render_message_router_->OnProcessMessageReceived(
           browser, frame, source_process, message)) {
     return true;

@@ -57,7 +57,7 @@ void QCefClient::V8Handler::ExecuteInvokeMethod(const CefString& function,
 #if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   if (browser_)
     browser_->SendProcessMessage(PID_BROWSER, msg);
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR >= 76
   if (frame_)
     frame_->SendProcessMessage(PID_BROWSER, msg);
 #endif
@@ -245,7 +245,7 @@ void QCefClient::SendBrowserContextCreatedMessage() {
 #if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   if (browser_)
     browser_->SendProcessMessage(PID_BROWSER, msg);
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR >= 76
   if (frame_)
     frame_->SendProcessMessage(PID_BROWSER, msg);
 #endif

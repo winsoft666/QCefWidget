@@ -36,8 +36,6 @@ class QCefBrowserApp : public CefApp, public CefBrowserProcessHandler {
 
   virtual void OnBeforeChildProcessLaunch(CefRefPtr<CefCommandLine> command_line) override;
 
-  virtual CefRefPtr<CefPrintHandler> GetPrintHandler() override;
-
   virtual void OnScheduleMessagePumpWork(int64 delay_ms) override;
 
 #pragma endregion CefBrowserProcessHandler

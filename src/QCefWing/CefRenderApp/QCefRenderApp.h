@@ -93,7 +93,7 @@ class QCefRenderApp : public CefApp, public CefRenderProcessHandler {
 
 #if CEF_VERSION_MAJOR == 72 || CEF_VERSION_MAJOR == 74
   virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) override;
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR >= 76
   virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser, CefRefPtr<CefDictionaryValue> extra_info) override;
 #endif
 
@@ -123,7 +123,7 @@ class QCefRenderApp : public CefApp, public CefRenderProcessHandler {
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefProcessId source_process,
                                         CefRefPtr<CefProcessMessage> message) override;
-#elif CEF_VERSION_MAJOR == 76 || CEF_VERSION_MAJOR == 86 || CEF_VERSION_MAJOR == 87 || CEF_VERSION_MAJOR == 89
+#elif CEF_VERSION_MAJOR >= 76
   virtual bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser,
                                         CefRefPtr<CefFrame> frame,
                                         CefProcessId source_process,
