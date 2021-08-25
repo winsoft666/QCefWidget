@@ -121,6 +121,7 @@ QCefWidget has been tested with follow Qt and CEF version:
 |5.15.2|74.1.19|✅|
 |5.15.2|76.1.13|✅|
 |5.15.2|89.0.18|✅|
+|5.15.2|91.1.2|✅|
 
 In theory, other `Qt5+` versions and CEF versions are also supported.
 

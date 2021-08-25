@@ -312,7 +312,13 @@ void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
     QCefManager::getInstance().removeAllCefWidgets(pTopWidget_);
     if (pTopWidget_) {
       QMetaObject::invokeMethod(
-          pTopWidget_, [this]() { pTopWidget_->close(); }, Qt::QueuedConnection);
+          pTopWidget_, [this]() {
+            QTimer::singleShot(500, [this]() { // give enought time to release cef resource
+              if (pTopWidget_)
+                pTopWidget_->close();
+            });
+          },
+          Qt::QueuedConnection);
     }
   }
 }
