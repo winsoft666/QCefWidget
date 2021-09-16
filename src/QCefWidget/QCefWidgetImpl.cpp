@@ -50,7 +50,6 @@ QCefWidgetImpl::~QCefWidgetImpl() {
 }
 
 bool QCefWidgetImpl::createBrowser(const QString& url) {
-  qDebug().noquote() << "QCefWidgetImpl::createBrowser: " << url;
   if (browserCreated_)
     return true;
   Q_ASSERT(pWidget_);
@@ -58,8 +57,6 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
   Q_ASSERT(hwnd);
   if (!hwnd)
     return false;
-
-  qDebug().noquote() << "deviceScaleFactor: " << deviceScaleFactor_;
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
@@ -155,8 +152,6 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   Q_ASSERT(hwnd);
   if (!hwnd)
     return false;
-
-  qDebug().noquote() << "deviceScaleFactor:" << deviceScaleFactor_;
 
 #if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
   RegisterTouchWindow(hwnd, 0);
@@ -419,8 +414,6 @@ void QCefWidgetImpl::onScreenLogicalDotsPerInchChanged() {
   if (pCefUIEventWin_)
     pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
 
-  qDebug().noquote() << "deviceScaleFactor:" << deviceScaleFactor_;
-
   // See QTBUG-89646
   QRectF curRc = pWidget_->geometry();
   ::SetWindowPos((HWND)pWidget_->winId(), NULL,
@@ -444,8 +437,6 @@ void QCefWidgetImpl::onScreenChanged(QScreen* screen) {
   deviceScaleFactor_ = pWidget_->devicePixelRatioF();
   if (pCefUIEventWin_)
     pCefUIEventWin_->setDeviceScaleFactor(deviceScaleFactor_);
-
-  qDebug().noquote() << "deviceScaleFactor:" << deviceScaleFactor_;
 
   // See QTBUG-89646
   QRectF curRc = pWidget_->geometry();
@@ -707,7 +698,6 @@ bool QCefWidgetImpl::nativeEvent(const QByteArray& eventType,
       }
     }
     else if (pMsg->message == WM_SIZE) {
-      qDebug().noquote() << "WM_SIZE";
       if (browserSetting_.osrEnabled) {
         // winsoft666:
         // Old cef version maybe has some bugs about resize with dpi scale.

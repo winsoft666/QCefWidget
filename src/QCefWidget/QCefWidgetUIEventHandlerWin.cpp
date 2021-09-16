@@ -374,11 +374,12 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(HWND hWnd,
         //render_handler_->SetSpin(0, 0);
       }
       else {
-        if (lastClickTime_ == 0) {
+        // Fix issue #24
+        //#if (lastClickTime_ == 0) {
           // winsoft666:
           // window title will only receive a WM_MBUTTONUP message but not WM_MBUTTONDOWN when double-click.
-          break;
-        }
+          //break;
+        //}
         int x = GET_X_LPARAM(lParam);
         int y = GET_Y_LPARAM(lParam);
         CefBrowserHost::MouseButtonType btnType =
