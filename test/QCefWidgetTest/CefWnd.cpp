@@ -60,6 +60,10 @@ void CefWnd::setupUi() {
             &QCefOpenGLWidget::cefQueryRequest,
             this,
             &CefWnd::onCefQueryRequest);
+    connect(pCefGLWidget_,
+            &QCefOpenGLWidget::popupWindow,
+            this,
+            &CefWnd::onPopupWindow);
   }
   else {
     pCefWidget_ = new QCefWidget(initUrl_);
@@ -83,6 +87,10 @@ void CefWnd::setupUi() {
             &QCefWidget::cefQueryRequest,
             this,
             &CefWnd::onCefQueryRequest);
+    connect(pCefWidget_,
+            &QCefWidget::popupWindow,
+            this,
+            &CefWnd::onPopupWindow);
   }
 
   QHBoxLayout* hlMain = new QHBoxLayout();
@@ -323,4 +331,12 @@ void CefWnd::onCefQueryRequest(const QCefQuery& query) {
     pCefGLWidget_->responseCefQuery(rsp);
   else
     pCefWidget_->responseCefQuery(rsp);
+}
+
+void CefWnd::onPopupWindow(const QString& url) {
+  CefWnd* pPopupWnd = new CefWnd(false, false);
+  pPopupWnd->setInitUrl(url);
+  pPopupWnd->setupUi();
+  pPopupWnd->resize(800, 600);
+  pPopupWnd->show();
 }

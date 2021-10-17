@@ -75,7 +75,7 @@ class CefWnd : public CefWndBase<QWidget> {
                                     const QVariantList& arguments);
   virtual void onTriggerEvent();
   virtual void onCefQueryRequest(const QCefQuery& query);
-
+  virtual void onPopupWindow(const QString& url);
  protected:
   bool usingGLWidget_;
   bool framelessWindow_;
