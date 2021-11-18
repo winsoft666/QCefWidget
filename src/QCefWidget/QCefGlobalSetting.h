@@ -1,6 +1,5 @@
 #ifndef QCEF_GLOBAL_SETTING_H__
 #define QCEF_GLOBAL_SETTING_H__
-#pragma once
 
 #include <include\cef_base.h>
 #include <QMap>

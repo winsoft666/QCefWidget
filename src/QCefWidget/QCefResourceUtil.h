@@ -1,6 +1,6 @@
 #ifndef QCEF_RESOURCE_UTIL_H_
 #define QCEF_RESOURCE_UTIL_H_
-#pragma once
+
 #include <string>
 #include "include/cef_image.h"
 #include "include/cef_stream.h"

@@ -87,11 +87,14 @@ set(USE_SANDBOX OFF CACHE BOOL "Disable the Sandbox")
 # Disable the ATL
 set(USE_ATL OFF CACHE STRING "Disable the ATL")
 
+# Disable message hook
+# TODO
+set(DISABLE_HOOK OFF CACHE BOOL "Disable hook")
+
 # Find the CEF package
 find_package(CEF REQUIRED)
 
 # Store the libcef.lib path and cef dll wrapper target name
-# NOTE: we set this just for simplify the following referring.
 set(CEF_LIB_FILE "${CEF_BINARY_DIR}/libcef.lib")
 set(CEF_DLL_WRAPPER "libcef_dll_wrapper")
 

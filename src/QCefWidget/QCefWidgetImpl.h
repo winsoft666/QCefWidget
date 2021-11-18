@@ -1,6 +1,6 @@
 #ifndef QCEF_WIDGET_IMPLEMENT_H_
 #define QCEF_WIDGET_IMPLEMENT_H_
-#pragma once
+
 #include "CefBrowserApp/QCefBrowserHandler.h"
 #include "Include/QCefEvent.h"
 #include "Include/QCefQuery.h"

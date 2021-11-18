@@ -1,6 +1,5 @@
 #ifndef WIN32_DPI_HELPER_H_
 #define WIN32_DPI_HELPER_H_
-#pragma once
 
 #include <windows.h>
 

@@ -1,6 +1,6 @@
 #ifndef QCEF_DEVTOOLS_WND_H_
 #define QCEF_DEVTOOLS_WND_H_
-#pragma once
+
 #include <QMainWindow>
 #include <include/cef_app.h>
 #include "QCefWidgetImpl.h"

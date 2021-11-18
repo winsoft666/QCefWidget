@@ -1,6 +1,5 @@
 #ifndef UI_EVENT_HANDLER_WIN_H_
 #define UI_EVENT_HANDLER_WIN_H_
-#pragma once
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #include <include/cef_client.h>

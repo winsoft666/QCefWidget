@@ -1,6 +1,5 @@
 #ifndef QCEFWIDGET_RENDERAPP_H_
 #define QCEFWIDGET_RENDERAPP_H_
-#pragma once
 
 #include <set>
 #include <include/cef_app.h>

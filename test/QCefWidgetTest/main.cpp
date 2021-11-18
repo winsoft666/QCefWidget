@@ -1,5 +1,6 @@
 #include "TestWnd.h"
 #include <QtWidgets/QApplication>
+#include "QCefInitializer.h"
 
 #pragma execution_character_set("utf-8")
 
@@ -13,8 +14,12 @@ int main(int argc, char* argv[]) {
 #endif
   QApplication a(argc, argv);
 
+  InitializeQCef();
+
   TestWnd w;
   w.show();
   int iret = a.exec();
+
+  UnInitializeQCef();
   return iret;
 }

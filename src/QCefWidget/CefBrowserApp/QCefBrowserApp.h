@@ -1,6 +1,5 @@
 #ifndef QCEF_BROWSERAPP_H_
 #define QCEF_BROWSERAPP_H_
-#pragma once
 #include <set>
 #include <include/cef_app.h>
 #include "Include/QCefVersion.h"

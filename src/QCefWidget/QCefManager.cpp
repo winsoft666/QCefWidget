@@ -63,24 +63,20 @@ void QCefManager::initializeCef() {
 #endif
 
   void* sandboxInfo = nullptr;
-  if (!CefInitialize(main_args, cefSettings_, app_, sandboxInfo))
-    assert(0);
+  if (!CefInitialize(main_args, cefSettings_, app_, sandboxInfo)) {
+      assert(0);
+  }
   initialized_ = true;
-  connect(qApp, &QApplication::aboutToQuit, this, &QCefManager::uninitializeCef);
 }
 
 void QCefManager::uninitializeCef() {
   if (!initialized_)
     return;
-  static bool hasCalled = false;
-  Q_ASSERT(!hasCalled);
-  hasCalled = true;
 
   app_ = nullptr;
+  initialized_ = false;
 
   CefShutdown();
-
-  initialized_ = false;
 }
 
 QWidget* QCefManager::addBrowser(QWidget* pCefWidget,

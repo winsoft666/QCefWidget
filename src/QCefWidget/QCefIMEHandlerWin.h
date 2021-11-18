@@ -1,6 +1,5 @@
 #ifndef QCEF_IME_HANDLER_WIN_H__
 #define QCEF_IME_HANDLER_WIN_H__
-#pragma once
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 

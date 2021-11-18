@@ -32,8 +32,6 @@ QCefWidgetImpl::QCefWidgetImpl(WidgetType vt, QWidget* pWidget) :
     browserClosing_(false),
     pQCefViewHandler_(nullptr) {
   draggableRegion_ = ::CreateRectRgn(0, 0, 0, 0);
-  QCefManager::getInstance().initializeCef();
-
   deviceScaleFactor_ = pWidget_->devicePixelRatioF();
 
   connect(pWidget_->window()->windowHandle(), &QWindow::screenChanged, this, &QCefWidgetImpl::onScreenChanged);
@@ -308,7 +306,7 @@ void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
     if (pTopWidget_) {
       QMetaObject::invokeMethod(
           pTopWidget_, [this]() {
-            QTimer::singleShot(500, [this]() { // give enought time to release cef resource
+            QTimer::singleShot(200, [this]() { // give enought time to release cef resource
               if (pTopWidget_)
                 pTopWidget_->close();
             });

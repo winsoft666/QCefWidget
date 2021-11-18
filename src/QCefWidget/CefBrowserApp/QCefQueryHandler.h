@@ -1,6 +1,6 @@
 #ifndef QCEF_BROWSER_HANDLER_H_
 #define QCEF_BROWSER_HANDLER_H_
-#pragma once
+
 #include <map>
 #include <mutex>
 #include <include/cef_base.h>

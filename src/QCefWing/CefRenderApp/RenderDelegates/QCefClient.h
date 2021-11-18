@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QCEF_CLIENT_H_
+#define QCEF_CLIENT_H_
 #include <include/cef_v8.h>
 #include <list>
 #include <map>
@@ -81,6 +82,7 @@ class QCefClient : public CefBaseRefCounted {
 
   void ExecuteEventListener(const CefString eventName, CefRefPtr<CefDictionaryValue> dict);
   void SendBrowserContextCreatedMessage();
+
  private:
   CefRefPtr<CefV8Value> object_;
 
@@ -93,3 +95,5 @@ class QCefClient : public CefBaseRefCounted {
  private:
   IMPLEMENT_REFCOUNTING(QCefClient);
 };
+
+#endif  // !QCEF_CLIENT_H_

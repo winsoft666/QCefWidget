@@ -1,4 +1,5 @@
-#pragma once
+#ifndef QCEF_DEFAULT_RENDER_DELEGATE_H_
+#define QCEF_DEFAULT_RENDER_DELEGATE_H_
 #include <include/wrapper/cef_message_router.h>
 #include <unordered_map>
 #include "../QCefRenderApp.h"
@@ -54,3 +55,4 @@ class RenderDelegate : public QCefRenderApp::RenderDelegate {
 };
 
 }  // namespace QCefDefaultRenderDelegate
+#endif  // !QCEF_DEFAULT_RENDER_DELEGATE_H_

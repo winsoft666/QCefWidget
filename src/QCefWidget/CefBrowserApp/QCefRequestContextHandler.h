@@ -1,6 +1,5 @@
 #ifndef QCEF_REQUEST_CONTEXT_HANDLER_H_
 #define QCEF_REQUEST_CONTEXT_HANDLER_H_
-#pragma once
 
 #include "include/cef_request_context.h"
 #include "include/cef_request_context_handler.h"

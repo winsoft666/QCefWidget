@@ -1,9 +1,7 @@
 #ifndef QCEF_WIDGET_H_
 #define QCEF_WIDGET_H_
-#pragma once
 
 #include <memory>
-#include <QtCore/qglobal.h>
 #include <QWidget>
 #include <QVariantList>
 #include <QAbstractNativeEventFilter>
@@ -11,17 +9,6 @@
 #include "QCefEvent.h"
 #include "QCefResourceProvider.h"
 #include "QCefUserDefined.h"
-
-#ifndef QCEFWIDGET_EXPORT
-#ifdef QCEFWIDGET_LIB
-#define QCEFWIDGET_EXPORT Q_DECL_EXPORT
-#else
-#define QCEFWIDGET_EXPORT Q_DECL_IMPORT
-#if (defined Q_OS_WIN32 || defined Q_OS_WIN64)
-#pragma comment(lib, QCEF_WIDGET_DLL_LIB_NAME)
-#endif
-#endif
-#endif
 
 class QCefWidgetImpl;
 class QCefDevToolsWnd;

@@ -40,6 +40,12 @@ if (OS_WINDOWS)
   )
 endif()
 
+if (DISABLE_HOOK)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE
+    DISABLE_HOOK
+  )
+endif()
+
 target_link_libraries(${PROJECT_NAME} PRIVATE
   Qt5::Core
   Qt5::Gui 

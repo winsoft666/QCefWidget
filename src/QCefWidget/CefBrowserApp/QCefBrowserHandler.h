@@ -1,6 +1,6 @@
 #ifndef QCEFVIEWHANDLER_H_
 #define QCEFVIEWHANDLER_H_
-#pragma once
+
 #include "QCefQueryHandler.h"
 #include "Include/QCefQuery.h"
 #include "Include/QCefVersion.h"

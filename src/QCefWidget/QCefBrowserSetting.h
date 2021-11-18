@@ -1,6 +1,5 @@
 #ifndef QCEF_BROWSER_SETTING_H_
 #define QCEF_BROWSER_SETTING_H_
-#pragma once
 
 #include <QColor>
 

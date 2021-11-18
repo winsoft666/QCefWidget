@@ -1,6 +1,5 @@
 #ifndef QCEF_MANAGER_H_
 #define QCEF_MANAGER_H_
-#pragma once
 
 #include "CefBrowserApp/QCefBrowserApp.h"
 #include <mutex>
