@@ -306,7 +306,7 @@ void QCefWidgetImpl::browserDestoryedNotify(CefRefPtr<CefBrowser> browser) {
     if (pTopWidget_) {
       QMetaObject::invokeMethod(
           pTopWidget_, [this]() {
-            QTimer::singleShot(200, [this]() { // give enought time to release cef resource
+            QTimer::singleShot(200, [this]() {  // give enought time to release cef resource
               if (pTopWidget_)
                 pTopWidget_->close();
             });
@@ -545,11 +545,14 @@ bool QCefWidgetImpl::isLoadingBrowser() {
 }
 
 void QCefWidgetImpl::reloadBrowser(bool bIgnoreCache) {
-  if (pQCefViewHandler_ && pQCefViewHandler_->browser())
-    if (bIgnoreCache)
+  if (pQCefViewHandler_ && pQCefViewHandler_->browser()) {
+    if (!bIgnoreCache) {
       pQCefViewHandler_->browser()->Reload();
-    else
+    }
+    else {
       pQCefViewHandler_->browser()->ReloadIgnoreCache();
+    }
+  }
 }
 
 void QCefWidgetImpl::stopLoadBrowser() {
