@@ -137,3 +137,8 @@ test目录中的QCefWidgetTest是一个示例程序，演示了如何使用QCefW
 ![user clieck x button](x-button-close.png)
 
 > 通过`QWidget::close()`方法关闭窗口时，QCefWidget控件和窗口销毁的过程与上图稍有不同，但大体类似。
+
+---
+
+该项目最初参考了QCefView, 非常感谢！但该项目与其不兼容，因此不会合并到QCefView中.
+
