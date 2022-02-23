@@ -135,7 +135,7 @@ QCefWidgetTest is a perfect demo about how to use QCefWidget in `test` folder.
 ![screenshot2 on windows](./test/Screenshot/screenshot2.png)
 
 # 5. Donate
-Open source is not a easy work, please support me! If you don't want to donate, just Star⭐ it.
+Open source is not a easy work, just Star⭐ it.
 
 # 6. Code structure
 The following figure shows about how to destroy the QCefWidget and window when user clicked the X button (or sends a WM_CLOSE message to the window):
