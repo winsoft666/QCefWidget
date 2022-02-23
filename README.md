@@ -4,8 +4,6 @@
 
 The QCefWidget project provide a widget that used to render and interact with webpage. 
 
-**The QCefWidget initial reference QCefView, thanks! However, the changes are quite a lot and also incompatible with QCefView, so these modify will not be merged into the QCefView.**
-
 Support:
 
 ✅ Supports both CEF OSR and non-OSR mode;

@@ -3,8 +3,6 @@
 # 一、QCefWidget
 `QCefWidget`项目提供了一个Widget来显示网页与与之交互.
 
-**该项目最初参考了QCefView, 非常感谢！但由于改动非常大，与其也不兼容，因此这些改动不会合并到QCefView中.**
-
 支持：
 
 ✅ 同时支持CEF OSR和非OSR模式;
