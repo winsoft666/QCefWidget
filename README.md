@@ -132,6 +132,8 @@ QCefWidgetTest is a perfect demo about how to use QCefWidget in `test` folder.
 
 ![screenshot2 on windows](./test/Screenshot/screenshot2.png)
 
+> If SVG is blurry, copy `iconengines` to Debug or Release folder.
+
 # 5. Donate
 Open source is not a easy work, just Star⭐ it.
 

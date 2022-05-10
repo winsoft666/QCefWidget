@@ -128,6 +128,8 @@ test目录中的QCefWidgetTest是一个示例程序，演示了如何使用QCefW
 
 ![screenshot2 on windows](test/Screenshot/screenshot2.png)
 
+> 如果SVG图标模糊，请拷贝`iconengines`到Debug或Release目录.
+
 # 四、捐赠
 开源不易，本项目不接受捐赠，在右上角点个星星⭐就可以了.
 
