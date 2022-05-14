@@ -63,8 +63,13 @@ bool QCefWidgetImpl::createBrowser(const QString& url) {
   QCefGlobalSetting::initializeInstance();
   QDir resourceDir = QString::fromStdWString(
       QCefGlobalSetting::resource_directory_path.ToWString());
+#if CEF_VERSION_MAJOR >= 90
+  browserSetting_.devToolsResourceExist =
+      QFile::exists(resourceDir.filePath("resources.pak"));
+#else
   browserSetting_.devToolsResourceExist =
       QFile::exists(resourceDir.filePath("devtools_resources.pak"));
+#endif
 
   CefWindowInfo window_info;
   CefBrowserSettings browserSettings;
@@ -158,8 +163,13 @@ bool QCefWidgetImpl::createDevTools(CefRefPtr<CefBrowser> targetBrowser) {
   QCefGlobalSetting::initializeInstance();
   QDir resourceDir = QString::fromStdWString(
       QCefGlobalSetting::resource_directory_path.ToWString());
+#if CEF_VERSION_MAJOR >= 90
+  browserSetting_.devToolsResourceExist =
+      QFile::exists(resourceDir.filePath("resources.pak"));
+#else
   browserSetting_.devToolsResourceExist =
       QFile::exists(resourceDir.filePath("devtools_resources.pak"));
+#endif
 
   CefWindowInfo windowInfo;
   CefBrowserSettings browserSettings;
