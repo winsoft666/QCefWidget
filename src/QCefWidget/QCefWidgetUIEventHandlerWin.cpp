@@ -41,7 +41,7 @@ QCefWidgetUIEventHandlerWin::QCefWidgetUIEventHandlerWin(
     lastClickX_(0),
     lastClickY_(0),
     lastClickButton_(MBT_LEFT),
-    lastClickCount_(0),
+    lastClickCount_(1),
     lastClickTime_(0),
     lastMouseDownOnView_(false) {
   // TODO: Qt widget's hwnd maybe change
@@ -316,7 +316,7 @@ void QCefWidgetUIEventHandlerWin::OnMouseEvent(HWND hWnd,
         ((currentTime - lastClickTime_) > GetDoubleClickTime());
     if (cancelPreviousClick &&
         (message == WM_MOUSEMOVE || message == WM_MOUSELEAVE)) {
-      lastClickCount_ = 0;
+      lastClickCount_ = 1;
       lastClickX_ = 0;
       lastClickY_ = 0;
       lastClickTime_ = 0;
