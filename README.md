@@ -6,25 +6,25 @@ The QCefWidget project provide a widget that used to render and interact with we
 
 Support:
 
-✅ Supports both CEF OSR and non-OSR mode;
+- Supports both CEF OSR and non-OSR mode.
 
-✅ Show background transparent webpage in irregularity window;
+- Show background transparent webpage in irregularity window.
 
-✅ Javascript and Qt interaction;
+- Javascript and Qt interaction.
 
-✅ OpenGL graphics acceleration;
+- OpenGL graphics acceleration.
 
-✅ Third-party input method software;
+- Third-party input method software.
 
-✅ Perfect exit app without any CEF assert/exception in debug/release mode;
+- Perfect exit app without any CEF assert/exception in debug/release mode.
 
-✅ Separate CEF rendering process and plugin process;
+- Separate CEF rendering process and plugin process.
 
-✅ Support Adobe Flash without any warnning, eg "Control-click to run Adobe Flash Player".
+- Support Adobe Flash without any warnning, eg "Control-click to run Adobe Flash Player".
 
-✅ Drag/Drop frameless window like Electron throught setting CSS property.
+- Drag/Drop frameless window like Electron throught setting CSS property.
 
-✅ Move between mixed scale factor monitors.
+- Move between mixed scale factor monitors.
 
 ---
 
