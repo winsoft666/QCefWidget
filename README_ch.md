@@ -1,7 +1,7 @@
 [ >>> English Version](README.md)
 
 # 一、QCefWidget
-`QCefWidget`项目提供了一个Widget来显示网页与与之交互.
+`QCefWidget`项目提供了一个Widget来显示网页，并与之交互.
 
 支持：
 
