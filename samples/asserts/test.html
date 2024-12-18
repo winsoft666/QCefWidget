@@ -1,0 +1,195 @@
+<html>
+
+<head>
+  <meta name="description" content="Test Page" />
+  <script>
+    function onEventTest(event) {
+      var kvlist = [];
+      for (var key in event) {
+        kvlist.push(key + ":" + event[key])
+      }
+      var msg = kvlist.join('\r\n');
+      document.getElementById("eventMessage").value += msg;
+
+      document.getElementById("eventMessage").value += "\r\n\r\n";
+    }
+
+    function onLoad() {
+      if (typeof (QCefWidget) == 'undefined') {
+        document.getElementById("eventMessage").value += "Warning: typeof(QCefWidget) != 'undefined'";
+        return;
+      }
+
+      QCefWidget.addEventListener("eventTest", onEventTest)
+    }
+
+    function onInvokeMethodClicked() {
+      QCefWidget.invoke("TestMethod", 1, false, "arg3");
+    }
+
+    function onQCefQueryClicked() {
+      var query = {
+        request: document.getElementById("message").value,
+        onSuccess: function (response) {
+          alert("onSuccess: " + response);
+        },
+        onFailure: function (error_code, error_message) {
+          alert("onFailure: " + error_code + ", " + error_message);
+        }
+      }
+      window.QCefWidgetQuery(query);
+    }
+
+    function onCookieSetClicked() {
+      setCookie(document.getElementById("cookieName").value,
+        document.getElementById("cookieValue").value,
+        document.getElementById("cookieDays").value);
+    }
+
+    function onCookieGetClicked() {
+      document.getElementById("cookieValue").value = getCookie(document.getElementById("cookieName").value);
+    }
+
+    function onCookieClearClicked() {
+      eraseCookie(document.getElementById("cookieName").value);
+    }
+
+    function setCookie(name, value, days) {
+      var expires = "";
+      if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+      }
+      document.cookie = name + "=" + (value || "") + expires + "; path=/";
+    }
+
+    function getCookie(name) {
+      var nameEQ = name + "=";
+      var ca = document.cookie.split(';');
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+      }
+      return null;
+    }
+
+    function eraseCookie(name) {
+      document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+    }
+  </script>
+  <style>
+    .title {
+      -webkit-app-region: drag;
+      background-color: rgb(5, 39, 175);
+      width: 100%;
+      height: 40px;
+      color: white;
+
+      padding-left: 10px;
+      line-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .title-area {
+      width: calc((100% - 35px)/2);
+      text-align: left;
+    }
+
+    .title-button {
+      -webkit-app-region: no-drag;
+      background-color: red;
+      width: 100px;
+      height: 20px;
+      font-size: 8px;
+      text-align: center;
+      line-height: 20px;
+    }
+
+
+    #btnInvoke {
+      margin-top: 20px;
+      margin-bottom: 20px;
+      width: 160px;
+      height: 30px;
+    }
+
+    #btnQuery {
+      width: 100px;
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    textarea {
+      width: 80%;
+      height: 100px;
+      margin-left: 10px;
+      margin-bottom: 5px;
+    }
+
+    .tt {
+      font-family: Arial;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+
+    .cookie {
+      font-family: Arial;
+      font-size: 12px;
+      margin-left: 10px;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+
+<body onload="onLoad()" id="main">
+
+  <div class='title'>
+    <div class="title-area">Draggable Area</div>
+    <div class="title-button">
+      CAN'T DRAG
+    </div>
+  </div>
+  
+  <div align="center">
+    <object width="100%" height="200" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0">
+    <param name="movie" value="./test.swf">
+    <param name="quality" value="high">
+    <embed width="100%" height="200" pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash" src="./test.swf" type="application/x-shockwave-flash" quality="high">
+    </object>
+  </div>
+
+  <input id='btnInvoke' type="button" value="Invoke to C++" onclick="onInvokeMethodClicked()" />
+
+  <div class='tt'>Recevie from Qt: (Try to click <img src='javascript_h.svg' /> button)</div>
+  <textarea id="eventMessage"></textarea>
+
+  <div class='tt'>QCefQuery Test:</div>
+  <textarea id="message">This is a query request message from JavaScript.</textarea>
+
+  <div>
+    <input id='btnQuery' type="button" value="Query" onclick="onQCefQueryClicked()" />
+  </div>
+
+  <div class='tt'>Cookie Manager</div>
+  <div class='cookie'>
+    Name: <input id="cookieName" type="text" />
+  </div>
+  <div class='cookie'>
+    Value: <input id="cookieValue" type="text" />
+  </div>
+  <div class='cookie'>
+    Days: <input id="cookieDays" type="text" />
+  </div>
+  <div class='cookie'>
+    <input id="cookieSet" type="button" value="Set" onclick="onCookieSetClicked()" />
+    <input id="cookieGet" type="button" value="Get" onclick="onCookieGetClicked()" />
+    <input id="cookieGet" type="button" value="Clear" onclick="onCookieClearClicked()" />
+  </div>
+</body>
+
+</html>

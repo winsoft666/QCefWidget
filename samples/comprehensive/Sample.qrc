@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/Sample">
+        <file>ControlPanel.qss</file>
+        <file>images/weixin.svg</file>
+        <file>images/logo.svg</file>
+        <file>images/close_h.svg</file>
+        <file>images/close_n.svg</file>
+        <file>images/devtools_h.svg</file>
+        <file>images/devtools_n.svg</file>
+        <file>images/javascript_h.svg</file>
+        <file>images/javascript_n.svg</file>
+        <file>images/logo_blue.svg</file>
+        <file>images/invisible.svg</file>
+        <file>images/visible.svg</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,38 @@
+QPushButton#pushButtonGetSourceCode {
+	border: none;
+	color: rgba(0,0,255,1);
+	font-size: 14px;
+	font-weight: bold;
+	text-decoration: underline;
+	min-width: 120px;
+}
+
+QPushButton#pushButtonGetSourceCode:hover {
+	border: none;
+	color: rgba(255,0,0,0.6);
+	font-size: 14px;
+	font-weight: bold;
+	text-decoration: underline;
+	min-width: 120px;
+}
+
+
+QPushButton#pushButtonNewBrowser {
+  border: 1px solid green;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: bold;
+  color: green;
+  min-width: 120px;
+  min-height: 32px;
+}
+
+QPushButton#pushButtonNewBrowser:hover {
+  border: 1px solid red;
+  border-radius: 2px;
+  font-size: 14px;
+  font-weight: bold;
+  color: red;
+  min-width: 120px;
+  min-height: 32px;
+}

@@ -1,0 +1,5 @@
+/out
+*.aps
+.vs
+build/
+/src/version.h
