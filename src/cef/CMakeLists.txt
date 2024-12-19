@@ -81,3 +81,8 @@ target_link_libraries(QWebView.CEF
 )
 
 CONFIG_QWEBVIEW_CEF_TARGET_PROP(QWebView.CEF)
+
+# add_custom_command(TARGET QWebView.CEF POST_BUILD
+#   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CEF_RESOURCE_DIR} $<TARGET_FILE_DIR:QWebView.CEF/resources
+#   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CEF_BINARY_DIR} $<TARGET_FILE_DIR:QWebView.CEF>
+# )

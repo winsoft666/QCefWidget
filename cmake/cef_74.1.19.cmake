@@ -392,9 +392,8 @@ else()
   ADD_LOGICAL_TARGET("libcef_lib" "${CEF_LIB_DEBUG}" "${CEF_LIB_RELEASE}")
 endif()
 
-# # Determine the target output directory.
-SET_CEF_TARGET_OUT_DIR()
-
+# Set the target output directory to bin/$<CONFIGURATION> folder.
+set(CEF_TARGET_OUT_DIR "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>")
 
 #
 # Linux configuration.

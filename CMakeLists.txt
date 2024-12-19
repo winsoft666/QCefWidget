@@ -61,11 +61,6 @@ if(QWEBVIEW_ENABLE_WEBVIEW2)
 endif()
 
 if(ENABLE_CEF)
-  # configure_file (
-  # "${CMAKE_SOURCE_DIR}/src/cef/widget/CefVersion.h.in"
-  # "${CMAKE_SOURCE_DIR}/src/cef/widget/CefVersion.h"
-  # )
-
   set(CEF_ROOT "${CEF_SDK_DIR}")
   list(APPEND CMAKE_MODULE_PATH "${CEF_SDK_DIR}/cmake")
 
