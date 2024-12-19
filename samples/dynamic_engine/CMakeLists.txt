@@ -55,3 +55,7 @@ if (MSVC)
     add_custom_command(TARGET DynamicEngine POST_BUILD
 			COMMAND mt.exe -manifest \"${CMAKE_CURRENT_SOURCE_DIR}\\compatibility.manifest\" -inputresource:\"$<TARGET_FILE:DynamicEngine>\" -outputresource:\"$<TARGET_FILE:DynamicEngine>\")
 endif(MSVC)
+
+add_custom_command(TARGET DynamicEngine POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/../asserts" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/asserts"
+)

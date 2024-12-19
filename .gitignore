@@ -3,3 +3,5 @@
 .vs
 build/
 /src/version.h
+/src/webview2/HostObjectSimple_h.h
+/src/webview2/HostObjectSimple_i.c

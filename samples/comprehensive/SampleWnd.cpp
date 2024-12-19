@@ -125,9 +125,6 @@ void SampleWnd::setupUi() {
 
   checkboxUsingHideInsteadCloseWhenClickCloseButton_ = new QCheckBox("点击窗口关闭按钮时，不关闭窗口，而是隐藏窗口");
 
-  checkboxAllowExecuteUnknownProtocolViaOS_ = new QCheckBox("Allow Execute Unknown Protocol via OS");
-  checkboxAllowExecuteUnknownProtocolViaOS_->setChecked(true);
-
   QHBoxLayout* hlInitUrl = new QHBoxLayout();
   hlInitUrl->addWidget(new QLabel("初始链接: "));
   comboBoxUrl_ = new QComboBox();
@@ -159,7 +156,6 @@ void SampleWnd::setupUi() {
   vlOption->addWidget(checkboxTranslucentWindowBackground_);
   vlOption->addWidget(checkboxOsrEnabled_);
   vlOption->addWidget(checkboxUsingHideInsteadCloseWhenClickCloseButton_);
-  vlOption->addWidget(checkboxAllowExecuteUnknownProtocolViaOS_);
   vlOption->addLayout(hlFPS);
   vlOption->addLayout(hlInitSize);
   vlOption->addLayout(hlWindowBkColor);
@@ -207,7 +203,6 @@ void SampleWnd::onPushButtonNewBrowserClicked() {
   connect(wmd, &WebViewWnd::webViewWndClosed, this, &SampleWnd::onWebViewWndClosed);
   wmd->setOsrEnabled(checkboxOsrEnabled_->isChecked());
   wmd->setUsingHideInsteadClose(checkboxUsingHideInsteadCloseWhenClickCloseButton_->isChecked());
-  wmd->setAllowExecuteUnknownProtocolViaOS(checkboxAllowExecuteUnknownProtocolViaOS_->isChecked());
   wmd->setMaximumFps(lineEditFPS_->text().toInt());
 
   QColor winBkColor;

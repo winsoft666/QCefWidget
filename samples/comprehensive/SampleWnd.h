@@ -38,7 +38,6 @@ class SampleWnd : public QWidget {
   QCheckBox* checkboxTranslucentWindowBackground_;
   QCheckBox* checkboxOsrEnabled_;
   QCheckBox* checkboxUsingHideInsteadCloseWhenClickCloseButton_;
-  QCheckBox* checkboxAllowExecuteUnknownProtocolViaOS_;
 
   QPushButton* pushButtonClose_;
   QPushButton* pushButtonNewBrowser_;

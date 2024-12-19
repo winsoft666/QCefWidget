@@ -47,10 +47,10 @@ void BrowserListItem::setupUi() {
       "QPushButton[status=\"visible\"] {border: none;image: url(:/Sample/images/visible.svg);} QPushButton[status=\"invisible\"] {border: none;image: url(:/Sample/images/invisible.svg);}");
   pushButtonVisible_->setProperty("status", "invisible");
 
-  pushButtonInvokeJS_ = new QPushButton();
-  pushButtonInvokeJS_->setFixedSize(18, 18);
-  pushButtonInvokeJS_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
-  pushButtonInvokeJS_->setStyleSheet(
+  pushButtonNotifyJS_ = new QPushButton();
+  pushButtonNotifyJS_->setFixedSize(18, 18);
+  pushButtonNotifyJS_->setCursor(QCursor(Qt::CursorShape::PointingHandCursor));
+  pushButtonNotifyJS_->setStyleSheet(
       "QPushButton {border: none;image: url(:/Sample/images/javascript_n.svg);} QPushButton:hover {border: none; image: url(:/Sample/images/javascript_h.svg);}");
 
   pushButtonDevTools_ = new QPushButton();
@@ -76,7 +76,7 @@ void BrowserListItem::setupUi() {
   hlMain->addStretch();
   hlMain->addWidget(labelStatus_);
   hlMain->addWidget(pushButtonVisible_);
-  hlMain->addWidget(pushButtonInvokeJS_);
+  hlMain->addWidget(pushButtonNotifyJS_);
   hlMain->addWidget(pushButtonDevTools_);
   hlMain->addWidget(pushButtonClose_);
 
@@ -87,10 +87,10 @@ void BrowserListItem::setupUi() {
           &QPushButton::clicked,
           webViewWnd_,
           &WebViewWnd::onShowDevTools);
-  connect(pushButtonInvokeJS_,
+  connect(pushButtonNotifyJS_,
           &QPushButton::clicked,
           webViewWnd_,
-          &WebViewWnd::onTriggerEvent);
+          &WebViewWnd::onNotifyToJs);
   connect(pushButtonVisible_, &QPushButton::clicked, [this]() {
     QString strStatus = pushButtonVisible_->property("status").toString();
     if (strStatus == "invisible") {

@@ -9,33 +9,7 @@ library HostObjectSimpleLibrary
     [uuid(3a14c9c0-bc3e-453f-a314-4ce4a0ec81d8), object, local]
     interface IHostObjectSimple : IUnknown
     {
-        // Call_ParamsTypes_ReturnType
-        // V = Void
-        // S = String
-        // I = INT
-        // D = double
-        // C = Callback
-        //
-        HRESULT Call_V_V([in] INT cmd);
-
-        HRESULT Call_S_V([in] INT cmd, [in] BSTR s);
-        HRESULT Call_S_D([in] INT cmd, [in] BSTR s, [ out, retval ] double* ret);
-        HRESULT Call_S_I([in] INT cmd, [in] BSTR s, [ out, retval ] INT* ret);
-        HRESULT Call_S_S([in] INT cmd, [in] BSTR s, [ out, retval ] BSTR* ret);
-
-        HRESULT Call_I_V([in] INT cmd, [in] INT i);
-        HRESULT Call_I_D([in] INT cmd, [in] INT i, [ out, retval ] double* ret);
-        HRESULT Call_I_I([in] INT cmd, [in] INT i, [ out, retval ] INT* ret);
-        HRESULT Call_I_S([in] INT cmd, [in] INT i, [ out, retval ] BSTR* ret);
-
-        HRESULT Call_D_V([in] INT cmd, [in] double d);
-        HRESULT Call_D_D([in] INT cmd, [in] double d, [ out, retval ] double* ret);
-        HRESULT Call_D_I([in] INT cmd, [in] double d, [ out, retval ] INT* ret);
-        HRESULT Call_D_S([in] INT cmd, [in] double d, [ out, retval ] BSTR* ret);
-
-        HRESULT Call_IC_V([in] INT cmd, [in] INT i, [in] IDispatch* dispatch);
-        HRESULT Call_SC_V([in] INT cmd, [in] BSTR s, [in] IDispatch* dispatch);
-        HRESULT Call_DC_V([in] INT cmd, [in] double d, [in] IDispatch* dispatch);
+        HRESULT NotifyCPP([in] BSTR s);
     };
     //! [AddHostObjectInterface]
 

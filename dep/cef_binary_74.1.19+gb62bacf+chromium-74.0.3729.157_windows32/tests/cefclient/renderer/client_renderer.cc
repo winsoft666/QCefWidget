@@ -53,7 +53,8 @@ class ClientRenderDelegate : public ClientAppRenderer::Delegate {
                         CefRefPtr<CefV8Context> context) OVERRIDE {
     message_router_->OnContextCreated(browser, frame, context);
     
-    // winsoft666: [update-cefclient] Bind notify function on window object.
+    // winsoft666: [update-cefclient] Register something on window object.
+    RegisterCEFEngineFlag(context, this);
     RegisterJSNotifyFunction(context, this);
   }
 

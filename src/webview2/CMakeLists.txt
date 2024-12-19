@@ -105,7 +105,7 @@ set(MIDL_FILE
 
 add_custom_command(
     OUTPUT ${MIDL_OUTPUT}
-    COMMAND midl /h HostObjectSimple_h.h /tlb ${CMAKE_CURRENT_BINARY_DIR}/QWebView.WebView2.tlb ${MIDL_FILE}
+    COMMAND midl /h HostObjectSimple_h.h /tlb ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/$<CONFIGURATION>/QWebView.WebView2.tlb ${MIDL_FILE}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     VERBATIM
 )

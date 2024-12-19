@@ -6,6 +6,7 @@
 #include "root_window_qt.h"
 
 namespace {
+const char kCEFEngineFlagName[] = "IsCEFEngine";
 const char kJSNotifyFunc[] = "mrtNotify";
 const char kDoneMessageName[] = "mrtNotifyMsg";
 }  // namespace
@@ -57,6 +58,20 @@ class V8HandlerImpl : public CefV8Handler {
 };
 
 namespace renderer {
+void RegisterCEFEngineFlag(CefRefPtr<CefV8Context> context, CefRefPtr<ClientAppRenderer::Delegate> delegate) {
+  // 添加 window.IsCEFEngine = true
+  CefRefPtr<CefV8Value> window = context->GetGlobal();
+
+  CefRefPtr<V8HandlerImpl> handler = new V8HandlerImpl(delegate);
+  CefV8Value::PropertyAttribute attributes =
+      static_cast<CefV8Value::PropertyAttribute>(
+          V8_PROPERTY_ATTRIBUTE_READONLY | V8_PROPERTY_ATTRIBUTE_DONTENUM |
+          V8_PROPERTY_ATTRIBUTE_DONTDELETE);
+
+  CefRefPtr<CefV8Value> trueValue = CefV8Value::CreateBool(true);
+  window->SetValue(kCEFEngineFlagName, trueValue, attributes);
+}
+
 void RegisterJSNotifyFunction(CefRefPtr<CefV8Context> context, CefRefPtr<ClientAppRenderer::Delegate> delegate) {
   // Register function handlers with the 'window' object.
   CefRefPtr<CefV8Value> window = context->GetGlobal();

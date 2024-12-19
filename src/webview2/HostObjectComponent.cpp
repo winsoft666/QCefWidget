@@ -31,7 +31,7 @@ HostObjectComponent::HostObjectComponent(QWebViewWebView2Impl* d) :
                 // We can call AddHostObjectToScript multiple times in a row without
                 // calling RemoveHostObject first. This will replace the previous object
                 // with the new object. In our case this is the same object and everything is fine.
-                CHECK_FAILURE(m_webView->AddHostObjectToScript(L"QWebView2", &remoteObjectAsVariant));
+                CHECK_FAILURE(m_webView->AddHostObjectToScript(L"QWebViewWebView2", &remoteObjectAsVariant));
                 remoteObjectAsVariant.pdispVal->Release();
                 //! [AddHostObjectToScript]
 
@@ -68,7 +68,7 @@ HostObjectComponent::HostObjectComponent(QWebViewWebView2Impl* d) :
                     LPCWSTR origin = L"https://appassets.example/";
 
                     CHECK_FAILURE(webviewFrame->AddHostObjectToScriptWithOrigins(
-                        L"QWebView2", &remoteObjectAsVariant, 1, &origin));
+                        L"QWebViewWebView2", &remoteObjectAsVariant, 1, &origin));
                     //! [AddHostObjectToScriptWithOrigins]
 
                     // Subscribe to frame name changed event
@@ -100,7 +100,7 @@ HostObjectComponent::HostObjectComponent(QWebViewWebView2Impl* d) :
 }
 
 HostObjectComponent::~HostObjectComponent() {
-    m_webView->RemoveHostObjectFromScript(L"QWebView2");
+    m_webView->RemoveHostObjectFromScript(L"QWebViewWebView2");
     m_webView->remove_NavigationStarting(m_navigationStartingToken);
     wil::com_ptr<ICoreWebView2_4> webview2_4 = m_webView.try_query<ICoreWebView2_4>();
     if (webview2_4) {

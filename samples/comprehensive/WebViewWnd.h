@@ -18,9 +18,6 @@ class WebViewWnd : public WebViewWndBase<QWidget> {
 
   void setupUi();
 
-  void setAllowExecuteUnknownProtocolViaOS(bool b);
-  bool allowExecuteUnknownProtocolViaOS();
-
   bool framelessWindow();
 
   bool translucentWindowBackground();
@@ -63,7 +60,7 @@ class WebViewWnd : public WebViewWndBase<QWidget> {
   virtual void onReload();
   virtual void onShowDevTools();
   virtual void onCloseDevTools();
-  virtual void onTriggerEvent();
+  virtual void onNotifyToJs();
   virtual void onPopupWindow(const QString& url);
 
  private slots:
@@ -72,7 +69,6 @@ class WebViewWnd : public WebViewWndBase<QWidget> {
  protected:
   bool framelessWindow_;
   bool translucentWindowBackground_;
-  bool allowExecuteUnknownProtocolViaOS_;
   bool usingHideInsteadClose_;
   bool forceClose_;
   QSize initSize_;

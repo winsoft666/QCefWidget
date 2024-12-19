@@ -14,6 +14,9 @@
 
 namespace client {
 namespace renderer {
+// 渲染进程：在Window对象上注册IsCEFEngine值
+void RegisterCEFEngineFlag(CefRefPtr<CefV8Context> context, CefRefPtr<ClientAppRenderer::Delegate> delegate);
+
 // 渲染进程：在Window对象上注册JS通知函数
 void RegisterJSNotifyFunction(CefRefPtr<CefV8Context> context,
                               CefRefPtr<ClientAppRenderer::Delegate> delegate);

@@ -19,7 +19,7 @@ class BrowserListItem : public QWidget {
   QComboBox* comboBoxUrl_;
   QLabel* labelStatus_;
 
-  QPushButton* pushButtonInvokeJS_;
+  QPushButton* pushButtonNotifyJS_;
   QPushButton* pushButtonDevTools_;
   QPushButton* pushButtonClose_;
   QPushButton* pushButtonVisible_;

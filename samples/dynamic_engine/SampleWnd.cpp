@@ -1,6 +1,7 @@
 ﻿#include "SampleWnd.h"
 #include "QWebView/Creator.h"
 #include "QWebView/Manager.h"
+#include <QTimer>
 
 SampleWnd::SampleWnd(QWebView::BrowserEngine engine, QWidget* parent /*= nullptr*/) :
     QWidget(parent) {
@@ -13,6 +14,10 @@ SampleWnd::SampleWnd(QWebView::BrowserEngine engine, QWidget* parent /*= nullptr
     setWindowTitle(windowTitle() + "当前是 CEF 内核");
   }
   webview_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+  connect(webview_, &QWebView::messageReceived, this, [this](QString message) {
+    QMessageBox::information(this, "Message from JavaSript", message, QMessageBox::Ok);
+  });
 
   QPushButton* btnClose = new QPushButton("调用QWidget::close()");
   connect(btnClose, &QPushButton::clicked, this, [this]() {
@@ -43,7 +48,15 @@ SampleWnd::SampleWnd(QWebView::BrowserEngine engine, QWidget* parent /*= nullptr
 
   setLayout(v);
 
-  webview_->navigate("https://www.baidu.com");
+  webview_->navigate(QString("file:///%1").arg(QCoreApplication::applicationDirPath() + u8"/asserts/test.html"));
+
+  QTimer* timer = new QTimer(this);
+
+  timer->setInterval(1500);
+  connect(timer, &QTimer::timeout, this, [this]() {
+    webview_->postMessage("hi, this is C++ message.");
+  });
+  timer->start();
 }
 
 void SampleWnd::closeEvent(QCloseEvent* e) {

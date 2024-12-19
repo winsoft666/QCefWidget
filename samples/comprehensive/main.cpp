@@ -16,7 +16,9 @@ int main(int argc, char* argv[]) {
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 #endif
 #endif
+
   QApplication a(argc, argv);
+
   // 需要设置最后一个窗口关闭后，不自动退出应用程序
   a.setQuitOnLastWindowClosed(false);
 

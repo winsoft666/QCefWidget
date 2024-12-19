@@ -2,12 +2,14 @@
 #include "QWebView/Creator.h"
 #include "QWebView/Manager.h"
 
-WebViewWnd::WebViewWnd(bool frameless, bool translucentWindowBackground, QWebView::BrowserEngine engine, QWidget* parent /*= nullptr*/) :
+WebViewWnd::WebViewWnd(bool frameless,
+                       bool translucentWindowBackground,
+                       QWebView::BrowserEngine engine,
+                       QWidget* parent /*= nullptr*/) :
     WebViewWndBase<QWidget>(frameless, translucentWindowBackground, parent),
     framelessWindow_(frameless),
     translucentWindowBackground_(translucentWindowBackground),
     engine_(engine),
-    allowExecuteUnknownProtocolViaOS_(false),
     usingHideInsteadClose_(false),
     forceClose_(false),
     osrEnabled_(false),
@@ -38,10 +40,6 @@ void WebViewWnd::setupUi() {
     webview_->setOSREnabled(osrEnabled_);
   }
 
-  //pCefWidget_->setContextMenuEnabled(contextMenuEnabled_);
-  //pCefWidget_->setBrowserBackgroundColor(browserBkColor_);
-  //pCefWidget_->setAllowExecuteUnknownProtocolViaOS(
-  //    allowExecuteUnknownProtocolViaOS_);
   if (!translucentWindowBackground_)
     webview_->setStyleSheet("image: url(:/Sample/images/logo_blue.svg);");
 
@@ -81,14 +79,6 @@ void WebViewWnd::setupUi() {
     webview_->navigate(initUrl_);
 
   UpdateWindowTitle();
-}
-
-void WebViewWnd::setAllowExecuteUnknownProtocolViaOS(bool b) {
-  allowExecuteUnknownProtocolViaOS_ = b;
-}
-
-bool WebViewWnd::allowExecuteUnknownProtocolViaOS() {
-  return allowExecuteUnknownProtocolViaOS_;
 }
 
 bool WebViewWnd::framelessWindow() {
@@ -232,8 +222,8 @@ void WebViewWnd::onCloseDevTools() {
     webview_->closeDevTools();
 }
 
-void WebViewWnd::onTriggerEvent() {
-  webview_->postMessage("hi, this is c++ message.");
+void WebViewWnd::onNotifyToJs() {
+  webview_->postMessage("hi, this is C++ message.");
 }
 
 void WebViewWnd::onPopupWindow(const QString& url) {

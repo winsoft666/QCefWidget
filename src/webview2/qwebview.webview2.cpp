@@ -32,6 +32,11 @@ QWebViewWebView2::QWebViewWebView2(QWidget* parent) :
   Q_ASSERT(!qApp->quitOnLastWindowClosed());
 
   engine_ = BrowserEngine::WebView2;
+
+  impl_->RegisterSciptCallNotify([this](const QVariant& value, CallbackToScript cbScript) {
+    emit messageReceived(value.toString());
+    return QVariant();
+  });
 }
 
 QWebViewWebView2::~QWebViewWebView2() {
