@@ -100,10 +100,12 @@ void QWebViewWebView2::setMute(bool mute) {
 }
 
 bool QWebViewWebView2::isOSREnabled() {
+  qWarning() << "QWebView: not support OSR in WebView2 engine.";
   return false;
 }
 
 void QWebViewWebView2::setOSREnabled(bool enabled) {
+  qWarning() << "QWebView: not support OSR in WebView2 engine.";
 }
 
 bool QWebViewWebView2::postMessage(const QString& message) {

@@ -1,4 +1,4 @@
-#ifndef TEST_WND_H__
+﻿#ifndef TEST_WND_H__
 #define TEST_WND_H__
 
 #pragma execution_character_set("utf-8")

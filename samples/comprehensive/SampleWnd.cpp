@@ -1,4 +1,4 @@
-#include "SampleWnd.h"
+ï»¿#include "SampleWnd.h"
 #include "QWebView/Core.h"
 #include <QDebug>
 #include <QStyle>
@@ -68,7 +68,7 @@ void SampleWnd::setupUi() {
   this->setWindowIcon(QIcon(":/Sample/images/logo.svg"));
 
   QHBoxLayout* hlEngine = new QHBoxLayout();
-  hlEngine->addWidget(new QLabel("ä¯ÀÀÆ÷ÒýÇæ: "));
+  hlEngine->addWidget(new QLabel("æµè§ˆå™¨å¼•æ“Ž: "));
   comboBoxEngine_ = new QComboBox();
   comboBoxEngine_->setMinimumWidth(80);
   comboBoxEngine_->addItem("WebView2", (int)QWebView::BrowserEngine::WebView2);
@@ -76,16 +76,16 @@ void SampleWnd::setupUi() {
   hlEngine->addWidget(comboBoxEngine_);
   hlEngine->addStretch();
 
-  checkboxFramelessWindow_ = new QCheckBox("ÎÞ±ß¿ò´°¿Ú");
+  checkboxFramelessWindow_ = new QCheckBox("æ— è¾¹æ¡†çª—å£");
 
-  checkboxTranslucentWindowBackground_ = new QCheckBox("´°¿Ú±³¾°Í¸Ã÷");
+  checkboxTranslucentWindowBackground_ = new QCheckBox("çª—å£èƒŒæ™¯é€æ˜Ž");
 
   QRegExp rxColor(
       "((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9]).){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9][0-9]|[0-9])");
   QRegExpValidator* regValidatorColor = new QRegExpValidator(rxColor);
 
   QHBoxLayout* hlWindowBkColor = new QHBoxLayout();
-  hlWindowBkColor->addWidget(new QLabel("´°¿Ú±³¾°É«(ARGB): "));
+  hlWindowBkColor->addWidget(new QLabel("çª—å£èƒŒæ™¯è‰²(ARGB): "));
   lineEditWindowBkColor_ = new QLineEdit("255,255,255,255");
   lineEditWindowBkColor_->setMaximumWidth(110);
   lineEditWindowBkColor_->setValidator(regValidatorColor);
@@ -93,19 +93,19 @@ void SampleWnd::setupUi() {
   hlWindowBkColor->addStretch();
 
   QHBoxLayout* hlBrowserBkColor = new QHBoxLayout();
-  hlBrowserBkColor->addWidget(new QLabel("ä¯ÀÀÆ÷±³¾°É«(ARGB): "));
+  hlBrowserBkColor->addWidget(new QLabel("æµè§ˆå™¨èƒŒæ™¯è‰²(ARGB): "));
   lineEditBrowserBkColor_ = new QLineEdit("255,255,255,255");
   lineEditBrowserBkColor_->setMaximumWidth(110);
   lineEditBrowserBkColor_->setValidator(regValidatorColor);
   hlBrowserBkColor->addWidget(lineEditBrowserBkColor_);
   hlBrowserBkColor->addStretch();
 
-  checkboxOsrEnabled_ = new QCheckBox("ÀëÆÁäÖÈ¾(OSR)");
+  checkboxOsrEnabled_ = new QCheckBox("ç¦»å±æ¸²æŸ“(OSR)");
 
-  checkboxInitHide_ = new QCheckBox("´´½¨Òþ²ØµÄ´°¿Ú");
+  checkboxInitHide_ = new QCheckBox("åˆ›å»ºéšè—çš„çª—å£");
 
   QHBoxLayout* hlFPS = new QHBoxLayout();
-  hlFPS->addWidget(new QLabel("×î´óFPS (1 ~ 60£¬½öOSRÄ£Ê½ÏÂ¿ÉÓÃ): "));
+  hlFPS->addWidget(new QLabel("æœ€å¤§FPS (1 ~ 60ï¼Œä»…OSRæ¨¡å¼ä¸‹å¯ç”¨): "));
   lineEditFPS_ = new QLineEdit("25");
   lineEditFPS_->setMaximumWidth(32);
   QIntValidator* intValidator = new QIntValidator(1, 60);
@@ -114,7 +114,7 @@ void SampleWnd::setupUi() {
   hlFPS->addStretch();
 
   QHBoxLayout* hlInitSize = new QHBoxLayout();
-  hlInitSize->addWidget(new QLabel("´°¿Ú³ß´ç: "));
+  hlInitSize->addWidget(new QLabel("çª—å£å°ºå¯¸: "));
   lineEditInitSize_ = new QLineEdit("800*600");
   lineEditInitSize_->setMaximumWidth(80);
   QRegExp rx("[0-9]+\\*[0-9]+");
@@ -123,13 +123,13 @@ void SampleWnd::setupUi() {
   hlInitSize->addWidget(lineEditInitSize_);
   hlInitSize->addStretch();
 
-  checkboxUsingHideInsteadCloseWhenClickCloseButton_ = new QCheckBox("µã»÷´°¿Ú¹Ø±Õ°´Å¥Ê±£¬²»¹Ø±Õ´°¿Ú£¬¶øÊÇÒþ²Ø´°¿Ú");
+  checkboxUsingHideInsteadCloseWhenClickCloseButton_ = new QCheckBox("ç‚¹å‡»çª—å£å…³é—­æŒ‰é’®æ—¶ï¼Œä¸å…³é—­çª—å£ï¼Œè€Œæ˜¯éšè—çª—å£");
 
   checkboxAllowExecuteUnknownProtocolViaOS_ = new QCheckBox("Allow Execute Unknown Protocol via OS");
   checkboxAllowExecuteUnknownProtocolViaOS_->setChecked(true);
 
   QHBoxLayout* hlInitUrl = new QHBoxLayout();
-  hlInitUrl->addWidget(new QLabel("³õÊ¼Á´½Ó: "));
+  hlInitUrl->addWidget(new QLabel("åˆå§‹é“¾æŽ¥: "));
   comboBoxUrl_ = new QComboBox();
   comboBoxUrl_->setObjectName("comboBoxUrl");
   comboBoxUrl_->setMinimumWidth(300);
@@ -138,16 +138,16 @@ void SampleWnd::setupUi() {
   hlInitUrl->addWidget(comboBoxUrl_);
   hlInitUrl->addStretch();
 
-  pushButtonNewBrowser_ = newPushButton("pushButtonNewBrowser", "Ê¹ÓÃÉÏÃæÅäÖÃ´´½¨ÐÂµÄä¯ÀÀÆ÷´°¿Ú");
+  pushButtonNewBrowser_ = newPushButton("pushButtonNewBrowser", "ä½¿ç”¨ä¸Šé¢é…ç½®åˆ›å»ºæ–°çš„æµè§ˆå™¨çª—å£");
   connect(pushButtonNewBrowser_, &QPushButton::clicked, this, &SampleWnd::onPushButtonNewBrowserClicked);
 
   QHBoxLayout* hlQuickSetting = new QHBoxLayout();
-  hlQuickSetting->addWidget(new QLabel("¿ìËÙÉèÖÃ: "));
-  pushButtonQuickSettingForIrregularWnd_ = newPushButton("", "²»¹æÔò´°¿Ú");
+  hlQuickSetting->addWidget(new QLabel("å¿«é€Ÿè®¾ç½®: "));
+  pushButtonQuickSettingForIrregularWnd_ = newPushButton("", "ä¸è§„åˆ™çª—å£");
   connect(pushButtonQuickSettingForIrregularWnd_, &QPushButton::clicked, this, &SampleWnd::onPushButtonQuickSettingForIrregularWndClicked);
   hlQuickSetting->addWidget(pushButtonQuickSettingForIrregularWnd_);
 
-  pushButtonQuickSettingForElectron_ = newPushButton("", "Ä£ÄâElectron");
+  pushButtonQuickSettingForElectron_ = newPushButton("", "æ¨¡æ‹ŸElectron");
   connect(pushButtonQuickSettingForElectron_, &QPushButton::clicked, this, &SampleWnd::onPushButtonQuickSettingForElectronClicked);
   hlQuickSetting->addWidget(pushButtonQuickSettingForElectron_);
   hlQuickSetting->addStretch();
@@ -173,7 +173,7 @@ void SampleWnd::setupUi() {
   //labelVersion_->setText(QString("QCefWidget: %1  CEF: %2").arg(QCefWidget::QCefWidgetVersion()).arg(QCefWidget::CefVersion()));
   hlBottom->addWidget(labelVersion_);
   hlBottom->addStretch();
-  pushButtonClose_ = newPushButton("", "µ÷ÓÃQWidget::close()·½·¨");
+  pushButtonClose_ = newPushButton("", "è°ƒç”¨QWidget::close()æ–¹æ³•");
   connect(pushButtonClose_, &QPushButton::clicked, [this]() { close(); });
   hlBottom->addWidget(pushButtonClose_);
 

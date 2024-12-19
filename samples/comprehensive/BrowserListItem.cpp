@@ -1,4 +1,4 @@
-#include "BrowserListItem.h"
+﻿#include "BrowserListItem.h"
 #include "WebViewWnd.h"
 #include "BuiltInUrl.h"
 

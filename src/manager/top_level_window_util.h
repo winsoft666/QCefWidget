@@ -9,11 +9,7 @@
 #define QWEBVIEW_TOP_LEVEL_WINDOW_UTIL_H_
 #pragma once
 
-#include <QObject>
-#include <QSet>
-#include <QMap>
 #include <QWidget>
-#include <QAbstractNativeEventFilter>
 
 QWidget* GetTopLevelWindow(QWidget* w);
 

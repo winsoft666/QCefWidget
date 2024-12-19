@@ -2,17 +2,26 @@
 #include "QWebView/Creator.h"
 #include "QWebView/Manager.h"
 
-SampleWnd::SampleWnd(QWidget* parent /*= nullptr*/) :
+SampleWnd::SampleWnd(QWebView::BrowserEngine engine, QWidget* parent /*= nullptr*/) :
     QWidget(parent) {
-  webviewLeft_ = CreateWebView2();
-  webviewLeft_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-  webviewRight_ = CreateWebView2();
-  webviewRight_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  if (engine == QWebView::BrowserEngine::WebView2) {
+    webview_ = CreateWebView2();
+    setWindowTitle(windowTitle() + "当前是 WebView2 内核");
+  }
+  else if (engine == QWebView::BrowserEngine::CEF) {
+    webview_ = CreateCEF();
+    setWindowTitle(windowTitle() + "当前是 CEF 内核");
+  }
+  webview_->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   QPushButton* btnClose = new QPushButton("调用QWidget::close()");
   connect(btnClose, &QPushButton::clicked, this, [this]() {
     this->close();
+  });
+
+  QPushButton* btnCloseLeft = new QPushButton("调用QWebView::close()");
+  connect(btnCloseLeft, &QPushButton::clicked, this, [this]() {
+    webview_->close();
   });
 
   QPushButton* btnQuit = new QPushButton("调用QCoreApplication::quit()");
@@ -21,10 +30,10 @@ SampleWnd::SampleWnd(QWidget* parent /*= nullptr*/) :
   });
 
   QHBoxLayout* lTop = new QHBoxLayout();
-  lTop->addWidget(webviewLeft_);
-  lTop->addWidget(webviewRight_);
+  lTop->addWidget(webview_);
 
   QHBoxLayout* lBottom = new QHBoxLayout();
+  lBottom->addWidget(btnCloseLeft);
   lBottom->addWidget(btnClose);
   lBottom->addWidget(btnQuit);
 
@@ -34,8 +43,7 @@ SampleWnd::SampleWnd(QWidget* parent /*= nullptr*/) :
 
   setLayout(v);
 
-  webviewLeft_->navigate("https://www.baidu.com");
-  webviewRight_->navigate("https://www.baidu.com");
+  webview_->navigate("https://www.baidu.com");
 }
 
 void SampleWnd::closeEvent(QCloseEvent* e) {

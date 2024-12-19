@@ -1,4 +1,4 @@
-#include "BuiltInUrl.h"
+﻿#include "BuiltInUrl.h"
 #include <QCoreApplication>
 
 QStringList getBuiltInUrl() {

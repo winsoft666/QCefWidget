@@ -1,9 +1,3 @@
-﻿#define IDR_TEST_PAGE                   101
-#define IDI_ICON1                       102
-#define IDR_TREE_PAGE                   103
-#define IDR_SWF1                        104
-#define IDR_SVG1                        105
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED

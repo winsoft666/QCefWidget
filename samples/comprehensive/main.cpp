@@ -1,4 +1,4 @@
-#include "SampleWnd.h"
+ï»¿#include "SampleWnd.h"
 #include <QtWidgets/QApplication>
 #include "QWebView/Creator.h"
 #include "QWebView/Manager.h"
@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
 #endif
 #endif
   QApplication a(argc, argv);
-  // ĞèÒªÉèÖÃ×îºóÒ»¸ö´°¿Ú¹Ø±Õºó£¬²»×Ô¶¯ÍË³öÓ¦ÓÃ³ÌĞò
+  // éœ€è¦è®¾ç½®æœ€åä¸€ä¸ªçª—å£å…³é—­åï¼Œä¸è‡ªåŠ¨é€€å‡ºåº”ç”¨ç¨‹åº
   a.setQuitOnLastWindowClosed(false);
 
   SampleWnd w;

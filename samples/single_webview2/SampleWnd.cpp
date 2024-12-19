@@ -1,4 +1,4 @@
-#include "SampleWnd.h"
+ï»¿#include "SampleWnd.h"
 #include "QWebView/Creator.h"
 #include "QWebView/Manager.h"
 
@@ -10,14 +10,14 @@ SampleWnd::SampleWnd(QWidget* parent /*= nullptr*/) :
     setWindowTitle(title);
   });
 
-  QPushButton* btnClose = new QPushButton("µ÷ÓÃQWidget::close()");
+  QPushButton* btnClose = new QPushButton("è°ƒç”¨QWidget::close()");
   connect(btnClose, &QPushButton::clicked, this, [this]() {
     this->close();
   });
 
-  QPushButton* btnQuit = new QPushButton("µ÷ÓÃQCoreApplication::quit()");
+  QPushButton* btnQuit = new QPushButton("è°ƒç”¨QCoreApplication::quit()");
   connect(btnQuit, &QPushButton::clicked, this, [this]() {
-    QMessageBox::warning(this, "Ê¹ÓÃ´íÎó", "²»ÄÜÖ±½Óµ÷ÓÃ QCoreApplication::quit() À´ÍË³öÓ¦ÓÃ³ÌĞò£¡");
+    QMessageBox::warning(this, "ä½¿ç”¨é”™è¯¯", "ä¸èƒ½ç›´æ¥è°ƒç”¨ QCoreApplication::quit() æ¥é€€å‡ºåº”ç”¨ç¨‹åºï¼");
   });
 
   QHBoxLayout* lTop = new QHBoxLayout();
@@ -41,7 +41,7 @@ void SampleWnd::closeEvent(QCloseEvent* e) {
   qDebug() << ">>>> SampleWnd closeEvent" << state;
 
   if (state == QWebViewManager::TopLevelWndCloseState::NotStart) {
-    if (QMessageBox::Yes == QMessageBox::question(this, "¾¯¸æ", "È·¶¨ÒªÍË³öÊ¾Àı³ÌĞòÂğ£¿")) {
+    if (QMessageBox::Yes == QMessageBox::question(this, "è­¦å‘Š", "ç¡®å®šè¦é€€å‡ºç¤ºä¾‹ç¨‹åºå—ï¼Ÿ")) {
       QWebViewManager::Get()->prepareToCloseTopLevelWindow(this);
     }
     qDebug() << ">>>> SampleWnd closeEvent: ignore";
