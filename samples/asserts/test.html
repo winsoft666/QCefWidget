@@ -1,0 +1,109 @@
+<html>
+
+<head>
+  <meta name="description" content="Test Page" />
+  <script>
+    window.onload = (event) => {
+      document.getElementById("engine").innerHTML = window.IsCEFEngine ? '当前是CEF内核' : "当前是WebView2内核";
+
+      if (window.IsCEFEngine) {
+        window.onMessage = (message) => {
+          document.getElementById("eventMessage").value += message;
+        };
+      }
+      else {
+        window.chrome.webview.addEventListener("message", event => {
+          document.getElementById("eventMessage").value += event.data;
+        });
+      }
+    };
+
+    function onNotifyCppBtnClicked() {
+      if (window.IsCEFEngine) {
+        window.mrtNotify("hi, this is javascript message.");
+      }
+      else {
+        chrome.webview.hostObjects.QWebViewWebView2.NotifyCPP("hi, this is javascript message.");
+      }
+    }
+  </script>
+  <style>
+    .title {
+      -webkit-app-region: drag;
+      background-color: rgb(5, 39, 175);
+      width: 100%;
+      height: 40px;
+      color: white;
+
+      padding-left: 10px;
+      line-height: 40px;
+      display: flex;
+      align-items: center;
+    }
+
+    .title-area {
+      width: calc((100% - 35px)/2);
+      text-align: left;
+    }
+
+    .title-button {
+      -webkit-app-region: no-drag;
+      background-color: red;
+      width: 100px;
+      height: 20px;
+      font-size: 8px;
+      text-align: center;
+      line-height: 20px;
+    }
+
+    textarea {
+      width: 80%;
+      height: 100px;
+      margin-left: 10px;
+      margin-bottom: 5px;
+    }
+
+    .txt {
+      margin-top: 20px;
+    }
+
+    .button {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body id="main">
+  <div class='title'>
+    <div class="title-area">蓝色为标题栏，可拖动区域</div>
+    <div class="title-button">红色为不可拖动区域</div>
+  </div>
+
+  <!--
+  <div align="center">
+    <object width="100%" height="200" classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000"
+      codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0">
+      <param name="movie" value="./test.swf">
+      <param name="quality" value="high">
+      <embed width="100%" height="200"
+        pluginspage="http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash"
+        src="./test.swf" type="application/x-shockwave-flash" quality="high">
+    </object>
+  </div>
+  -->
+
+  <div id='engine' class='txt'></div>
+
+  <div class='txt'>
+    <a href="https://baidu.com" target="_blank">在新窗口打开百度</a>
+  </div>
+
+  <div>
+    <input class="button" type="button" value="演示 JavaScript 发送消息到 C++" onclick="onNotifyCppBtnClicked()" />
+  </div>
+
+  <div class='txt'>【仅在 Comprehensive 示例中有效】点击界面上的 <img src='./img/javascript_h.svg' /> 按钮，演示从 C++ 发送消息到 JavaScript。<br/>下面是来自于 C++ 的消息：</div>
+  <textarea id="eventMessage"></textarea>
+</body>
+
+</html>
