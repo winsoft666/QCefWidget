@@ -1,0 +1,21 @@
+﻿/*
+ * Copyright (c) winsoft666.
+ * All rights reserved.
+ *
+ * This source code is licensed under the license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+#ifndef QWEBVIEW_VERSION_H_
+#define QWEBVIEW_VERSION_H_
+#pragma once
+
+#define QWEBVIEW_VERSION "@PROJECT_VERSION@"
+
+#define QWEBVIEW_VERSION_MAJOR @QWEBVIEW_VERSION_MAJOR@
+#define QWEBVIEW_VERSION_MINOR @QWEBVIEW_VERSION_MINOR@
+#define QWEBVIEW_VERSION_PATCH @QWEBVIEW_VERSION_PATCH@
+
+#define stringify(a) stringify_(a)
+#define stringify_(a) #a
+
+#endif //!QWEBVIEW_VERSION_H_
